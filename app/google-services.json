@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "300885537276",
+    "project_id": "findyourpet-e77a8",
+    "storage_bucket": "findyourpet-e77a8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:300885537276:android:ace3d645431b18facc4279",
+        "android_client_info": {
+          "package_name": "com.edu.wszib.findyourpet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "300885537276-62i1fl7sm6f3vg1m6imc49slr3k452v9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.edu.wszib.findyourpet",
+            "certificate_hash": "8dd0b4f581f40f649e76ec626bb42ee3a55c73ce"
+          }
+        },
+        {
+          "client_id": "300885537276-rdvd33eu9ugna5lu0745905evqes2v7i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBioGuG5fJbnOnOVgHaWMmeODgi93eT_gw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "300885537276-rdvd33eu9ugna5lu0745905evqes2v7i.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
