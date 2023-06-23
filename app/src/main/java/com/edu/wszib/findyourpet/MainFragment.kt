@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
 import com.edu.wszib.findyourpet.databinding.FragmentMainBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -31,6 +32,8 @@ class MainFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         auth = Firebase.auth
 
-
+        binding.button2.setOnClickListener{
+            findNavController().navigate(MainFragmentDirections.actionMainFragmentToLostCreateFragment())
+        }
     }
 }

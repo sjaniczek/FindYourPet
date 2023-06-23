@@ -18,5 +18,28 @@
         android:id="@+id/mainFragment"
         android:name="com.edu.wszib.findyourpet.MainFragment"
         android:label="fragment_main"
-        tools:layout="@layout/fragment_main" />
+        tools:layout="@layout/fragment_main" >
+        <action
+            android:id="@+id/action_mainFragment_to_lostCreateFragment"
+            app:destination="@id/lostCreateFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/lostCreateFragment"
+        android:name="com.edu.wszib.findyourpet.LostCreateFragment"
+        android:label="fragment_create_lost"
+        tools:layout="@layout/fragment_create_lost" >
+        <action
+            android:id="@+id/action_lostCreateFragment_to_lostMapsFragment"
+            app:destination="@id/lostMapsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/lostDetailsFragment"
+        android:name="com.edu.wszib.findyourpet.LostDetailsFragment"
+        android:label="fragment_details_lost"
+        tools:layout="@layout/fragment_details_lost" />
+    <fragment
+        android:id="@+id/lostMapsFragment"
+        android:name="com.edu.wszib.findyourpet.LostMapsFragment"
+        android:label="fragment_lost_maps"
+        tools:layout="@layout/fragment_lost_maps" />
 </navigation>
