@@ -41,5 +41,9 @@
         android:id="@+id/lostMapsFragment"
         android:name="com.edu.wszib.findyourpet.LostMapsFragment"
         android:label="fragment_lost_maps"
-        tools:layout="@layout/fragment_lost_maps" />
+        tools:layout="@layout/fragment_lost_maps" >
+        <action
+            android:id="@+id/action_lostMapsFragment_to_lostCreateFragment"
+            app:destination="@id/lostCreateFragment" />
+    </fragment>
 </navigation>
