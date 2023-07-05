@@ -65,13 +65,15 @@
                 android:id="@+id/rbLostDog"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Pies" />
+                android:text="Pies"
+                android:tag="Pies"/>
 
             <RadioButton
                 android:id="@+id/rbLostCat"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Kot" />
+                android:text="Kot"
+                android:tag="Kot"/>
         </RadioGroup>
 
         <TextView
@@ -97,6 +99,29 @@
             app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvLostPetName" />
+        <TextView
+            android:id="@+id/tvLostPetDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="Data zaginięcia"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etLostPetName" />
+
+        <EditText
+            android:id="@+id/etLostPetDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:text="Name"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvLostPetDate" />
 
         <TextView
             android:id="@+id/tvLostAddress"
@@ -106,7 +131,7 @@
             android:text="Adres zaginięcia"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etLostPetName" />
+            app:layout_constraintTop_toBottomOf="@+id/etLostPetDate" />
 
         <EditText
             android:id="@+id/etLostAddress"
@@ -155,7 +180,7 @@
             app:layout_constraintTop_toBottomOf="@+id/tvLostAge" />
 
         <TextView
-            android:id="@+id/tvLostAgressive"
+            android:id="@+id/tvLostAggressive"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
@@ -172,19 +197,21 @@
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvLostAgressive">
+            app:layout_constraintTop_toBottomOf="@+id/tvLostAggressive">
 
             <RadioButton
                 android:id="@+id/rbLostBehaviorYes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Tak" />
+                android:text="Tak"
+                android:tag="Tak"/>
 
             <RadioButton
-                android:id="@+id/rbLostAgressiveNo"
+                android:id="@+id/rbLostBehaviorNo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Nie" />
+                android:text="Nie"
+                android:tag="Nie"/>
         </RadioGroup>
 
         <TextView
@@ -211,13 +238,15 @@
                 android:id="@+id/rbLostReactsYes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Tak" />
+                android:text="Reaguje"
+                android:tag="Reaguje"/>
 
             <RadioButton
                 android:id="@+id/rbLostReactsNo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Nie" />
+                android:text="Nie reaguje"
+                android:tag="Nie reaguje"/>
         </RadioGroup>
 
         <TextView
@@ -336,6 +365,15 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvLostOwnerAdditionalInfo" />
+
+        <Button
+            android:id="@+id/buttonLostAccept"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Akceptuj"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etLostOwnerAdditionalInfo" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

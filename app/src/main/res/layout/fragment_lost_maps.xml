@@ -5,16 +5,34 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layoutDirection="ltr">
+    android:layoutDirection="ltr"
+    tools:context="LostMapsFragment">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/map_lost_layout"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="-109dp"
-        tools:layout_editor_absoluteY="157dp" />
+        tools:layout="@layout/fragment_lost_maps"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp" />
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginBottom="1462dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintGuide_percent="0.5" />
 
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/guideline3"
+        app:layout_constraintEnd_toEndOf="@+id/map_lost_layout"
+        app:layout_constraintStart_toStartOf="@+id/map_lost_layout"
+        app:srcCompat="@drawable/ic_baseline_location_on_24" />
     <Button
         android:id="@+id/button_lost_map_send"
         android:layout_width="150dp"

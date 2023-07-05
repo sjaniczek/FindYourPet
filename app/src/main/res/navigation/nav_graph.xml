@@ -20,8 +20,11 @@
         android:label="fragment_main"
         tools:layout="@layout/fragment_main" >
         <action
-            android:id="@+id/action_mainFragment_to_lostCreateFragment"
-            app:destination="@id/lostCreateFragment" />
+            android:id="@+id/action_mainFragment_to_chooseFragment"
+            app:destination="@id/chooseFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_lostDetailsFragment"
+            app:destination="@id/lostDetailsFragment" />
     </fragment>
     <fragment
         android:id="@+id/lostCreateFragment"
@@ -31,6 +34,9 @@
         <action
             android:id="@+id/action_lostCreateFragment_to_lostMapsFragment"
             app:destination="@id/lostMapsFragment" />
+        <action
+            android:id="@+id/action_lostCreateFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
     </fragment>
     <fragment
         android:id="@+id/lostDetailsFragment"
@@ -44,6 +50,15 @@
         tools:layout="@layout/fragment_lost_maps" >
         <action
             android:id="@+id/action_lostMapsFragment_to_lostCreateFragment"
+            app:destination="@id/lostCreateFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/chooseFragment"
+        android:name="com.edu.wszib.findyourpet.ChooseFragment"
+        android:label="fragment_choose"
+        tools:layout="@layout/fragment_choose" >
+        <action
+            android:id="@+id/action_chooseFragment_to_lostCreateFragment"
             app:destination="@id/lostCreateFragment" />
     </fragment>
 </navigation>

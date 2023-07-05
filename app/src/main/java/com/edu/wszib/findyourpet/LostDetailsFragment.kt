@@ -24,4 +24,8 @@ class LostDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
     }
+    companion object {
+        private const val TAG = "PostDetailFragment"
+        const val EXTRA_POST_KEY = "post_key"
+    }
 }

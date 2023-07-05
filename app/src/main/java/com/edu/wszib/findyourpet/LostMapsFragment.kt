@@ -38,7 +38,7 @@ class LostMapsFragment : Fragment(), OnMapReadyCallback {
 
     private val lostPetViewModel: LostPetViewModel by activityViewModels()
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private lateinit var mapFragment: SupportMapFragment
+    //private lateinit var mapFragment: SupportMapFragment
     private lateinit var googleMap: GoogleMap
     private var _binding: FragmentLostMapsBinding? = null
     private val binding get() = _binding!!
@@ -68,7 +68,7 @@ class LostMapsFragment : Fragment(), OnMapReadyCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mapFragment =
+        val mapFragment =
             childFragmentManager.findFragmentById(R.id.map_lost_layout) as SupportMapFragment
         mapFragment.getMapAsync(this)
     }

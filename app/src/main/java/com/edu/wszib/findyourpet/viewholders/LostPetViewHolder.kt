@@ -1,0 +1,33 @@
+package com.edu.wszib.findyourpet.viewholders
+
+import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
+import com.edu.wszib.findyourpet.R
+import com.edu.wszib.findyourpet.models.LostPetData
+import com.squareup.picasso.Picasso
+
+class LostPetViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
+    private val listLostPetName: TextView = itemView.findViewById(R.id.listLostPetName)
+    private val listLostPetAddress: TextView = itemView.findViewById(R.id.listLostPetAddress)
+    private val listLostPetDate: TextView = itemView.findViewById(R.id.listLostPetDate)
+    private val listLostPetImg: ImageView = itemView.findViewById(R.id.listLostPetImg)
+
+    fun bindToLostPet(lostPet: LostPetData, starClickListener: View.OnClickListener){
+        listLostPetName.text = lostPet.petName
+        listLostPetDate.text = lostPet.lostDate
+        listLostPetAddress.text = lostPet.decodedAddress
+
+        val lostImageUrl = if(lostPet.imageUrl.isNullOrEmpty()){
+            DEFAULT_IMAGE_URL
+        } else {
+            lostPet.imageUrl
+        }
+        Picasso.get()
+            .load(lostImageUrl)
+            .into(listLostPetImg)
+    }
+}
+
+private const val DEFAULT_IMAGE_URL = "https://i.stack.imgur.com/l60Hf.png"
