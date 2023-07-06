@@ -6,52 +6,46 @@ import com.google.firebase.database.IgnoreExtraProperties
 
 @IgnoreExtraProperties
 data class LostPetData(
-    var adId: String? = "",
-    var petName: String? = "",
-    var petType: String? = "",
-    var petAge: String? = "",
-    var lostDate: String? = "",
-    var ownerName: String? = "",
-    var phoneNumber: String? = "",
-    var emailAddress: String? = "",
-    var decodedAddress: String? = "",
-    var petBehavior: String? = "",
-    var petReact: String? = "",
-    var additionalPetInfo: String? = "",
-    var additionalOwnerInfo: String? = "",
-    var dateAdded: String? = "",
-    var imageUrl: String? = "",
-    var imageUri: Uri? = null,
-    var lostLocation: LostLocation? = null
-){
-
+    var lostPetId: String? = "",
+    var lostPetName: String? = "",
+    var lostPetType: String? = "",
+    var lostPetAge: String? = "",
+    var lostPetDate: String? = "",
+    var lostPetOwnerName: String? = "",
+    var lostPetPhoneNumber: String? = "",
+    var lostPetEmailAddress: String? = "",
+    var lostPetDecodedAddress: String? = "",
+    var lostPetBehavior: String? = "",
+    var lostPetReact: String? = "",
+    var lostPetAdditionalPetInfo: String? = "",
+    var lostPetAdditionalOwnerInfo: String? = "",
+    var lostPetDateAdded: String? = "",
+    var lostPetImageUrl: String? = "",
+    var lostPetImageUri: Uri? = null,
+    var lostPetLocation: LostLocation? = null
+) {
     @Exclude
     fun toMap(): Map<String, Any?> {
         return mapOf(
-            "adId" to adId,
-            "petName" to petName,
-            "petType" to petType,
-            "petAge" to petAge,
-            "lostDate" to lostDate,
-            "ownerName" to ownerName,
-            "phoneNumber" to phoneNumber,
-            "emailAddress" to emailAddress,
-            "decodedAddress" to decodedAddress,
-            "petBehavior" to petBehavior,
-            "petReact" to petReact,
-            "additionalPetInfo" to additionalPetInfo,
-            "additionalOwnerInfo" to additionalOwnerInfo,
-            "dateAdded" to dateAdded,
-            "imageUrl" to imageUrl,
-            "lostLocation" to lostLocation
+            "lostPetId" to lostPetId,
+            "lostPetName" to lostPetName,
+            "lostPetType" to lostPetType,
+            "lostPetAge" to lostPetAge,
+            "lostPetDate" to lostPetDate,
+            "lostPetOwnerName" to lostPetOwnerName,
+            "lostPetPhoneNumber" to lostPetPhoneNumber,
+            "lostPetEmailAddress" to lostPetEmailAddress,
+            "lostPetDecodedAddress" to lostPetDecodedAddress,
+            "lostPetBehavior" to lostPetBehavior,
+            "lostPetReact" to lostPetReact,
+            "lostPetAdditionalPetInfo" to lostPetAdditionalPetInfo,
+            "lostPetAdditionalOwnerInfo" to lostPetAdditionalOwnerInfo,
+            "lostPetDateAdded" to lostPetDateAdded,
+            "lostPetImageUrl" to lostPetImageUrl,
+            "lostPetLocation" to lostPetLocation
         )
     }
 
-    //    fun getImageUriObject(): Uri? {
-//        return imageUri?.let {
-//            Uri.parse(it)
-//        }
-//    }
     data class LostLocation(
         val latitude: Double = 0.0,
         val longitude: Double = 0.0

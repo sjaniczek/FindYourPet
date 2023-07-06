@@ -60,5 +60,25 @@
         <action
             android:id="@+id/action_chooseFragment_to_lostCreateFragment"
             app:destination="@id/lostCreateFragment" />
+        <action
+            android:id="@+id/action_chooseFragment_to_foundCreateFragment"
+            app:destination="@id/foundCreateFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/foundCreateFragment"
+        android:name="com.edu.wszib.findyourpet.FoundCreateFragment"
+        android:label="fragment_create_found"
+        tools:layout="@layout/fragment_create_found" >
+        <action
+            android:id="@+id/action_foundCreateFragment_to_foundMapsFragment"
+            app:destination="@id/foundMapsFragment" />
+        <action
+            android:id="@+id/action_foundCreateFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/foundMapsFragment"
+        android:name="com.edu.wszib.findyourpet.FoundMapsFragment"
+        android:label="fragment_found_maps"
+        tools:layout="@layout/fragment_found_maps" />
 </navigation>

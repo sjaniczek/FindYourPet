@@ -97,19 +97,19 @@ class LostMapsFragment : Fragment(), OnMapReadyCallback {
                 object : Geocoder.GeocodeListener {
                     override fun onGeocode(addresses: MutableList<Address>) {
                         val decodedAddress = addresses[0].getAddressLine(0)
-                        lostPetViewModel.lostPetData?.decodedAddress = decodedAddress
-                        lostPetViewModel.lostPetData?.lostLocation = LostPetData.LostLocation(
+                        lostPetViewModel.lostPetData?.lostPetDecodedAddress = decodedAddress
+                        lostPetViewModel.lostPetData?.lostPetLocation = LostPetData.LostLocation(
                             currentLocation.latitude,
                             currentLocation.longitude
                         )
                         Log.i("decodeLocation",decodedAddress.toString())
-                        Log.i("decodeLocation",lostPetViewModel.lostPetData?.decodedAddress.toString())
+                        Log.i("decodeLocation",lostPetViewModel.lostPetData?.lostPetDecodedAddress.toString())
                         Log.i("decodeLocation",lostPetViewModel.toString())
-                        Log.i("decodeLocation",lostPetViewModel.lostPetData?.lostLocation.toString())
+                        Log.i("decodeLocation",lostPetViewModel.lostPetData?.lostPetLocation.toString())
                         activity?.runOnUiThread {
                             Toast.makeText(
                                 context,
-                                lostPetViewModel.lostPetData?.decodedAddress.toString(),
+                                lostPetViewModel.lostPetData?.lostPetDecodedAddress.toString(),
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
@@ -133,8 +133,8 @@ class LostMapsFragment : Fragment(), OnMapReadyCallback {
             if (addresses != null && addresses.isNotEmpty()) {
                 // Process the retrieved addresses
                 val decodedAddress = addresses[0].getAddressLine(0)
-                lostPetViewModel.lostPetData?.decodedAddress = decodedAddress
-                lostPetViewModel.lostPetData?.lostLocation =
+                lostPetViewModel.lostPetData?.lostPetDecodedAddress = decodedAddress
+                lostPetViewModel.lostPetData?.lostPetLocation =
                     LostPetData.LostLocation(currentLocation.latitude, currentLocation.longitude)
 
                 findNavController().navigate(LostMapsFragmentDirections.actionLostMapsFragmentToLostCreateFragment())

@@ -110,9 +110,9 @@ class LostCreateFragment : Fragment() {
         }
         val lostPetData = lostPetViewModel.lostPetData
         if (lostPetData != null) {
-            binding.rgLostType.findViewWithTag<RadioButton>(lostPetData.petType)?.isChecked = true
-            binding.etLostPetName.setText(lostPetData.petName)
-            binding.etLostAddress.setText(lostPetData.decodedAddress)
+            binding.rgLostType.findViewWithTag<RadioButton>(lostPetData.lostPetType)?.isChecked = true
+            binding.etLostPetName.setText(lostPetData.lostPetName)
+            binding.etLostAddress.setText(lostPetData.lostPetDecodedAddress)
         }
     }
     private fun uploadImageAndForm() {
@@ -161,7 +161,7 @@ class LostCreateFragment : Fragment() {
             binding.rgLostReacts.findViewById<RadioButton>(binding.rgLostReacts.checkedRadioButtonId).text.toString()
         val petBehavior =
             binding.rgLostBehavior.findViewById<RadioButton>(binding.rgLostBehavior.checkedRadioButtonId).text.toString()
-        val locationData = lostPetViewModel.lostPetData?.lostLocation
+        val locationData = lostPetViewModel.lostPetData?.lostPetLocation
         val uploadTask = fileRef.putFile(imageUri)
         uploadTask.addOnSuccessListener { taskSnapshot ->
             taskSnapshot.storage.downloadUrl.addOnSuccessListener { uri ->
@@ -204,13 +204,13 @@ class LostCreateFragment : Fragment() {
     }
     private fun saveFormData() {
         val lostPetData = LostPetData(
-            petName = binding.etLostPetName.text.toString(),
-            petType = binding.rgLostType.findViewById<RadioButton>(binding.rgLostType.checkedRadioButtonId)?.text.toString(),
-            petReact = binding.rgLostReacts.findViewById<RadioButton>(binding.rgLostReacts.checkedRadioButtonId)?.text.toString(),
-            petBehavior = binding.rgLostBehavior.findViewById<RadioButton>(binding.rgLostBehavior.checkedRadioButtonId)?.text.toString(),
-            petAge = binding.etLostAge.text.toString(),
-            decodedAddress = binding.etLostAddress.text.toString(),
-            additionalPetInfo = binding.tvLostPetAdditionalInfo.text.toString()
+            lostPetName = binding.etLostPetName.text.toString(),
+            lostPetType = binding.rgLostType.findViewById<RadioButton>(binding.rgLostType.checkedRadioButtonId)?.text.toString(),
+            lostPetReact = binding.rgLostReacts.findViewById<RadioButton>(binding.rgLostReacts.checkedRadioButtonId)?.text.toString(),
+            lostPetBehavior = binding.rgLostBehavior.findViewById<RadioButton>(binding.rgLostBehavior.checkedRadioButtonId)?.text.toString(),
+            lostPetAge = binding.etLostAge.text.toString(),
+            lostPetDecodedAddress = binding.etLostAddress.text.toString(),
+            lostPetAdditionalPetInfo = binding.tvLostPetAdditionalInfo.text.toString()
         )
         lostPetViewModel.saveFormData(lostPetData)
     }

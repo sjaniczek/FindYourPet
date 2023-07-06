@@ -28,5 +28,8 @@ class ChooseFragment : Fragment() {
         binding.buttonGoToLostPet.setOnClickListener{
             findNavController().navigate(ChooseFragmentDirections.actionChooseFragmentToLostCreateFragment())
         }
+        binding.buttonGoToFoundPet.setOnClickListener{
+            findNavController().navigate(ChooseFragmentDirections.actionChooseFragmentToLostCreateFragment())
+        }
     }
 }
