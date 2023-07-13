@@ -23,15 +23,19 @@ import androidx.navigation.fragment.findNavController
 import com.edu.wszib.findyourpet.databinding.FragmentCreateFoundBinding
 import com.edu.wszib.findyourpet.models.FoundPetData
 import com.edu.wszib.findyourpet.models.FoundPetViewModel
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
+import java.text.SimpleDateFormat
 import java.util.*
 
 class FoundCreateFragment : Fragment() {
 
+    private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
     private lateinit var storage: FirebaseStorage
     private var _binding: FragmentCreateFoundBinding? = null
@@ -110,105 +114,83 @@ class FoundCreateFragment : Fragment() {
         }
         val foundPetData = foundPetViewModel.foundPetData
         if (foundPetData != null) {
-            binding.rgFoundType.findViewWithTag<RadioButton>(foundPetData.foundPetType)?.isChecked = true
-            binding.etFoundPetName.setText(foundPetData.foundPetName)
+            binding.rgFoundType.findViewWithTag<RadioButton>(foundPetData.foundPetType)?.isChecked =
+                true
             binding.etFoundAddress.setText(foundPetData.foundPetDecodedAddress)
         }
     }
+
     private fun uploadImageAndForm() {
         storage = Firebase.storage
-        val databaseUrl = "https://findyourpet-e77a8-default-rtdb.europe-west1.firebasedatabase.app/"
+        val databaseUrl =
+            "https://findyourpet-e77a8-default-rtdb.europe-west1.firebasedatabase.app/"
         database = Firebase.database(databaseUrl)
-        val databaseRef = database.getReference("test")
+        auth = Firebase.auth
+        val userId = auth.currentUser?.uid
         val storageRef = storage.reference
         val fileName = UUID.randomUUID().toString()
-        val petId = databaseRef.push().key!!
+
+        val databaseRef = database.reference
+        val foundPetKey = databaseRef.child("found_pets").push().key
+        if (foundPetKey == null) {
+            Log.w(TAG, "Couldn't get push key for foundPetKey")
+            return
+        }
         val fileRef = storageRef.child("images/$fileName")
         val imageUri = imageUri
-//            Log.d("TAG", "Image URI is null")
-//            return
-//        }
-        if (binding.etFoundPetName.text.isNullOrEmpty() ||
-            binding.etFoundAddress.text.isNullOrEmpty() ||
-            binding.etFoundAge.text.isNullOrEmpty() ||
-            binding.etFoundPetDate.text.isNullOrEmpty() ||
-            binding.etFoundOwnerName.text.isNullOrEmpty() ||
-            binding.etFoundOwnerEmail.text.isNullOrEmpty() ||
-            binding.etFoundOwnerNumber.text.isNullOrEmpty() ||
-            binding.rgFoundType.checkedRadioButtonId == -1 ||
-            binding.rgFoundBehavior.checkedRadioButtonId == -1 ||
-            binding.rgFoundReacts.checkedRadioButtonId == -1 ||
-            imageUri == null
 
-        ) {
-            Toast.makeText(context, "Wypełnij lub zaznacz wszystkie pola oraz dodaj zdjęcie", Toast.LENGTH_SHORT)
+        if (!validateFieldsAndImage(imageUri)) {
+            Toast.makeText(
+                context,
+                "Wypełnij lub zaznacz wszystkie pola oraz dodaj zdjęcie",
+                Toast.LENGTH_SHORT
+            )
                 .show()
             return
         }
 
-        val petName = binding.etFoundPetName.text.toString()
-        val petType =
-            binding.rgFoundType.findViewById<RadioButton>(binding.rgFoundType.checkedRadioButtonId).text.toString()
-        val petAge = binding.etFoundAge.text.toString()
-        val foundDate = binding.etFoundPetDate.text.toString()
-        val ownerName = binding.etFoundOwnerName.text.toString()
-        val phoneNumber = binding.etFoundOwnerNumber.text.toString()
-        val emailAddress = binding.etFoundOwnerEmail.text.toString()
-        val decodedAddress = binding.etFoundAddress.text.toString()
-        val additionalPetInfo = binding.etFoundPetAdditionalInfo.text.toString()
-        val additionalOwnerInfo = binding.etFoundOwnerAdditionalInfo.text.toString()
-        val petReact =
-            binding.rgFoundReacts.findViewById<RadioButton>(binding.rgFoundReacts.checkedRadioButtonId).text.toString()
-        val petBehavior =
-            binding.rgFoundBehavior.findViewById<RadioButton>(binding.rgFoundBehavior.checkedRadioButtonId).text.toString()
-        val locationData = foundPetViewModel.foundPetData?.foundPetLocation
-        val uploadTask = fileRef.putFile(imageUri)
+        val uploadTask = fileRef.putFile(imageUri!!)
         uploadTask.addOnSuccessListener { taskSnapshot ->
             taskSnapshot.storage.downloadUrl.addOnSuccessListener { uri ->
-                imageUrl = uri.toString()
-                val petAd = FoundPetData(
-                    petId,
-                    petName,
-                    petType,
-                    petAge,
-                    foundDate,
-                    ownerName,
-                    phoneNumber,
-                    emailAddress,
-                    decodedAddress,
-                    petBehavior,
-                    petReact,
-                    additionalPetInfo,
-                    additionalOwnerInfo,
-                    imageUrl
-                )
-
-                databaseRef.child(petId).setValue(petAd.toMap())
-                    .addOnSuccessListener {
+                val imageUrl = uri.toString()
+                val foundPetData = createFoundPetData(imageUrl, foundPetKey)
+                if (foundPetData != null) {
+                    val foundPetValues = foundPetData.toMap()
+                    val foundPetUpdates = hashMapOf<String, Any>(
+                        "/found_pets/$foundPetKey" to foundPetValues,
+                        "/users/$userId/found_pets/$foundPetKey" to foundPetValues,
+                    )
+                    databaseRef.updateChildren(foundPetUpdates).addOnSuccessListener {
                         // Form uploaded successfully
                         Toast.makeText(context, "Form submitted", Toast.LENGTH_SHORT).show()
                         findNavController().navigate(FoundCreateFragmentDirections.actionFoundCreateFragmentToMainFragment())
                     }
-                    .addOnFailureListener { e ->
-                        // Form upload failed
-                        Log.e(TAG, "Error uploading form: ${e.message}", e)
-                        Toast.makeText(context, "Error submitting form", Toast.LENGTH_SHORT).show()
-                    }
+                        .addOnFailureListener { e ->
+                            // Form upload failed
+                            Log.e(TAG, "Error uploading form: ${e.message}", e)
+                            Toast.makeText(context, "Error submitting form", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                } else {
+                    Toast.makeText(
+                        context,
+                        "Error while getting data from fields",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
+                .addOnFailureListener { e ->
+                    // Image upload failed
+                    Log.e(TAG, "Error uploading image: ${e.message}", e)
+                    Toast.makeText(context, "Error uploading image", Toast.LENGTH_SHORT).show()
+                }
         }
-            .addOnFailureListener { e ->
-                // Image upload failed
-                Log.e(TAG, "Error uploading image: ${e.message}", e)
-                Toast.makeText(context, "Error uploading image", Toast.LENGTH_SHORT).show()
-            }
     }
+
     private fun saveFormData() {
         val foundPetData = FoundPetData(
-            foundPetName = binding.etFoundPetName.text.toString(),
             foundPetType = binding.rgFoundType.findViewById<RadioButton>(binding.rgFoundType.checkedRadioButtonId)?.text.toString(),
-            foundPetReact = binding.rgFoundReacts.findViewById<RadioButton>(binding.rgFoundReacts.checkedRadioButtonId)?.text.toString(),
             foundPetBehavior = binding.rgFoundBehavior.findViewById<RadioButton>(binding.rgFoundBehavior.checkedRadioButtonId)?.text.toString(),
-            foundPetAge = binding.etFoundAge.text.toString(),
             foundPetDecodedAddress = binding.etFoundAddress.text.toString(),
             foundPetAdditionalPetInfo = binding.tvFoundPetAdditionalInfo.text.toString()
         )
@@ -218,6 +200,58 @@ class FoundCreateFragment : Fragment() {
     private fun launchImagePicker() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         getImageLauncher.launch(intent)
+    }
+
+    private fun validateFieldsAndImage(imageUri: Uri?): Boolean {
+        val isAnyFieldEmpty = binding.etFoundAddress.text.isNullOrEmpty() ||
+                binding.etFoundPetDate.text.isNullOrEmpty() ||
+                binding.etFoundOwnerName.text.isNullOrEmpty() ||
+                binding.etFoundOwnerEmail.text.isNullOrEmpty() ||
+                binding.etFoundOwnerNumber.text.isNullOrEmpty() ||
+                binding.rgFoundType.checkedRadioButtonId == -1 ||
+                binding.rgFoundBehavior.checkedRadioButtonId == -1 ||
+                imageUri == null
+
+        return !isAnyFieldEmpty
+    }
+
+    private fun createFoundPetData(imageUrl: String?, foundPetKey: String?): FoundPetData? {
+
+        val petType =
+            binding.rgFoundType.findViewById<RadioButton>(binding.rgFoundType.checkedRadioButtonId).text.toString()
+        val foundDate = binding.etFoundPetDate.text.toString()
+        val ownerName = binding.etFoundOwnerName.text.toString()
+        val phoneNumber = binding.etFoundOwnerNumber.text.toString()
+        val emailAddress = binding.etFoundOwnerEmail.text.toString()
+        val decodedAddress = binding.etFoundAddress.text.toString()
+        val additionalPetInfo = binding.etFoundPetAdditionalInfo.text.toString()
+        val additionalOwnerInfo = binding.etFoundOwnerAdditionalInfo.text.toString()
+
+        val petBehavior =
+            binding.rgFoundBehavior.findViewById<RadioButton>(binding.rgFoundBehavior.checkedRadioButtonId).text.toString()
+        val locationData = foundPetViewModel.foundPetData?.foundPetLocation
+
+        // Perform validation or handle errors if necessary
+        // Return the created FoundPetData instance
+        return FoundPetData(
+            foundPetKey,
+            petType,
+            foundDate,
+            ownerName,
+            phoneNumber,
+            emailAddress,
+            decodedAddress,
+            petBehavior,
+            additionalPetInfo,
+            additionalOwnerInfo,
+            imageUrl //TODO CHANGE SO THAT MATCHES FOUNDPETDATA
+        )
+    }
+
+    fun getCurrentDateTime(): String {
+        val calendar = Calendar.getInstance()
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        return dateFormat.format(calendar.time)
     }
 
     companion object {

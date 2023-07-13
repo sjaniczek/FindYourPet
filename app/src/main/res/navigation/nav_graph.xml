@@ -80,5 +80,9 @@
         android:id="@+id/foundMapsFragment"
         android:name="com.edu.wszib.findyourpet.FoundMapsFragment"
         android:label="fragment_found_maps"
-        tools:layout="@layout/fragment_found_maps" />
+        tools:layout="@layout/fragment_found_maps" >
+        <action
+            android:id="@+id/action_foundMapsFragment_to_foundCreateFragment"
+            app:destination="@id/foundCreateFragment" />
+    </fragment>
 </navigation>

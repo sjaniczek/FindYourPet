@@ -77,37 +77,13 @@
         </RadioGroup>
 
         <TextView
-            android:id="@+id/tvFoundPetName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:text="Imię zwięrzecia"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/rgFoundType" />
-
-        <EditText
-            android:id="@+id/etFoundPetName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:text="Name"
-            android:textSize="14sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.497"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvFoundPetName" />
-        <TextView
             android:id="@+id/tvFoundPetDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:text="Data zaginięcia"
+            android:text="Data odnalezienia"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etFoundPetName" />
+            app:layout_constraintTop_toBottomOf="@+id/rgFoundType" />
 
         <EditText
             android:id="@+id/etFoundPetDate"
@@ -128,7 +104,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
-            android:text="Adres zaginięcia"
+            android:text="Adres odnalezienia"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/etFoundPetDate" />
@@ -157,37 +133,13 @@
             tools:textSize="10sp" />
 
         <TextView
-            android:id="@+id/tvFoundAge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:text="Wiek zwierzęcia"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/buttonGoToMap" />
-
-        <EditText
-            android:id="@+id/etFoundAge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:text="Name"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.497"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvFoundAge" />
-
-        <TextView
             android:id="@+id/tvFoundAggressive"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
             android:text="Czy zwierze jest agresywne?"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etFoundAge" />
+            app:layout_constraintTop_toBottomOf="@+id/buttonGoToMap" />
 
         <RadioGroup
             android:id="@+id/rgFoundBehavior"
@@ -215,49 +167,13 @@
         </RadioGroup>
 
         <TextView
-            android:id="@+id/tvFoundReacts"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:text="Czy zwierze reaguje na imię?"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/rgFoundBehavior" />
-
-        <RadioGroup
-            android:id="@+id/rgFoundReacts"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvFoundReacts">
-
-            <RadioButton
-                android:id="@+id/rbFoundReactsYes"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Reaguje"
-                android:tag="Reaguje"/>
-
-            <RadioButton
-                android:id="@+id/rbFoundReactsNo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Nie reaguje"
-                android:tag="Nie reaguje"/>
-        </RadioGroup>
-
-        <TextView
             android:id="@+id/tvFoundPetAdditionalInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
             android:text="Dodatkowe informacje(np. znagi szczególne)"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/rgFoundReacts" />
+            app:layout_constraintTop_toBottomOf="@+id/rgFoundBehavior" />
 
         <EditText
             android:id="@+id/etFoundPetAdditionalInfo"

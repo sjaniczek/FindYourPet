@@ -5,16 +5,13 @@ import com.google.firebase.database.Exclude
 
 data class FoundPetData(
     var foundPetId: String? = "",
-    var foundPetName: String? = "",
     var foundPetType: String? = "",
-    var foundPetAge: String? = "",
     var foundPetDate: String? = "",
     var foundPetFinderName: String? = "",
     var foundPetPhoneNumber: String? = "",
     var foundPetEmailAddress: String? = "",
     var foundPetDecodedAddress: String? = "",
     var foundPetBehavior: String? = "",
-    var foundPetReact: String? = "",
     var foundPetAdditionalPetInfo: String? = "",
     var foundPetDateAdded: String? = "",
     var foundPetImageUrl: String? = "",
@@ -25,15 +22,12 @@ data class FoundPetData(
     fun toMap(): Map<String, Any?> {
         return mapOf(
             "foundPetId" to foundPetId,
-            "foundPetName" to foundPetName,
             "foundPetType" to foundPetType,
-            "foundPetAge" to foundPetAge,
             "foundPetDate" to foundPetDate,
             "foundPetFinderName" to foundPetFinderName,
             "foundPetPhoneNumber" to foundPetPhoneNumber,
             "foundPetEmailAddress" to foundPetEmailAddress,
             "foundPetBehavior" to foundPetBehavior,
-            "foundPetReact" to foundPetReact,
             "foundPetDecodedAddress" to foundPetDecodedAddress,
             "foundPetAdditionalPetInfo" to foundPetAdditionalPetInfo,
             "foundPetDateAdded" to foundPetDateAdded,

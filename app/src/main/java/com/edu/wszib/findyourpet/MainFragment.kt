@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.edu.wszib.findyourpet.databinding.FragmentMainBinding
+import com.edu.wszib.findyourpet.listlostfragments.TopFoundFragment
 import com.edu.wszib.findyourpet.listlostfragments.TopLostFragment
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.auth.FirebaseAuth
@@ -41,7 +42,7 @@ class MainFragment : Fragment() {
             object : FragmentStateAdapter(childFragmentManager, viewLifecycleOwner.lifecycle) {
                 private val fragments = arrayOf<Fragment>(
                     TopLostFragment(),
-                    TopLostFragment(),
+                    TopFoundFragment(),
                     LostMapsFragment()
                 )
 
