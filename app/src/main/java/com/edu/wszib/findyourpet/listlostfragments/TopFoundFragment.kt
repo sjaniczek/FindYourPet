@@ -5,6 +5,6 @@ import com.google.firebase.database.Query
 
 class TopFoundFragment: FoundListFragment() {
     override fun getQuery(databaseReference: DatabaseReference): Query {
-        return databaseReference.child("users").orderByChild("found_pets")
+        return databaseReference.child("found_pets")
     }
 }

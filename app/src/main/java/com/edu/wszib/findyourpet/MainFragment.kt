@@ -43,7 +43,7 @@ class MainFragment : Fragment() {
                 private val fragments = arrayOf<Fragment>(
                     TopLostFragment(),
                     TopFoundFragment(),
-                    LostMapsFragment()
+                    PinsMapFragment()
                 )
 
                 override fun createFragment(position: Int) = fragments[position]
@@ -59,8 +59,8 @@ class MainFragment : Fragment() {
             TabLayoutMediator(tabs, container) { tab, position ->
                 tab.text = when (position) {
                     0 -> getString(R.string.top_lost_pets)
-                    1 -> getString(R.string.top_lost_pets)
-                    else -> getString(R.string.top_lost_pets)
+                    1 -> getString(R.string.top_found_pets)
+                    else -> "Mapa z pinami"
                 }
             }.attach()
         }

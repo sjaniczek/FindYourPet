@@ -121,15 +121,14 @@ class FoundCreateFragment : Fragment() {
     }
 
     private fun uploadImageAndForm() {
-        storage = Firebase.storage
         val databaseUrl =
             "https://findyourpet-e77a8-default-rtdb.europe-west1.firebasedatabase.app/"
         database = Firebase.database(databaseUrl)
+        storage = Firebase.storage
+        val storageRef = storage.reference
         auth = Firebase.auth
         val userId = auth.currentUser?.uid
-        val storageRef = storage.reference
         val fileName = UUID.randomUUID().toString()
-
         val databaseRef = database.reference
         val foundPetKey = databaseRef.child("found_pets").push().key
         if (foundPetKey == null) {
@@ -154,30 +153,22 @@ class FoundCreateFragment : Fragment() {
             taskSnapshot.storage.downloadUrl.addOnSuccessListener { uri ->
                 val imageUrl = uri.toString()
                 val foundPetData = createFoundPetData(imageUrl, foundPetKey)
-                if (foundPetData != null) {
-                    val foundPetValues = foundPetData.toMap()
-                    val foundPetUpdates = hashMapOf<String, Any>(
-                        "/found_pets/$foundPetKey" to foundPetValues,
-                        "/users/$userId/found_pets/$foundPetKey" to foundPetValues,
-                    )
-                    databaseRef.updateChildren(foundPetUpdates).addOnSuccessListener {
-                        // Form uploaded successfully
-                        Toast.makeText(context, "Form submitted", Toast.LENGTH_SHORT).show()
-                        findNavController().navigate(FoundCreateFragmentDirections.actionFoundCreateFragmentToMainFragment())
-                    }
-                        .addOnFailureListener { e ->
-                            // Form upload failed
-                            Log.e(TAG, "Error uploading form: ${e.message}", e)
-                            Toast.makeText(context, "Error submitting form", Toast.LENGTH_SHORT)
-                                .show()
-                        }
-                } else {
-                    Toast.makeText(
-                        context,
-                        "Error while getting data from fields",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                val foundPetValues = foundPetData.toMap()
+                val foundPetUpdates = hashMapOf<String, Any>(
+                    "/found_pets/$foundPetKey" to foundPetValues,
+                    "/users/$userId/found_pets/$foundPetKey" to foundPetValues,
+                )
+                databaseRef.updateChildren(foundPetUpdates).addOnSuccessListener {
+                    // Form uploaded successfully
+                    Toast.makeText(context, "Form submitted", Toast.LENGTH_SHORT).show()
+                    findNavController().navigate(FoundCreateFragmentDirections.actionFoundCreateFragmentToMainFragment())
                 }
+                    .addOnFailureListener { e ->
+                        // Form upload failed
+                        Log.e(TAG, "Error uploading form: ${e.message}", e)
+                        Toast.makeText(context, "Error submitting form", Toast.LENGTH_SHORT)
+                            .show()
+                    }
             }
                 .addOnFailureListener { e ->
                     // Image upload failed
@@ -215,40 +206,42 @@ class FoundCreateFragment : Fragment() {
         return !isAnyFieldEmpty
     }
 
-    private fun createFoundPetData(imageUrl: String?, foundPetKey: String?): FoundPetData? {
+    private fun createFoundPetData(imageUrl: String?, foundPetKey: String?): FoundPetData {
 
         val petType =
             binding.rgFoundType.findViewById<RadioButton>(binding.rgFoundType.checkedRadioButtonId).text.toString()
         val foundDate = binding.etFoundPetDate.text.toString()
-        val ownerName = binding.etFoundOwnerName.text.toString()
+        val finderName = binding.etFoundOwnerName.text.toString()
         val phoneNumber = binding.etFoundOwnerNumber.text.toString()
         val emailAddress = binding.etFoundOwnerEmail.text.toString()
         val decodedAddress = binding.etFoundAddress.text.toString()
         val additionalPetInfo = binding.etFoundPetAdditionalInfo.text.toString()
-        val additionalOwnerInfo = binding.etFoundOwnerAdditionalInfo.text.toString()
-
+        val additionalFinderInfo = binding.etFoundOwnerAdditionalInfo.text.toString()
         val petBehavior =
             binding.rgFoundBehavior.findViewById<RadioButton>(binding.rgFoundBehavior.checkedRadioButtonId).text.toString()
         val locationData = foundPetViewModel.foundPetData?.foundPetLocation
-
+        val dateAdded = getCurrentDateTime()
         // Perform validation or handle errors if necessary
         // Return the created FoundPetData instance
         return FoundPetData(
             foundPetKey,
             petType,
             foundDate,
-            ownerName,
+            finderName,
             phoneNumber,
             emailAddress,
             decodedAddress,
             petBehavior,
             additionalPetInfo,
-            additionalOwnerInfo,
-            imageUrl //TODO CHANGE SO THAT MATCHES FOUNDPETDATA
+            additionalFinderInfo,
+            dateAdded,
+            imageUrl,
+            imageUri,
+            locationData
         )
     }
 
-    fun getCurrentDateTime(): String {
+    private fun getCurrentDateTime(): String {
         val calendar = Calendar.getInstance()
         val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
         return dateFormat.format(calendar.time)

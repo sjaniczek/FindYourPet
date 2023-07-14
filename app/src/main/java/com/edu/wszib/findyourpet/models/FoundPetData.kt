@@ -13,6 +13,7 @@ data class FoundPetData(
     var foundPetDecodedAddress: String? = "",
     var foundPetBehavior: String? = "",
     var foundPetAdditionalPetInfo: String? = "",
+    var foundPetAdditionalFinderInfo: String? = "",
     var foundPetDateAdded: String? = "",
     var foundPetImageUrl: String? = "",
     var foundPetImageUri: Uri? = null,
@@ -30,6 +31,7 @@ data class FoundPetData(
             "foundPetBehavior" to foundPetBehavior,
             "foundPetDecodedAddress" to foundPetDecodedAddress,
             "foundPetAdditionalPetInfo" to foundPetAdditionalPetInfo,
+            "foundPetAdditionalFinderInfo" to foundPetAdditionalFinderInfo,
             "foundPetDateAdded" to foundPetDateAdded,
             "foundPetImageUrl" to foundPetImageUrl,
             "foundPetLocation" to foundPetLocation
