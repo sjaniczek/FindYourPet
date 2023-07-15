@@ -1,27 +1,29 @@
 package com.edu.wszib.findyourpet
 
-import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.RadioButton
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.edu.wszib.findyourpet.inputmasks.DateInputMask
+import com.edu.wszib.findyourpet.inputmasks.TimeInputMask
 import com.edu.wszib.findyourpet.databinding.FragmentCreateLostBinding
-import com.edu.wszib.findyourpet.models.FoundPetData
 import com.edu.wszib.findyourpet.models.LostPetData
 import com.edu.wszib.findyourpet.models.LostPetViewModel
 import com.google.firebase.auth.FirebaseAuth
@@ -69,7 +71,7 @@ class LostCreateFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentCreateLostBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -77,6 +79,10 @@ class LostCreateFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val dateEditText: EditText = binding.etLostPetDate
+        val hourEditText: EditText = binding.etLostPetHour
+        DateInputMask(dateEditText).listen()
+        TimeInputMask(hourEditText).listen()
         binding.buttonChooseLostPic.setOnClickListener {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 // For API 33 and above
@@ -116,8 +122,19 @@ class LostCreateFragment : Fragment() {
         val lostPetData = lostPetViewModel.lostPetData
         if (lostPetData != null) {
             binding.rgLostType.findViewWithTag<RadioButton>(lostPetData.lostPetType)?.isChecked = true
+            binding.rgLostBehavior.findViewWithTag<RadioButton>(lostPetData.lostPetBehavior)?.isChecked = true
+            binding.rgLostReacts.findViewWithTag<RadioButton>(lostPetData.lostPetReact)?.isChecked = true
+            binding.ivLostPet.setImageURI(lostPetData.lostPetImageUri)
             binding.etLostPetName.setText(lostPetData.lostPetName)
             binding.etLostAddress.setText(lostPetData.lostPetDecodedAddress)
+            binding.etLostAge.setText(lostPetData.lostPetAge)
+            binding.etLostPetDate.setText(lostPetData.lostPetDate)
+            binding.etLostPetHour.setText(lostPetData.lostPetHour)
+            binding.etLostPetAdditionalInfo.setText(lostPetData.lostPetAdditionalPetInfo)
+            binding.etLostOwnerName.setText(lostPetData.lostPetOwnerName)
+            binding.etLostOwnerNumber.setText(lostPetData.lostPetPhoneNumber)
+            binding.etLostOwnerEmail.setText(lostPetData.lostPetEmailAddress)
+            binding.etLostOwnerAdditionalInfo.setText(lostPetData.lostPetAdditionalOwnerInfo)
         }
     }
     private fun uploadImageAndForm() {
@@ -136,7 +153,6 @@ class LostCreateFragment : Fragment() {
             return
         }
         val fileRef = storageRef.child("images/$fileName")
-        val imageUri = imageUri
 
         if (!validateFieldsAndImage(imageUri)) {
             Toast.makeText(
@@ -153,30 +169,22 @@ class LostCreateFragment : Fragment() {
             taskSnapshot.storage.downloadUrl.addOnSuccessListener { uri ->
                 val imageUrl = uri.toString()
                 val lostPetData = createFoundPetData(imageUrl, lostPetKey)
-                if (lostPetData != null) {
-                    val lostPetValues = lostPetData.toMap()
-                    val lostPetUpdates = hashMapOf<String, Any>(
-                        "/lost_pets/$lostPetKey" to lostPetValues,
-                        "/users/$userId/lost_pets/$lostPetKey" to lostPetValues,
-                    )
-                    databaseRef.updateChildren(lostPetUpdates).addOnSuccessListener {
-                        // Form uploaded successfully
-                        Toast.makeText(context, "Form submitted", Toast.LENGTH_SHORT).show()
-                        findNavController().navigate(LostCreateFragmentDirections.actionLostCreateFragmentToMainFragment())
-                    }
-                        .addOnFailureListener { e ->
-                            // Form upload failed
-                            Log.e(TAG, "Error uploading form: ${e.message}", e)
-                            Toast.makeText(context, "Error submitting form", Toast.LENGTH_SHORT)
-                                .show()
-                        }
-                } else {
-                    Toast.makeText(
-                        context,
-                        "Error while getting data from fields",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                val lostPetValues = lostPetData.toMap()
+                val lostPetUpdates = hashMapOf<String, Any>(
+                    "/lost_pets/$lostPetKey" to lostPetValues,
+                    "/users/$userId/lost_pets/$lostPetKey" to lostPetValues,
+                )
+                databaseRef.updateChildren(lostPetUpdates).addOnSuccessListener {
+                    // Form uploaded successfully
+                    Toast.makeText(context, "Form submitted", Toast.LENGTH_SHORT).show()
+                    findNavController().navigate(LostCreateFragmentDirections.actionLostCreateFragmentToMainFragment())
                 }
+                    .addOnFailureListener { e ->
+                        // Form upload failed
+                        Log.e(TAG, "Error uploading form: ${e.message}", e)
+                        Toast.makeText(context, "Error submitting form", Toast.LENGTH_SHORT)
+                            .show()
+                    }
             }
                 .addOnFailureListener { e ->
                     // Image upload failed
@@ -188,12 +196,20 @@ class LostCreateFragment : Fragment() {
     private fun saveFormData() {
         val lostPetData = LostPetData(
             lostPetName = binding.etLostPetName.text.toString(),
+            lostPetDate = binding.etLostPetDate.text.toString(),
+            lostPetHour = binding.etLostPetHour.text.toString(),
+            lostPetAge = binding.etLostAge.text.toString(),
+            lostPetDecodedAddress = binding.etLostAddress.text.toString(),
+            lostPetAdditionalPetInfo = binding.etLostPetAdditionalInfo.text.toString(),
+            lostPetOwnerName = binding.etLostOwnerName.text.toString(),
+            lostPetPhoneNumber = binding.etLostOwnerNumber.text.toString(),
+            lostPetEmailAddress = binding.etLostOwnerEmail.text.toString(),
+            lostPetAdditionalOwnerInfo = binding.etLostOwnerAdditionalInfo.text.toString(),
+            lostPetImageUri = ((if (imageUri != null) imageUri else lostPetViewModel.lostPetData?.lostPetImageUri)),
             lostPetType = binding.rgLostType.findViewById<RadioButton>(binding.rgLostType.checkedRadioButtonId)?.text.toString(),
             lostPetReact = binding.rgLostReacts.findViewById<RadioButton>(binding.rgLostReacts.checkedRadioButtonId)?.text.toString(),
             lostPetBehavior = binding.rgLostBehavior.findViewById<RadioButton>(binding.rgLostBehavior.checkedRadioButtonId)?.text.toString(),
-            lostPetAge = binding.etLostAge.text.toString(),
-            lostPetDecodedAddress = binding.etLostAddress.text.toString(),
-            lostPetAdditionalPetInfo = binding.tvLostPetAdditionalInfo.text.toString()
+
         )
         lostPetViewModel.saveFormData(lostPetData)
     }
@@ -207,6 +223,7 @@ class LostCreateFragment : Fragment() {
                 binding.etLostAddress.text.isNullOrEmpty() ||
                 binding.etLostAge.text.isNullOrEmpty() ||
                 binding.etLostPetDate.text.isNullOrEmpty() ||
+                binding.etLostPetHour.text.isNullOrEmpty() ||
                 binding.etLostOwnerName.text.isNullOrEmpty() ||
                 binding.etLostOwnerEmail.text.isNullOrEmpty() ||
                 binding.etLostOwnerNumber.text.isNullOrEmpty() ||
@@ -225,6 +242,7 @@ class LostCreateFragment : Fragment() {
             binding.rgLostType.findViewById<RadioButton>(binding.rgLostType.checkedRadioButtonId).text.toString()
         val petAge = binding.etLostAge.text.toString()
         val lostDate = binding.etLostPetDate.text.toString()
+        val lostHour = binding.etLostPetHour.text.toString()
         val ownerName = binding.etLostOwnerName.text.toString()
         val phoneNumber = binding.etLostOwnerNumber.text.toString()
         val emailAddress = binding.etLostOwnerEmail.text.toString()
@@ -243,6 +261,7 @@ class LostCreateFragment : Fragment() {
             petType,
             petAge,
             lostDate,
+            lostHour,
             ownerName,
             phoneNumber,
             emailAddress,

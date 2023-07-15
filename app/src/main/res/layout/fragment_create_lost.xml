@@ -81,6 +81,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
+            android:labelFor="@id/etLostPetName"
             android:text="Imię zwięrzecia"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -93,7 +94,6 @@
             android:layout_marginTop="10dp"
             android:ems="10"
             android:inputType="textPersonName"
-            android:text="Name"
             android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.497"
@@ -111,17 +111,34 @@
 
         <EditText
             android:id="@+id/etLostPetDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="165dp"
+            android:layout_height="43dp"
             android:layout_marginTop="10dp"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:text="Name"
+            android:inputType="date"
             android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvLostPetDate" />
+        <TextView
+            android:id="@+id/tvLostPetHour"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="Przybliżona godzina zaginięcia"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etLostPetDate" />
+
+        <EditText
+            android:id="@+id/etLostPetHour"
+            android:layout_width="165dp"
+            android:layout_height="43dp"
+            android:layout_marginTop="10dp"
+            android:inputType="number"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvLostPetHour" />
 
         <TextView
             android:id="@+id/tvLostAddress"
@@ -131,7 +148,7 @@
             android:text="Adres zaginięcia"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etLostPetDate" />
+            app:layout_constraintTop_toBottomOf="@+id/etLostPetHour" />
 
         <EditText
             android:id="@+id/etLostAddress"
@@ -140,7 +157,6 @@
             android:layout_marginTop="10dp"
             android:ems="10"
             android:inputType="textPersonName"
-            android:text="Name"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
@@ -172,10 +188,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:ems="10"
-            android:inputType="textPersonName"
-            android:text="Name"
+            android:inputType="number"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvLostAge" />
 
@@ -203,15 +217,15 @@
                 android:id="@+id/rbLostBehaviorYes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Tak"
-                android:tag="Tak"/>
+                android:text="Agresywne"
+                android:tag="Agresywne"/>
 
             <RadioButton
                 android:id="@+id/rbLostBehaviorNo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Nie"
-                android:tag="Nie"/>
+                android:text="Nie agresywne"
+                android:tag="Nie agresywne"/>
         </RadioGroup>
 
         <TextView
@@ -299,7 +313,6 @@
             android:layout_marginTop="10dp"
             android:ems="10"
             android:inputType="textPersonName"
-            android:text="Name"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvLostOwnerName" />
@@ -320,8 +333,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:ems="10"
-            android:inputType="textPersonName"
-            android:text="Name"
+            android:inputType="number"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvLostOwnerNumber" />
@@ -330,7 +342,7 @@
             android:id="@+id/tvLostOwnerEmail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TextView"
+            android:text="Podaj adres e-mail"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/etLostOwnerNumber" />
@@ -340,8 +352,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="textPersonName"
-            android:text="Name"
+            android:inputType="textEmailAddress"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvLostOwnerEmail" />

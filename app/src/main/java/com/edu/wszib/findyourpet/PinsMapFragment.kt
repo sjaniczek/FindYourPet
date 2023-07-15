@@ -9,10 +9,12 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.edu.wszib.findyourpet.databinding.FragmentPinsMapBinding
 import com.edu.wszib.findyourpet.models.FoundPetData
+import com.edu.wszib.findyourpet.models.LostPetData
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
@@ -40,10 +42,9 @@ class PinsMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.InfoWindowAdap
             "https://findyourpet-e77a8-default-rtdb.europe-west1.firebasedatabase.app/"
         database = Firebase.database(databaseUrl)
 
-        val databaseRef = database.reference.child("found_pets")
-        databaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
+        val foundPetsRef = database.reference.child("found_pets")
+        foundPetsRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                Log.i(TAG,"onDataChange")
                 for (dataSnapshot in snapshot.children) {
                     val foundPetData = dataSnapshot.getValue(FoundPetData::class.java)
                     val locationData = foundPetData?.foundPetLocation
@@ -54,7 +55,7 @@ class PinsMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.InfoWindowAdap
                             .position(LatLng(latitude, longitude))
                             .title(foundPetData.foundPetFinderName)
                             .snippet(foundPetData.foundPetDate)
-
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
 
                         val marker = googleMap.addMarker(markerOptions)
                         marker?.tag = foundPetData
@@ -63,7 +64,33 @@ class PinsMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.InfoWindowAdap
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Log.i(TAG,"onCancel")
+                Log.e(TAG, "Error fetching found pets data: ${error.message}")
+            }
+        })
+
+        val lostPetsRef = database.reference.child("lost_pets")
+        lostPetsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (dataSnapshot in snapshot.children) {
+                    val lostPetData = dataSnapshot.getValue(LostPetData::class.java)
+                    val locationData = lostPetData?.lostPetLocation
+                    if (locationData != null) {
+                        val latitude = locationData.latitude
+                        val longitude = locationData.longitude
+                        val markerOptions = MarkerOptions()
+                            .position(LatLng(latitude, longitude))
+                            .title(lostPetData.lostPetName)
+                            .snippet(lostPetData.lostPetDate)
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+
+                        val marker = googleMap.addMarker(markerOptions)
+                        marker?.tag = lostPetData
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e(TAG, "Error fetching lost pets data: ${error.message}")
             }
         })
 
@@ -97,20 +124,31 @@ class PinsMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.InfoWindowAdap
         mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
         Log.i(TAG,"onViewCreated")
-        fetchLocationDataFromDatabase()
+        //fetchLocationDataFromDatabase()
     }
 
     override fun getInfoContents(marker: Marker): View? {
         val inflater = LayoutInflater.from(requireContext())
         val view = inflater.inflate(R.layout.custom_info_window, null)
-        Log.d(TAG,"getInfoContents")
 
         // Retrieve adData from marker's tag
-        val foundPetData = marker.tag as FoundPetData?
-        val finderNameTextView = view.findViewById<TextView>(R.id.petNameTextView)
-        val foundDateTextView = view.findViewById<TextView>(R.id.lostDateTextView)
-        finderNameTextView.text = foundPetData?.foundPetFinderName
-        foundDateTextView.text = foundPetData?.foundPetDate
+        val petData = marker.tag
+
+        if (petData is FoundPetData) {
+            // Handle FoundPetData
+            val finderNameTextView = view.findViewById<TextView>(R.id.petNameTextView)
+            val foundDateTextView = view.findViewById<TextView>(R.id.lostDateTextView)
+            Log.i(TAG,petData.toString())
+            finderNameTextView.text = petData.foundPetFinderName
+            foundDateTextView.text = petData.foundPetDate
+        } else if (petData is LostPetData) {
+            // Handle LostPetData
+            val petNameTextView = view.findViewById<TextView>(R.id.petNameTextView)
+            val lostDateTextView = view.findViewById<TextView>(R.id.lostDateTextView)
+            Log.i(TAG,petData.toString())
+            petNameTextView.text = petData.lostPetName
+            lostDateTextView.text = petData.lostPetDate
+        }
 
         return view
     }
@@ -121,32 +159,32 @@ class PinsMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.InfoWindowAdap
 
 
 
-    private fun fetchLocationDataFromDatabase() {
-        val databaseUrl =
-            "https://findyourpet-e77a8-default-rtdb.europe-west1.firebasedatabase.app/"
-        database = Firebase.database(databaseUrl)
-        Log.i(TAG,"fetchLocationDataFromDatabase")
-        val databaseRef = database.reference.child("found_pets")
-        databaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                Log.i(TAG,"fetchLocationDataFromDatabase - onDataChange")
-                val locationDataList = mutableListOf<FoundPetData.FoundLocation>()
-
-                for (snapshot in dataSnapshot.children) {
-                    val foundPetData = snapshot.getValue(FoundPetData::class.java)
-                    foundPetData?.foundPetLocation?.let { locationData ->
-                        locationDataList.add(locationData)
-
-                    }
-                }
-                Log.d(TAG, locationDataList.toString())
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Log.e(TAG, "Error fetching location data: ${error.message}")
-            }
-        })
-    }
+//    private fun fetchLocationDataFromDatabase() {
+//        val databaseUrl =
+//            "https://findyourpet-e77a8-default-rtdb.europe-west1.firebasedatabase.app/"
+//        database = Firebase.database(databaseUrl)
+//        Log.i(TAG,"fetchLocationDataFromDatabase")
+//        val databaseRef = database.reference.child("found_pets")
+//        databaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
+//            override fun onDataChange(dataSnapshot: DataSnapshot) {
+//                Log.i(TAG,"fetchLocationDataFromDatabase - onDataChange")
+//                val locationDataList = mutableListOf<FoundPetData.FoundLocation>()
+//
+//                for (snapshot in dataSnapshot.children) {
+//                    val foundPetData = snapshot.getValue(FoundPetData::class.java)
+//                    foundPetData?.foundPetLocation?.let { locationData ->
+//                        locationDataList.add(locationData)
+//
+//                    }
+//                }
+//                Log.d(TAG, locationDataList.toString())
+//            }
+//
+//            override fun onCancelled(error: DatabaseError) {
+//                Log.e(TAG, "Error fetching location data: ${error.message}")
+//            }
+//        })
+//    }
     companion object {
         private const val TAG = "pinsMapFragment"
     }

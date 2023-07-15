@@ -11,6 +11,7 @@ data class LostPetData(
     var lostPetType: String? = "",
     var lostPetAge: String? = "",
     var lostPetDate: String? = "",
+    var lostPetHour: String? = "",
     var lostPetOwnerName: String? = "",
     var lostPetPhoneNumber: String? = "",
     var lostPetEmailAddress: String? = "",
