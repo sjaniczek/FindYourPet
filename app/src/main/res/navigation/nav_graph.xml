@@ -12,7 +12,9 @@
         tools:layout="@layout/fragment_login" >
         <action
             android:id="@+id/action_loginFragment_to_mainFragment"
-            app:destination="@id/mainFragment" />
+            app:destination="@id/mainFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true"/>
     </fragment>
     <fragment
         android:id="@+id/mainFragment"
@@ -25,6 +27,12 @@
         <action
             android:id="@+id/action_mainFragment_to_lostDetailsFragment"
             app:destination="@id/lostDetailsFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_foundDetailsFragment"
+            app:destination="@id/foundDetailsFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
     </fragment>
     <fragment
         android:id="@+id/lostCreateFragment"
@@ -85,4 +93,13 @@
             android:id="@+id/action_foundMapsFragment_to_foundCreateFragment"
             app:destination="@id/foundCreateFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/foundDetailsFragment"
+        android:name="com.edu.wszib.findyourpet.FoundDetailsFragment"
+        android:label="fragment_found_details"
+        tools:layout="@layout/fragment_found_details" />
+    <fragment
+        android:id="@+id/myLostFoundPetFragment"
+        android:name="com.edu.wszib.findyourpet.MyLostFoundPetFragment"
+        android:label="MyLostFoundPetFragment" />
 </navigation>

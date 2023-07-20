@@ -6,7 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.edu.wszib.findyourpet.databinding.FragmentPinsMapBinding
 import com.edu.wszib.findyourpet.models.FoundPetData
 import com.edu.wszib.findyourpet.models.LostPetData
@@ -97,16 +99,19 @@ class PinsMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.InfoWindowAdap
         googleMap.setInfoWindowAdapter(this)
         googleMap.setOnInfoWindowClickListener { marker ->
             // Retrieve adData from marker's tag
-            val foundPetData = marker.tag as FoundPetData?
+            val petData = marker.tag
             // Perform any necessary actions or navigation here
             // Example: Navigating to AdDetailsFragment with adData
             Log.d(TAG,"onMapReadyclick")
 
             Log.d(TAG,"onMapReadyclickBUTTON")
-
-            foundPetData?.let {
-//                val args = bundleOf(FoundDetailsFragment.EXTRA_POST_KEY to it.adId)
-//                findNavController().navigate(R.id.action_mainFragment_to_adDetailsFragment, args)
+            if (petData is LostPetData) {
+                petData.let { val args = bundleOf(LostDetailsFragment.EXTRA_POST_KEY to it.lostPetId)
+                findNavController().navigate(R.id.action_mainFragment_to_lostDetailsFragment, args) }
+            }
+            if (petData is FoundPetData) {
+                petData.let { val args = bundleOf(FoundDetailsFragment.EXTRA_POST_KEY to it.foundPetId)
+                    findNavController().navigate(R.id.action_mainFragment_to_foundDetailsFragment, args) }
             }
         }
     }

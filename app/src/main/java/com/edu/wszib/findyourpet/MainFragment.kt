@@ -9,8 +9,7 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.edu.wszib.findyourpet.databinding.FragmentMainBinding
-import com.edu.wszib.findyourpet.listlostfragments.TopFoundFragment
-import com.edu.wszib.findyourpet.listlostfragments.TopLostFragment
+import com.edu.wszib.findyourpet.listlostfragments.*
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth

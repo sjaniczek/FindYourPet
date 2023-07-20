@@ -14,7 +14,7 @@ class LostPetViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val listLostPetDate: TextView = itemView.findViewById(R.id.listLostPetDate)
     private val listLostPetImg: ImageView = itemView.findViewById(R.id.listLostPetImg)
 
-    fun bindToLostPet(lostPet: LostPetData, starClickListener: View.OnClickListener) {
+    fun bindToLostPet(lostPet: LostPetData) {
         listLostPetName.text = lostPet.lostPetName
         listLostPetDate.text = lostPet.lostPetDate
         listLostPetAddress.text = lostPet.lostPetDecodedAddress

@@ -1,9 +1,11 @@
 package com.edu.wszib.findyourpet.listlostfragments
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -30,7 +32,7 @@ abstract class LostListFragment : Fragment() {
 
     private lateinit var recycler: RecyclerView
     private lateinit var manager: LinearLayoutManager
-    private var adapter: FirebaseRecyclerAdapter<LostPetData, LostPetViewHolder>? = null
+    private lateinit var adapter: FirebaseRecyclerAdapter<LostPetData, LostPetViewHolder>
 
     val uid: String
         get() = Firebase.auth.currentUser!!.uid
@@ -87,21 +89,22 @@ abstract class LostListFragment : Fragment() {
                     val args = bundleOf(LostDetailsFragment.EXTRA_POST_KEY to postKey)
                     Toast.makeText(context, postKey, Toast.LENGTH_SHORT).show()
                     //Toast.makeText(context,args.toString(),Toast.LENGTH_SHORT).show()
-                    navController.navigate(R.id.action_mainFragment_to_lostDetailsFragment, args)
+                    navController.navigate(R.id.lostDetailsFragment, args)
                 }
 
-                // Determine if the current user has liked this post and set UI accordingly
-                // viewHolder.setLikedState(model.stars.containsKey(uid))
-
-                // Bind Post to ViewHolder, setting OnClickListener for the star button
-                viewHolder.bindToLostPet(model) {
-                    // Need to write to both places the post is stored
-                    //val globalPostRef = database.child("posts").child(postRef.key!!)
-                    //val userPostRef = database.child("user-posts").child(model.uid!!).child(postRef.key!!)
-
-                    // Run two transactions
-                    // onStarClicked(globalPostRef)
-                    //onStarClicked(userPostRef)
+                viewHolder.bindToLostPet(model)
+            }
+            override fun onDataChanged() {
+                super.onDataChanged()
+                val textEmpty = view.findViewById<TextView>(R.id.tvLostPetRecyclerEmpty)
+                // Check if the adapter has data or not
+                val isEmpty = itemCount == 0
+                if (isEmpty) {
+                    // Show the empty state TextView
+                    textEmpty.visibility = View.VISIBLE
+                } else {
+                    // Hide the empty state TextView
+                    textEmpty.visibility = View.GONE
                 }
             }
         }
@@ -109,14 +112,16 @@ abstract class LostListFragment : Fragment() {
         recycler.adapter = adapter
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onStart() {
         super.onStart()
-        adapter?.startListening()
+        adapter.notifyDataSetChanged()
+        adapter.startListening()
     }
 
     override fun onStop() {
         super.onStop()
-        adapter?.stopListening()
+        adapter.stopListening()
     }
     abstract fun getQuery(databaseReference: DatabaseReference): Query
 

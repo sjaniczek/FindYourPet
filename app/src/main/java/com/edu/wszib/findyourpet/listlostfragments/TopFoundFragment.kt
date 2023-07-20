@@ -1,7 +1,7 @@
 package com.edu.wszib.findyourpet.listlostfragments
 
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.Query
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
 
 class TopFoundFragment: FoundListFragment() {
     override fun getQuery(databaseReference: DatabaseReference): Query {

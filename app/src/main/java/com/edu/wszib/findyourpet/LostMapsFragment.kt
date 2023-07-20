@@ -165,7 +165,6 @@ class LostMapsFragment : Fragment(), OnMapReadyCallback {
 
                     override fun isCancellationRequested() = false
                 }).addOnSuccessListener { location: Location? ->
-                Log.i("userloc", location.toString())
                 if (location == null)
                     Toast.makeText(context, "Cannot get location.", Toast.LENGTH_SHORT).show()
                 else {

@@ -6,4 +6,23 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="top_lost_pets">Zagubione zwierzęta</string>
     <string name="top_found_pets">Odnalezione zwierzęta</string>
+    <string name="details_pet_type">Rodzaj zaginionego zwierzęcia: %s</string>
+    <string name="details_pet_hour">Ostatnio widziano o godzinie: %s</string>
+    <string name="details_pet_date">Dzień zaginiecia: %s</string>
+    <string name="details_pet_behavior">Zwierzę jest: %s</string>
+    <string name="details_pet_react">Reakcja na imię: %s</string>
+    <string name="details_pet_additional">Dodatkowe informacje: %s</string>
+    <string name="details_pet_owner_name">Imię własciciela: %s</string>
+    <string name="details_pet_owner_number">Kontaktowy numer telefonu: %s</string>
+    <string name="details_pet_owner_additional">Dodatkowe informacje: %s</string>
+    <string name="details_pet_owner_email">Kontaktowy adres e-mail: %s</string>
+    <string name="informacje_o_wlascicielu">Informacje o właścicielu</string>
+    <string name="informacje_o_zaginionym_zwierzeciu">Informacje o zaginionym zwierzęciu</string>
+    <string name="chat_icon">Chat icon</string>
+    <string name="location_icon">location_icon</string>
+    <string name="phone_icon">phone_icon</string>
+    <string name="pet_image">pet_image</string>
+
+    <string name="nav_open">Open</string>
+    <string name="nav_close">Close</string>
 </resources>

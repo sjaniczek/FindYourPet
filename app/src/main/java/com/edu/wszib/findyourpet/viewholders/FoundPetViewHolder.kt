@@ -9,12 +9,11 @@ import com.edu.wszib.findyourpet.models.FoundPetData
 import com.squareup.picasso.Picasso
 
 class FoundPetViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-    private val listFoundPetName: TextView = itemView.findViewById(R.id.listFoundPetName)
     private val listFoundPetAddress: TextView = itemView.findViewById(R.id.listFoundPetAddress)
     private val listFoundPetDate: TextView = itemView.findViewById(R.id.listFoundPetDate)
     private val listFoundPetImg: ImageView = itemView.findViewById(R.id.listFoundPetImg)
 
-    fun bindToLostPet(foundPet: FoundPetData, starClickListener: View.OnClickListener) {
+    fun bindToLostPet(foundPet: FoundPetData) {
         listFoundPetDate.text = foundPet.foundPetDate
         listFoundPetAddress.text = foundPet.foundPetDecodedAddress
 
