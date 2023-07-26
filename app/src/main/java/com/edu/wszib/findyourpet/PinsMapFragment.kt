@@ -35,7 +35,6 @@ class PinsMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.InfoWindowAdap
 
     override fun onMapReady(googleMap: GoogleMap) {
         this.googleMap = googleMap
-        Log.i(TAG,"insideOnMapReady")
         googleMap.uiSettings.isZoomControlsEnabled = true
         googleMap.uiSettings.setAllGesturesEnabled(true)
 
@@ -102,9 +101,7 @@ class PinsMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.InfoWindowAdap
             val petData = marker.tag
             // Perform any necessary actions or navigation here
             // Example: Navigating to AdDetailsFragment with adData
-            Log.d(TAG,"onMapReadyclick")
 
-            Log.d(TAG,"onMapReadyclickBUTTON")
             if (petData is LostPetData) {
                 petData.let { val args = bundleOf(LostDetailsFragment.EXTRA_POST_KEY to it.lostPetId)
                 findNavController().navigate(R.id.action_mainFragment_to_lostDetailsFragment, args) }

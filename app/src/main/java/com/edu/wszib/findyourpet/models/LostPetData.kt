@@ -6,6 +6,7 @@ import com.google.firebase.database.IgnoreExtraProperties
 
 @IgnoreExtraProperties
 data class LostPetData(
+    var lostPetOwnerId: String? ="",
     var lostPetId: String? = "",
     var lostPetName: String? = "",
     var lostPetType: String? = "",
@@ -28,6 +29,7 @@ data class LostPetData(
     @Exclude
     fun toMap(): Map<String, Any?> {
         return mapOf(
+            "lostPetOwnerId" to lostPetOwnerId,
             "lostPetId" to lostPetId,
             "lostPetName" to lostPetName,
             "lostPetType" to lostPetType,

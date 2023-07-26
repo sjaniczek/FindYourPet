@@ -13,6 +13,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.RadioButton
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -21,6 +22,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.edu.wszib.findyourpet.databinding.FragmentCreateFoundBinding
+import com.edu.wszib.findyourpet.inputmasks.DateInputMask
 import com.edu.wszib.findyourpet.models.FoundPetData
 import com.edu.wszib.findyourpet.models.FoundPetViewModel
 import com.google.firebase.auth.FirebaseAuth
@@ -76,6 +78,10 @@ class FoundCreateFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        auth = Firebase.auth
+        val dateEditText: EditText = binding.etFoundPetDate
+        DateInputMask(dateEditText).listen()
         binding.buttonChooseFoundPic.setOnClickListener {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 // For API 33 and above
@@ -114,9 +120,17 @@ class FoundCreateFragment : Fragment() {
         }
         val foundPetData = foundPetViewModel.foundPetData
         if (foundPetData != null) {
-            binding.rgFoundType.findViewWithTag<RadioButton>(foundPetData.foundPetType)?.isChecked =
-                true
+            binding.rgFoundType.findViewWithTag<RadioButton>(foundPetData.foundPetType)?.isChecked = true
+            binding.rgFoundBehavior.findViewWithTag<RadioButton>(foundPetData.foundPetBehavior)?.isChecked = true
+            binding.ivFoundPet.setImageURI(foundPetData.foundPetImageUri)
             binding.etFoundAddress.setText(foundPetData.foundPetDecodedAddress)
+            binding.etFoundPetDate.setText(foundPetData.foundPetDate)
+            binding.etFoundPetAdditionalInfo.setText(foundPetData.foundPetAdditionalPetInfo)
+            binding.etFoundFinderName.setText(foundPetData.foundPetFinderName)
+            binding.etFoundFinderNumber.setText(foundPetData.foundPetPhoneNumber)
+            binding.etFoundFinderEmail.setText(foundPetData.foundPetEmailAddress)
+            binding.etFoundFinderAdditionalInfo.setText(foundPetData.foundPetAdditionalFinderInfo)
+            imageUri = foundPetData.foundPetImageUri
         }
     }
 
@@ -126,7 +140,6 @@ class FoundCreateFragment : Fragment() {
         database = Firebase.database(databaseUrl)
         storage = Firebase.storage
         val storageRef = storage.reference
-        auth = Firebase.auth
         val userId = auth.currentUser?.uid
         val fileName = UUID.randomUUID().toString()
         val databaseRef = database.reference
@@ -180,10 +193,16 @@ class FoundCreateFragment : Fragment() {
 
     private fun saveFormData() {
         val foundPetData = FoundPetData(
-            foundPetType = binding.rgFoundType.findViewById<RadioButton>(binding.rgFoundType.checkedRadioButtonId)?.text.toString(),
-            foundPetBehavior = binding.rgFoundBehavior.findViewById<RadioButton>(binding.rgFoundBehavior.checkedRadioButtonId)?.text.toString(),
+            foundPetDate = binding.etFoundPetDate.text.toString(),
             foundPetDecodedAddress = binding.etFoundAddress.text.toString(),
-            foundPetAdditionalPetInfo = binding.tvFoundPetAdditionalInfo.text.toString()
+            foundPetAdditionalPetInfo = binding.etFoundPetAdditionalInfo.text.toString(),
+            foundPetFinderName = binding.etFoundFinderName.text.toString(),
+            foundPetPhoneNumber = binding.etFoundFinderName.text.toString(),
+            foundPetEmailAddress = binding.etFoundFinderName.text.toString(),
+            foundPetAdditionalFinderInfo = binding.etFoundFinderName.text.toString(),
+            foundPetImageUri = ((if (imageUri != null) imageUri else foundPetViewModel.foundPetData?.foundPetImageUri)),
+            foundPetType = binding.rgFoundType.findViewById<RadioButton>(binding.rgFoundType.checkedRadioButtonId)?.text.toString(),
+            foundPetBehavior = binding.rgFoundBehavior.findViewById<RadioButton>(binding.rgFoundBehavior.checkedRadioButtonId)?.text.toString()
         )
         foundPetViewModel.saveFormData(foundPetData)
     }
@@ -196,9 +215,9 @@ class FoundCreateFragment : Fragment() {
     private fun validateFieldsAndImage(imageUri: Uri?): Boolean {
         val isAnyFieldEmpty = binding.etFoundAddress.text.isNullOrEmpty() ||
                 binding.etFoundPetDate.text.isNullOrEmpty() ||
-                binding.etFoundOwnerName.text.isNullOrEmpty() ||
-                binding.etFoundOwnerEmail.text.isNullOrEmpty() ||
-                binding.etFoundOwnerNumber.text.isNullOrEmpty() ||
+                binding.etFoundFinderName.text.isNullOrEmpty() ||
+                binding.etFoundFinderEmail.text.isNullOrEmpty() ||
+                binding.etFoundFinderNumber.text.isNullOrEmpty() ||
                 binding.rgFoundType.checkedRadioButtonId == -1 ||
                 binding.rgFoundBehavior.checkedRadioButtonId == -1 ||
                 imageUri == null
@@ -208,15 +227,16 @@ class FoundCreateFragment : Fragment() {
 
     private fun createFoundPetData(imageUrl: String?, foundPetKey: String?): FoundPetData {
 
+        val loggedUser = auth.currentUser?.uid
         val petType =
             binding.rgFoundType.findViewById<RadioButton>(binding.rgFoundType.checkedRadioButtonId).text.toString()
         val foundDate = binding.etFoundPetDate.text.toString()
-        val finderName = binding.etFoundOwnerName.text.toString()
-        val phoneNumber = binding.etFoundOwnerNumber.text.toString()
-        val emailAddress = binding.etFoundOwnerEmail.text.toString()
+        val finderName = binding.etFoundFinderName.text.toString()
+        val phoneNumber = binding.etFoundFinderNumber.text.toString()
+        val emailAddress = binding.etFoundFinderEmail.text.toString()
         val decodedAddress = binding.etFoundAddress.text.toString()
         val additionalPetInfo = binding.etFoundPetAdditionalInfo.text.toString()
-        val additionalFinderInfo = binding.etFoundOwnerAdditionalInfo.text.toString()
+        val additionalFinderInfo = binding.etFoundFinderAdditionalInfo.text.toString()
         val petBehavior =
             binding.rgFoundBehavior.findViewById<RadioButton>(binding.rgFoundBehavior.checkedRadioButtonId).text.toString()
         val locationData = foundPetViewModel.foundPetData?.foundPetLocation
@@ -224,6 +244,7 @@ class FoundCreateFragment : Fragment() {
         // Perform validation or handle errors if necessary
         // Return the created FoundPetData instance
         return FoundPetData(
+            loggedUser,
             foundPetKey,
             petType,
             foundDate,

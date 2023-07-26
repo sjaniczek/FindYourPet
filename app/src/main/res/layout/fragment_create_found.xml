@@ -87,15 +87,12 @@
 
         <EditText
             android:id="@+id/etFoundPetDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="165dp"
+            android:layout_height="43dp"
             android:layout_marginTop="10dp"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:text="Name"
+            android:inputType="date"
             android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvFoundPetDate" />
 
@@ -116,9 +113,7 @@
             android:layout_marginTop="10dp"
             android:ems="10"
             android:inputType="textPersonName"
-            android:text="Name"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvFoundAddress" />
 
@@ -155,15 +150,15 @@
                 android:id="@+id/rbFoundBehaviorYes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Tak"
-                android:tag="Tak"/>
+                android:text="Agresywne"
+                android:tag="Agresywne"/>
 
             <RadioButton
                 android:id="@+id/rbFoundBehaviorNo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Nie"
-                android:tag="Nie"/>
+                android:text="Nie agresywne"
+                android:tag="Nie agresywne"/>
         </RadioGroup>
 
         <TextView
@@ -188,91 +183,88 @@
             app:layout_constraintTop_toBottomOf="@+id/tvFoundPetAdditionalInfo" />
 
         <TextView
-            android:id="@+id/tvFoundOwnerInfo"
+            android:id="@+id/tvFoundFinderInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
-            android:text="Informacje o właścicielu"
+            android:text="Informacje o osobie która odnalazła zwierzę"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/etFoundPetAdditionalInfo" />
 
         <TextView
-            android:id="@+id/tvFoundOwnerName"
+            android:id="@+id/tvFoundFinderName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
-            android:text="Imię właściciela"
+            android:text="Podaj swoje imię"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvFoundOwnerInfo" />
+            app:layout_constraintTop_toBottomOf="@+id/tvFoundFinderInfo" />
 
         <EditText
-            android:id="@+id/etFoundOwnerName"
+            android:id="@+id/etFoundFinderName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:ems="10"
             android:inputType="textPersonName"
-            android:text="Name"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvFoundOwnerName" />
+            app:layout_constraintTop_toBottomOf="@+id/tvFoundFinderName" />
 
         <TextView
-            android:id="@+id/tvFoundOwnerNumber"
+            android:id="@+id/tvFoundFinderNumber"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             android:text="Podaj numer telefonu kontaktowego"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etFoundOwnerName" />
+            app:layout_constraintTop_toBottomOf="@+id/etFoundFinderName" />
 
         <EditText
-            android:id="@+id/etFoundOwnerNumber"
+            android:id="@+id/etFoundFinderNumber"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:ems="10"
-            android:inputType="textPersonName"
-            android:text="Name"
+            android:inputType="number"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvFoundOwnerNumber" />
+            app:layout_constraintTop_toBottomOf="@+id/tvFoundFinderNumber" />
 
         <TextView
-            android:id="@+id/tvFoundOwnerEmail"
+            android:id="@+id/tvFoundFinderEmail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TextView"
+            android:text="Podaj kontaktowy e-mail"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etFoundOwnerNumber" />
+            app:layout_constraintTop_toBottomOf="@+id/etFoundFinderNumber" />
 
         <EditText
-            android:id="@+id/etFoundOwnerEmail"
+            android:id="@+id/etFoundFinderEmail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="textPersonName"
-            android:text="Name"
+            android:inputType="textEmailAddress"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvFoundOwnerEmail" />
+            app:layout_constraintTop_toBottomOf="@+id/tvFoundFinderEmail" />
 
         <TextView
-            android:id="@+id/tvFoundOwnerAdditionalInfo"
+            android:id="@+id/tvFoundFinderAdditionalInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Dodaj dodatkowe informacje"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etFoundOwnerEmail"/>
+            app:layout_constraintTop_toBottomOf="@+id/etFoundFinderEmail"/>
 
         <EditText
-            android:id="@+id/etFoundOwnerAdditionalInfo"
+            android:id="@+id/etFoundFinderAdditionalInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -280,7 +272,7 @@
             android:inputType="textMultiLine"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvFoundOwnerAdditionalInfo" />
+            app:layout_constraintTop_toBottomOf="@+id/tvFoundFinderAdditionalInfo" />
 
         <Button
             android:id="@+id/buttonFoundAccept"
@@ -289,7 +281,7 @@
             android:text="Akceptuj"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etFoundOwnerAdditionalInfo" />
+            app:layout_constraintTop_toBottomOf="@+id/etFoundFinderAdditionalInfo" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

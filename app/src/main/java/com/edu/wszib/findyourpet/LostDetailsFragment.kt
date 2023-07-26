@@ -4,13 +4,17 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
+import android.widget.Toolbar
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
+import androidx.lifecycle.Lifecycle
 import com.edu.wszib.findyourpet.databinding.FragmentDetailsLostBinding
 import com.edu.wszib.findyourpet.models.LostPetData
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
@@ -20,6 +24,9 @@ import java.lang.IllegalArgumentException
 
 class LostDetailsFragment : Fragment() {
 
+    private lateinit var editMenuItem: MenuItem
+    private lateinit var deleteMenuItem: MenuItem
+    private lateinit var auth: FirebaseAuth
     private lateinit var lostPetKey: String
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseRef: DatabaseReference
@@ -27,6 +34,8 @@ class LostDetailsFragment : Fragment() {
     private var _binding: FragmentDetailsLostBinding? = null
     private val binding: FragmentDetailsLostBinding
         get() = _binding!!
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,11 +50,38 @@ class LostDetailsFragment : Fragment() {
         lostPetKey = requireArguments().getString(EXTRA_POST_KEY)
             ?: throw IllegalArgumentException("Must pass EXTRA_POST_KEY")
 
+        // Initialize Firebase auth
+        auth = Firebase.auth
+
         // Initialize Database
         database = Firebase.database(databaseUrl)
         databaseRef = database.reference.child("lost_pets").child(lostPetKey)
+        activity?.title = "Details";
 
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                // Add menu items here
+                menuInflater.inflate(R.menu.menu_lost_pet_details, menu)
+                editMenuItem = menu.findItem(R.id.action_edit_pet)
+                deleteMenuItem = menu.findItem(R.id.action_delete_pet)
+            }
 
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                // Handle the menu selection
+                return when (menuItem.itemId) {
+                    R.id.action_edit_pet -> {
+                        // todo menu1
+                        true
+                    }
+                    R.id.action_delete_pet -> {
+                        // todo menu2
+                        true
+                    }
+                    else -> false
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
     override fun onStart() {
         super.onStart()
@@ -56,6 +92,10 @@ class LostDetailsFragment : Fragment() {
                 // Get Post object and use the values to update the UI
                 val lostPetData = dataSnapshot.getValue<LostPetData>()
                 lostPetData?.let {
+                    val ownerId = lostPetData.lostPetOwnerId
+                    editMenuItem.isVisible = isOwner(ownerId)
+                    deleteMenuItem.isVisible = isOwner(ownerId)
+
                     with(binding){
                         tvLostDetailsPetName.text = lostPetData.lostPetName
                         if(lostPetData.lostPetImageUrl.isNullOrEmpty()){
@@ -125,6 +165,15 @@ class LostDetailsFragment : Fragment() {
 
         // Clean up comments listener
         //adapter?.cleanupListener()
+    }
+
+    private fun isOwner(ownerId: String?): Boolean {
+        // Get the currently logged-in user's ID
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val currentUserId = currentUser?.uid
+
+        // Check if the ownerId matches the currently logged-in user's ID
+        return ownerId == currentUserId
     }
     companion object {
         private const val DEFAULT_IMAGE_URL = "https://i.stack.imgur.com/l60Hf.png"

@@ -79,6 +79,7 @@ class LostCreateFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        auth = Firebase.auth
         val dateEditText: EditText = binding.etLostPetDate
         val hourEditText: EditText = binding.etLostPetHour
         DateInputMask(dateEditText).listen()
@@ -135,6 +136,7 @@ class LostCreateFragment : Fragment() {
             binding.etLostOwnerNumber.setText(lostPetData.lostPetPhoneNumber)
             binding.etLostOwnerEmail.setText(lostPetData.lostPetEmailAddress)
             binding.etLostOwnerAdditionalInfo.setText(lostPetData.lostPetAdditionalOwnerInfo)
+            imageUri = lostPetData.lostPetImageUri
         }
     }
     private fun uploadImageAndForm() {
@@ -143,7 +145,6 @@ class LostCreateFragment : Fragment() {
         database = Firebase.database(databaseUrl)
         storage = Firebase.storage
         val storageRef = storage.reference
-        auth = Firebase.auth
         val userId = auth.currentUser?.uid
         val fileName = UUID.randomUUID().toString()
         val databaseRef = database.reference
@@ -237,6 +238,7 @@ class LostCreateFragment : Fragment() {
 
     private fun createFoundPetData(imageUrl: String?, lostPetKey: String?): LostPetData {
 
+        val loggedUser = auth.currentUser?.uid
         val petName = binding.etLostPetName.text.toString()
         val petType =
             binding.rgLostType.findViewById<RadioButton>(binding.rgLostType.checkedRadioButtonId).text.toString()
@@ -256,6 +258,7 @@ class LostCreateFragment : Fragment() {
         val locationData = lostPetViewModel.lostPetData?.lostPetLocation
         val dateAdded = getCurrentDateTime()
         return LostPetData(
+            loggedUser,
             lostPetKey,
             petName,
             petType,

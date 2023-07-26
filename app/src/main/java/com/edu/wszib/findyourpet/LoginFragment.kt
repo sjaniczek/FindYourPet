@@ -43,6 +43,9 @@ class LoginFragment : Fragment() {
         auth = Firebase.auth
         binding.signInButton.setOnClickListener { startSignIn() }
         binding.signOutButton.setOnClickListener { signOut() }
+
+        (requireActivity() as MainActivity).setNavigationDrawerVisibility(false)
+
     }
 
     override fun onStart() {

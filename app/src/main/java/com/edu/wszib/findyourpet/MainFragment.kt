@@ -6,10 +6,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.edu.wszib.findyourpet.databinding.FragmentMainBinding
-import com.edu.wszib.findyourpet.listlostfragments.*
+import com.edu.wszib.findyourpet.listlostandfoundfragments.*
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -36,6 +35,7 @@ class MainFragment : Fragment() {
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        (requireActivity() as MainActivity).setNavigationDrawerVisibility(true)
         auth = Firebase.auth
         pagerAdapter =
             object : FragmentStateAdapter(childFragmentManager, viewLifecycleOwner.lifecycle) {

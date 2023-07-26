@@ -4,6 +4,7 @@ import android.net.Uri
 import com.google.firebase.database.Exclude
 
 data class FoundPetData(
+    var foundPetOwnerId: String? ="",
     var foundPetId: String? = "",
     var foundPetType: String? = "",
     var foundPetDate: String? = "",
@@ -22,6 +23,7 @@ data class FoundPetData(
     @Exclude
     fun toMap(): Map<String, Any?> {
         return mapOf(
+            "foundPetOwnerId" to foundPetOwnerId,
             "foundPetId" to foundPetId,
             "foundPetType" to foundPetType,
             "foundPetDate" to foundPetDate,

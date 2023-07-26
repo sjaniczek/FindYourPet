@@ -1,4 +1,4 @@
-package com.edu.wszib.findyourpet.listlostfragments
+package com.edu.wszib.findyourpet.listlostandfoundfragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -12,27 +12,27 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.edu.wszib.findyourpet.FoundDetailsFragment
 import com.edu.wszib.findyourpet.LostDetailsFragment
 import com.edu.wszib.findyourpet.R
-import com.edu.wszib.findyourpet.R.*
-import com.edu.wszib.findyourpet.models.LostPetData
-import com.edu.wszib.findyourpet.viewholders.LostPetViewHolder
+import com.edu.wszib.findyourpet.models.FoundPetData
+import com.edu.wszib.findyourpet.viewholders.FoundPetViewHolder
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.Query
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
-abstract class LostListFragment : Fragment() {
+abstract class FoundListFragment : Fragment(){
     private lateinit var database: DatabaseReference
     // [END define_database_reference]
-
+    private lateinit var auth: FirebaseAuth
     private lateinit var recycler: RecyclerView
     private lateinit var manager: LinearLayoutManager
-    private lateinit var adapter: FirebaseRecyclerAdapter<LostPetData, LostPetViewHolder>
+    private lateinit var adapter: FirebaseRecyclerAdapter<FoundPetData, FoundPetViewHolder>
 
     val uid: String
         get() = Firebase.auth.currentUser!!.uid
@@ -43,13 +43,13 @@ abstract class LostListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         super.onCreateView(inflater, container, savedInstanceState)
-        val rootView = inflater.inflate(layout.fragment_recycler_lost, container, false)
+        val rootView = inflater.inflate(R.layout.fragment_recycler_found, container, false)
 
         // [START create_database_reference]
 
         // [END create_database_reference]
 
-        recycler = rootView.findViewById(R.id.recyclerViewLost)
+        recycler = rootView.findViewById(R.id.recyclerViewFound)
         recycler.setHasFixedSize(true)
 
         return rootView
@@ -68,17 +68,20 @@ abstract class LostListFragment : Fragment() {
 
         val postsQuery = getQuery(database)
 
-        val options = FirebaseRecyclerOptions.Builder<LostPetData>()
-            .setQuery(postsQuery, LostPetData::class.java)
+        val options = FirebaseRecyclerOptions.Builder<FoundPetData>()
+            .setQuery(postsQuery, FoundPetData::class.java)
             .build()
 
-        adapter = object : FirebaseRecyclerAdapter<LostPetData, LostPetViewHolder>(options) {
-            override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): LostPetViewHolder {
+        adapter = object : FirebaseRecyclerAdapter<FoundPetData, FoundPetViewHolder>(options) {
+
+            override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): FoundPetViewHolder {
                 val inflater = LayoutInflater.from(viewGroup.context)
-                return LostPetViewHolder(inflater.inflate(layout.lost_list_iem, viewGroup, false))
+                return FoundPetViewHolder(inflater.inflate(R.layout.found_list_item, viewGroup, false))
             }
 
-            override fun onBindViewHolder(viewHolder: LostPetViewHolder, position: Int, model: LostPetData) {
+
+
+            override fun onBindViewHolder(viewHolder: FoundPetViewHolder, position: Int, model: FoundPetData) {
                 val postRef = getRef(position)
 
                 // Set click listener for the whole post view
@@ -86,17 +89,17 @@ abstract class LostListFragment : Fragment() {
                 viewHolder.itemView.setOnClickListener {
                     // Launch PostDetailFragment
                     val navController = requireActivity().findNavController(R.id.nav_host_fragment)
-                    val args = bundleOf(LostDetailsFragment.EXTRA_POST_KEY to postKey)
+                    val args = bundleOf(FoundDetailsFragment.EXTRA_POST_KEY to postKey)
                     Toast.makeText(context, postKey, Toast.LENGTH_SHORT).show()
                     //Toast.makeText(context,args.toString(),Toast.LENGTH_SHORT).show()
-                    navController.navigate(R.id.lostDetailsFragment, args)
+                    navController.navigate(R.id.foundDetailsFragment, args)
                 }
 
                 viewHolder.bindToLostPet(model)
             }
             override fun onDataChanged() {
                 super.onDataChanged()
-                val textEmpty = view.findViewById<TextView>(R.id.tvLostPetRecyclerEmpty)
+                val textEmpty = view.findViewById<TextView>(R.id.tvFoundPetRecyclerEmpty)
                 // Check if the adapter has data or not
                 val isEmpty = itemCount == 0
                 if (isEmpty) {
@@ -108,6 +111,8 @@ abstract class LostListFragment : Fragment() {
                 }
             }
         }
+
+
 
         recycler.adapter = adapter
     }
