@@ -16,7 +16,9 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.edu.wszib.findyourpet.databinding.FragmentLostMapsBinding
 import com.edu.wszib.findyourpet.models.LostPetData
@@ -38,11 +40,11 @@ class LostMapsFragment : Fragment(), OnMapReadyCallback {
 
     private val lostPetViewModel: LostPetViewModel by activityViewModels()
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    //private lateinit var mapFragment: SupportMapFragment
     private lateinit var googleMap: GoogleMap
     private var _binding: FragmentLostMapsBinding? = null
     private val binding get() = _binding!!
-
+    private var isEditing = false
+    private lateinit var lostPetKey: String
     private val requestLocationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -71,6 +73,10 @@ class LostMapsFragment : Fragment(), OnMapReadyCallback {
         val mapFragment =
             childFragmentManager.findFragmentById(R.id.map_lost_layout) as SupportMapFragment
         mapFragment.getMapAsync(this)
+        val args = LostMapsFragmentArgs.fromBundle(requireArguments())
+        isEditing = args.isEditing
+        lostPetKey = args.lostPetKey
+        val currentLocation = args.currentLocation
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -113,7 +119,15 @@ class LostMapsFragment : Fragment(), OnMapReadyCallback {
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
-                        findNavController().navigate(LostMapsFragmentDirections.actionLostMapsFragmentToLostCreateFragment())
+                        if (isEditing) {
+                            val args = bundleOf(LostEditFragment.LOST_EDIT_POST_KEY to lostPetKey)
+                            val navController = requireActivity().findNavController(R.id.nav_host_fragment)
+                            navController.navigate(R.id.lostEditFragment, args)
+                        }
+                        else
+                        {
+                            findNavController().navigate(LostMapsFragmentDirections.actionLostMapsFragmentToLostCreateFragment())
+                        }
                     }
 
                     override fun onError(errorMessage: String?) {

@@ -1,5 +1,6 @@
 package com.edu.wszib.findyourpet
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -8,9 +9,12 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.Toast
 import android.widget.Toolbar
+import androidx.core.os.bundleOf
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.lifecycle.Lifecycle
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.edu.wszib.findyourpet.databinding.FragmentDetailsLostBinding
 import com.edu.wszib.findyourpet.models.LostPetData
 import com.google.firebase.auth.FirebaseAuth
@@ -71,11 +75,11 @@ class LostDetailsFragment : Fragment() {
                 // Handle the menu selection
                 return when (menuItem.itemId) {
                     R.id.action_edit_pet -> {
-                        // todo menu1
+                        navigateToEditPet()
                         true
                     }
                     R.id.action_delete_pet -> {
-                        // todo menu2
+                        deleteLostPet()
                         true
                     }
                     else -> false
@@ -83,6 +87,45 @@ class LostDetailsFragment : Fragment() {
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
+
+    private fun deleteLostPet() {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser != null) {
+            val userId = currentUser.uid
+            val lostPetRef = databaseRef
+
+            val confirmationDialog = AlertDialog.Builder(requireContext())
+                .setTitle("Delete Lost Pet")
+                .setMessage("Are you sure you want to delete this lost pet?")
+                .setPositiveButton("Yes") { _, _ ->
+                    // User clicked "Yes," proceed with the deletion
+                    // Create a map to delete the post from both locations in a single update
+                    val childUpdates = HashMap<String, Any?>()
+                    childUpdates["/lost_pets/$lostPetKey"] = null
+                    childUpdates["/users/$userId/lost_pets/$lostPetKey"] = null
+
+                    database.reference.updateChildren(childUpdates)
+                        .addOnSuccessListener {
+                            // Post deleted successfully
+                            // Navigate back to the previous fragment using NavController
+                            val navController = findNavController()
+                            navController.popBackStack()
+                        }
+                        .addOnFailureListener { e ->
+                            // Failed to delete post
+                            Toast.makeText(requireContext(), "Failed to delete post: ${e.message}", Toast.LENGTH_SHORT).show()
+                        }
+                }
+                .setNegativeButton("Cancel") { _, _ ->
+                    // User clicked "Cancel," do nothing
+                }
+                .create()
+
+            confirmationDialog.show()
+        }
+    }
+
+
     override fun onStart() {
         super.onStart()
 
@@ -174,6 +217,12 @@ class LostDetailsFragment : Fragment() {
 
         // Check if the ownerId matches the currently logged-in user's ID
         return ownerId == currentUserId
+    }
+    private fun navigateToEditPet() {
+        val args = bundleOf(LostEditFragment.LOST_EDIT_POST_KEY to lostPetKey)
+        val navController = requireActivity().findNavController(R.id.nav_host_fragment)
+        navController.navigate(R.id.lostEditFragment, args)
+
     }
     companion object {
         private const val DEFAULT_IMAGE_URL = "https://i.stack.imgur.com/l60Hf.png"

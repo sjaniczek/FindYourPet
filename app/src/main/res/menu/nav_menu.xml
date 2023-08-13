@@ -4,6 +4,9 @@
     tools:ignore="HardcodedText">
 
     <item
+        android:id="@+id/nav_home"
+        android:title="Strona główna" />
+    <item
         android:id="@+id/nav_my_lost_found"
         android:title="Moje ogłoszenia" />
 

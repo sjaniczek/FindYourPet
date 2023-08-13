@@ -1,14 +1,390 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraintLayoutCreateLostEdit"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".LostEditFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="match_parent">
 
-</FrameLayout>
+        <TextView
+            android:id="@+id/tvLostEditMain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:text="Edytuj informacje o zaginionym zwierzęciu"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/ivLostEditPet"
+            android:layout_width="166dp"
+            android:layout_height="168dp"
+            android:src="@drawable/pets"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvLostEditMain" />
+
+        <Button
+            android:id="@+id/buttonChooseLostEditPic"
+            android:layout_width="165dp"
+            android:layout_height="36dp"
+            android:text="Wybierz zdjęcie"
+            android:textSize="11sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ivLostEditPet" />
+
+        <TextView
+            android:id="@+id/tvType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="Rodzaj zagubionego zwięrzęcia"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/buttonChooseLostEditPic" />
+
+        <RadioGroup
+            android:id="@+id/rgLostEditType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvType">
+
+            <RadioButton
+                android:id="@+id/rbLostEditDog"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Pies"
+                android:tag="Pies"/>
+
+            <RadioButton
+                android:id="@+id/rbLostEditCat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Kot"
+                android:tag="Kot"/>
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/tvLostEditPetName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:labelFor="@id/etLostEditPetName"
+            android:text="Imię zwięrzecia"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rgLostEditType" />
+
+        <EditText
+            android:id="@+id/etLostEditPetName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvLostEditPetName" />
+        <TextView
+            android:id="@+id/tvLostEditPetDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="Data zaginięcia"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etLostEditPetName" />
+
+        <EditText
+            android:id="@+id/etLostEditPetDate"
+            android:layout_width="165dp"
+            android:layout_height="43dp"
+            android:layout_marginTop="10dp"
+            android:inputType="date"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvLostEditPetDate" />
+        <TextView
+            android:id="@+id/tvLostEditPetHour"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="Przybliżona godzina zaginięcia"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etLostEditPetDate" />
+
+        <EditText
+            android:id="@+id/etLostEditPetHour"
+            android:layout_width="165dp"
+            android:layout_height="43dp"
+            android:layout_marginTop="10dp"
+            android:inputType="number"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvLostEditPetHour" />
+
+        <TextView
+            android:id="@+id/tvLostEditAddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="Adres zaginięcia"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etLostEditPetHour" />
+
+        <EditText
+            android:id="@+id/etLostEditAddress"
+            android:layout_width="164dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:ems="10"
+            android:inputType="textPersonName"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvLostEditAddress" />
+
+        <Button
+            android:id="@+id/buttonGoToMap"
+            android:layout_width="171dp"
+            android:layout_height="38dp"
+            android:text="Włącz mapę"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etLostEditAddress"
+            tools:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/tvLostEditAge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="Wiek zwierzęcia"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/buttonGoToMap" />
+
+        <EditText
+            android:id="@+id/etLostEditAge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:ems="10"
+            android:inputType="number"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvLostEditAge" />
+
+        <TextView
+            android:id="@+id/tvLostEditAggressive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="Czy zwierze jest agresywne?"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etLostEditAge" />
+
+        <RadioGroup
+            android:id="@+id/rgLostEditBehavior"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvLostEditAggressive">
+
+            <RadioButton
+                android:id="@+id/rbLostEditBehaviorYes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Agresywne"
+                android:tag="Agresywne"/>
+
+            <RadioButton
+                android:id="@+id/rbLostEditBehaviorNo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Nie agresywne"
+                android:tag="Nie agresywne"/>
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/tvLostEditReacts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="Czy zwierze reaguje na imię?"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rgLostEditBehavior" />
+
+        <RadioGroup
+            android:id="@+id/rgLostEditReacts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvLostEditReacts">
+
+            <RadioButton
+                android:id="@+id/rbLostEditReactsYes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Reaguje"
+                android:tag="Reaguje"/>
+
+            <RadioButton
+                android:id="@+id/rbLostEditReactsNo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Nie reaguje"
+                android:tag="Nie reaguje"/>
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/tvLostEditPetAdditionalInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="Dodatkowe informacje(np. znagi szczególne)"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rgLostEditReacts" />
+
+        <EditText
+            android:id="@+id/etLostEditPetAdditionalInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:ems="10"
+            android:gravity="start|top"
+            android:inputType="textMultiLine"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvLostEditPetAdditionalInfo" />
+
+        <TextView
+            android:id="@+id/tvLostEditOwnerInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:text="Informacje o właścicielu"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etLostEditPetAdditionalInfo" />
+
+        <TextView
+            android:id="@+id/tvLostEditOwnerName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="Imię właściciela"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvLostEditOwnerInfo" />
+
+        <EditText
+            android:id="@+id/etLostEditOwnerName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:ems="10"
+            android:inputType="textPersonName"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvLostEditOwnerName" />
+
+        <TextView
+            android:id="@+id/tvLostEditOwnerNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="Podaj numer telefonu kontaktowego"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etLostEditOwnerName" />
+
+        <EditText
+            android:id="@+id/etLostEditOwnerNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:ems="10"
+            android:inputType="number"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvLostEditOwnerNumber" />
+
+        <TextView
+            android:id="@+id/tvLostEditOwnerEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Podaj adres e-mail"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etLostEditOwnerNumber" />
+
+        <EditText
+            android:id="@+id/etLostEditOwnerEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textEmailAddress"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvLostEditOwnerEmail" />
+
+        <TextView
+            android:id="@+id/tvLostEditOwnerAdditionalInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dodaj dodatkowe informacje"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etLostEditOwnerEmail"/>
+
+        <EditText
+            android:id="@+id/etLostEditOwnerAdditionalInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:gravity="start|top"
+            android:inputType="textMultiLine"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvLostEditOwnerAdditionalInfo" />
+
+        <Button
+            android:id="@+id/buttonLostEditAccept"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Akceptuj"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etLostEditOwnerAdditionalInfo" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

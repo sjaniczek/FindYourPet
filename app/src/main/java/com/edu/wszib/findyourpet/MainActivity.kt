@@ -69,10 +69,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 binding.fab.isVisible = true
                 Log.i("fab","isVisible")
                 binding.fab.setOnClickListener {
-                    navController.navigate(R.id.action_mainFragment_to_chooseFragment)
+                    navController.navigate(R.id.chooseFragment)
                 }
             } else {
-                binding.fab.isGone = true
+                binding.fab.isVisible = true
                 Log.i("fab","isGone")
             }
         }
@@ -99,6 +99,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         navController.setGraph(R.navigation.nav_graph)
 
         when (item.itemId) {
+            R.id.nav_home -> {
+                navController.navigate(R.id.mainFragment)
+                drawerLayout.closeDrawers()
+                return true
+            }
             R.id.nav_logout -> {
                 auth = FirebaseAuth.getInstance()
                 auth.signOut()

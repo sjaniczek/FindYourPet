@@ -54,6 +54,7 @@
         <ImageView
             android:id="@+id/ivPetImage"
             android:layout_width="271dp"
+            android:scaleType="centerCrop"
             android:layout_height="177dp"
             android:layout_marginTop="30dp"
             android:src="@drawable/pets"
@@ -80,7 +81,7 @@
         android:layout_marginTop="20dp"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
-        android:background="@color/colorAccent"
+        android:background="@color/colorSecondary"
         android:orientation="vertical"
         app:layout_constraintTop_toBottomOf="@+id/ivPetImage"
         tools:layout_editor_absoluteX="0dp">
@@ -99,19 +100,24 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:layout_marginTop="20dp"
+            android:layout_marginBottom="30dp"
             android:layout_marginStart="16dp"
+            android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
             <TextView
                 android:id="@+id/tvLostPetInfo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
-                android:text="@string/informacje_o_zaginionym_zwierzeciu"
                 android:gravity="center"
+                android:text="@string/informacje_o_zaginionym_zwierzeciu"
                 android:textSize="20sp" />
+
             <TextView
                 android:id="@+id/tvLostDetailsPetType"
                 android:layout_width="match_parent"
@@ -159,8 +165,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
-                android:text="@string/informacje_o_wlascicielu"
                 android:gravity="center"
+                android:text="@string/informacje_o_wlascicielu"
                 android:textSize="20sp" />
 
             <TextView
@@ -176,12 +182,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:textSize="16sp" />
+
             <TextView
                 android:id="@+id/tvLostDetailsPetEmailAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:textSize="16sp" />
+
             <TextView
                 android:id="@+id/tvLostDetailsPetOwnerAdditionalInfo"
                 android:layout_width="match_parent"

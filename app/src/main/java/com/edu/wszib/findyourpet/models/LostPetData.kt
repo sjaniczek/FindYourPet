@@ -10,7 +10,6 @@ data class LostPetData(
     var lostPetId: String? = "",
     var lostPetName: String? = "",
     var lostPetType: String? = "",
-    var lostPetAge: String? = "",
     var lostPetDate: String? = "",
     var lostPetHour: String? = "",
     var lostPetOwnerName: String? = "",
@@ -23,7 +22,6 @@ data class LostPetData(
     var lostPetAdditionalOwnerInfo: String? = "",
     var lostPetDateAdded: String? = "",
     var lostPetImageUrl: String? = "",
-    var lostPetImageUri: Uri? = null,
     var lostPetLocation: LostLocation? = null
 ) {
     @Exclude
@@ -33,8 +31,8 @@ data class LostPetData(
             "lostPetId" to lostPetId,
             "lostPetName" to lostPetName,
             "lostPetType" to lostPetType,
-            "lostPetAge" to lostPetAge,
             "lostPetDate" to lostPetDate,
+            "lostPetHour" to lostPetHour,
             "lostPetOwnerName" to lostPetOwnerName,
             "lostPetPhoneNumber" to lostPetPhoneNumber,
             "lostPetEmailAddress" to lostPetEmailAddress,

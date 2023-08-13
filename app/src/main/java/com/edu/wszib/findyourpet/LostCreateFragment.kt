@@ -20,12 +20,14 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.edu.wszib.findyourpet.inputmasks.DateInputMask
 import com.edu.wszib.findyourpet.inputmasks.TimeInputMask
 import com.edu.wszib.findyourpet.databinding.FragmentCreateLostBinding
 import com.edu.wszib.findyourpet.models.LostPetData
 import com.edu.wszib.findyourpet.models.LostPetViewModel
+import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.FirebaseDatabase
@@ -115,28 +117,38 @@ class LostCreateFragment : Fragment() {
         }
         binding.buttonGoToMap.setOnClickListener {
             saveFormData()
-            findNavController().navigate(LostCreateFragmentDirections.actionLostCreateFragmentToLostMapsFragment())
+            binding.buttonGoToMap.setOnClickListener {
+                saveFormData()
+                findNavController().navigate(LostCreateFragmentDirections.actionLostCreateFragmentToLostMapsFragment(false,
+                    LatLng(52.06,19.25),
+                    "lostpetkey"
+                ))
+            }
         }
         binding.buttonLostAccept.setOnClickListener {
             uploadImageAndForm()
         }
         val lostPetData = lostPetViewModel.lostPetData
-        if (lostPetData != null) {
-            binding.rgLostType.findViewWithTag<RadioButton>(lostPetData.lostPetType)?.isChecked = true
-            binding.rgLostBehavior.findViewWithTag<RadioButton>(lostPetData.lostPetBehavior)?.isChecked = true
-            binding.rgLostReacts.findViewWithTag<RadioButton>(lostPetData.lostPetReact)?.isChecked = true
-            binding.ivLostPet.setImageURI(lostPetData.lostPetImageUri)
-            binding.etLostPetName.setText(lostPetData.lostPetName)
-            binding.etLostAddress.setText(lostPetData.lostPetDecodedAddress)
-            binding.etLostAge.setText(lostPetData.lostPetAge)
-            binding.etLostPetDate.setText(lostPetData.lostPetDate)
-            binding.etLostPetHour.setText(lostPetData.lostPetHour)
-            binding.etLostPetAdditionalInfo.setText(lostPetData.lostPetAdditionalPetInfo)
-            binding.etLostOwnerName.setText(lostPetData.lostPetOwnerName)
-            binding.etLostOwnerNumber.setText(lostPetData.lostPetPhoneNumber)
-            binding.etLostOwnerEmail.setText(lostPetData.lostPetEmailAddress)
-            binding.etLostOwnerAdditionalInfo.setText(lostPetData.lostPetAdditionalOwnerInfo)
-            imageUri = lostPetData.lostPetImageUri
+        if (lostPetData != null && lostPetViewModel.imageUri != null) {
+            with(binding) {
+                rgLostType.findViewWithTag<RadioButton>(lostPetData.lostPetType)?.isChecked =
+                    true
+                rgLostBehavior.findViewWithTag<RadioButton>(lostPetData.lostPetBehavior)?.isChecked =
+                    true
+                rgLostReacts.findViewWithTag<RadioButton>(lostPetData.lostPetReact)?.isChecked =
+                    true
+                ivLostPet.setImageURI(lostPetViewModel.imageUri)
+                etLostPetName.setText(lostPetData.lostPetName)
+                etLostAddress.setText(lostPetData.lostPetDecodedAddress)
+                etLostPetDate.setText(lostPetData.lostPetDate)
+                etLostPetHour.setText(lostPetData.lostPetHour)
+                etLostPetAdditionalInfo.setText(lostPetData.lostPetAdditionalPetInfo)
+                etLostOwnerName.setText(lostPetData.lostPetOwnerName)
+                etLostOwnerNumber.setText(lostPetData.lostPetPhoneNumber)
+                etLostOwnerEmail.setText(lostPetData.lostPetEmailAddress)
+                etLostOwnerAdditionalInfo.setText(lostPetData.lostPetAdditionalOwnerInfo)
+                imageUri = lostPetViewModel.imageUri
+            }
         }
     }
     private fun uploadImageAndForm() {
@@ -178,7 +190,10 @@ class LostCreateFragment : Fragment() {
                 databaseRef.updateChildren(lostPetUpdates).addOnSuccessListener {
                     // Form uploaded successfully
                     Toast.makeText(context, "Form submitted", Toast.LENGTH_SHORT).show()
-                    findNavController().navigate(LostCreateFragmentDirections.actionLostCreateFragmentToMainFragment())
+                    val navController =
+                        requireActivity().findNavController(R.id.nav_host_fragment)
+                    navController.navigate(R.id.mainFragment)
+                    findNavController().popBackStack()
                 }
                     .addOnFailureListener { e ->
                         // Form upload failed
@@ -199,20 +214,19 @@ class LostCreateFragment : Fragment() {
             lostPetName = binding.etLostPetName.text.toString(),
             lostPetDate = binding.etLostPetDate.text.toString(),
             lostPetHour = binding.etLostPetHour.text.toString(),
-            lostPetAge = binding.etLostAge.text.toString(),
             lostPetDecodedAddress = binding.etLostAddress.text.toString(),
             lostPetAdditionalPetInfo = binding.etLostPetAdditionalInfo.text.toString(),
             lostPetOwnerName = binding.etLostOwnerName.text.toString(),
             lostPetPhoneNumber = binding.etLostOwnerNumber.text.toString(),
             lostPetEmailAddress = binding.etLostOwnerEmail.text.toString(),
             lostPetAdditionalOwnerInfo = binding.etLostOwnerAdditionalInfo.text.toString(),
-            lostPetImageUri = ((if (imageUri != null) imageUri else lostPetViewModel.lostPetData?.lostPetImageUri)),
+            //lostPetImageUri = ((if (imageUri != null) imageUri else lostPetViewModel.lostPetData?.lostPetImageUri)),
             lostPetType = binding.rgLostType.findViewById<RadioButton>(binding.rgLostType.checkedRadioButtonId)?.text.toString(),
             lostPetReact = binding.rgLostReacts.findViewById<RadioButton>(binding.rgLostReacts.checkedRadioButtonId)?.text.toString(),
             lostPetBehavior = binding.rgLostBehavior.findViewById<RadioButton>(binding.rgLostBehavior.checkedRadioButtonId)?.text.toString(),
 
         )
-        lostPetViewModel.saveFormData(lostPetData)
+        lostPetViewModel.saveFormData(lostPetData, imageUri)
     }
 
     private fun launchImagePicker() {
@@ -222,7 +236,6 @@ class LostCreateFragment : Fragment() {
     private fun validateFieldsAndImage(imageUri: Uri?): Boolean {
         val isAnyFieldEmpty = binding.etLostPetName.text.isNullOrEmpty() ||
                 binding.etLostAddress.text.isNullOrEmpty() ||
-                binding.etLostAge.text.isNullOrEmpty() ||
                 binding.etLostPetDate.text.isNullOrEmpty() ||
                 binding.etLostPetHour.text.isNullOrEmpty() ||
                 binding.etLostOwnerName.text.isNullOrEmpty() ||
@@ -242,7 +255,6 @@ class LostCreateFragment : Fragment() {
         val petName = binding.etLostPetName.text.toString()
         val petType =
             binding.rgLostType.findViewById<RadioButton>(binding.rgLostType.checkedRadioButtonId).text.toString()
-        val petAge = binding.etLostAge.text.toString()
         val lostDate = binding.etLostPetDate.text.toString()
         val lostHour = binding.etLostPetHour.text.toString()
         val ownerName = binding.etLostOwnerName.text.toString()
@@ -262,7 +274,6 @@ class LostCreateFragment : Fragment() {
             lostPetKey,
             petName,
             petType,
-            petAge,
             lostDate,
             lostHour,
             ownerName,
@@ -275,7 +286,6 @@ class LostCreateFragment : Fragment() {
             additionalOwnerInfo,
             dateAdded,
             imageUrl,
-            imageUri,
             locationData
         )
 

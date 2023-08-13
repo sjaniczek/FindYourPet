@@ -56,7 +56,6 @@ class FoundDetailsFragment : Fragment() {
             // Initialize Database
             database = Firebase.database(databaseUrl)
             databaseRef = database.reference.child("found_pets").child(foundPetKey)
-            activity?.title = "Details";
 
             val menuHost: MenuHost = requireActivity()
             menuHost.addMenuProvider(object : MenuProvider {
@@ -110,9 +109,9 @@ class FoundDetailsFragment : Fragment() {
                             tvFoundDetailsPetDecodedAddress.text =
                                 foundPetData.foundPetDecodedAddress
                             tvFoundDetailsPetType.text =
-                                getString(R.string.details_pet_type, foundPetData.foundPetType)
+                                getString(R.string.details_found_pet_type, foundPetData.foundPetType)
                             tvFoundDetailsPetDate.text =
-                                getString(R.string.details_pet_date, foundPetData.foundPetDate)
+                                getString(R.string.details_found_pet_date, foundPetData.foundPetDate)
                             tvFoundDetailsPetBehavior.text = getString(
                                 R.string.details_pet_behavior,
                                 foundPetData.foundPetBehavior
@@ -122,19 +121,19 @@ class FoundDetailsFragment : Fragment() {
                                 foundPetData.foundPetAdditionalPetInfo
                             )
                             tvFoundDetailsPetFinderName.text = getString(
-                                R.string.details_pet_owner_name,
+                                R.string.details_pet_finder_name,
                                 foundPetData.foundPetFinderName
                             )
                             tvFoundDetailsPetPhoneNumber.text = getString(
-                                R.string.details_pet_owner_number,
+                                R.string.details_pet_finder_number,
                                 foundPetData.foundPetPhoneNumber
                             )
                             tvFoundDetailsPetEmailAddress.text = getString(
-                                R.string.details_pet_owner_email,
+                                R.string.details_pet_finder_email,
                                 foundPetData.foundPetEmailAddress
                             )
                             tvFoundDetailsPetOwnerAdditionalInfo.text = getString(
-                                R.string.details_pet_owner_additional,
+                                R.string.details_pet_finder_additional,
                                 foundPetData.foundPetAdditionalFinderInfo
                             )
                         }
