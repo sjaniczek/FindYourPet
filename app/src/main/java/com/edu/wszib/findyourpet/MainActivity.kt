@@ -64,7 +64,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         profileImageView.setImageURI(auth.currentUser?.photoUrl)
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            Log.i("fab","executed")
+            Log.i("fab",destination.displayName)
             if (destination.id == R.id.mainFragment) {
                 binding.fab.isVisible = true
                 Log.i("fab","isVisible")
@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     navController.navigate(R.id.chooseFragment)
                 }
             } else {
-                binding.fab.isVisible = true
+                binding.fab.isVisible = false
                 Log.i("fab","isGone")
             }
         }

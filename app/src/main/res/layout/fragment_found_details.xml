@@ -44,7 +44,7 @@
                 />
 
             <ImageButton
-                android:id="@+id/imageButton3"
+                android:id="@+id/foundDetailsSmsButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:src="@drawable/baseline_message_24"

@@ -110,6 +110,16 @@
         <action
             android:id="@+id/action_foundMapsFragment_to_foundCreateFragment"
             app:destination="@id/foundCreateFragment" />
+        <argument
+            android:name="isEditing"
+            app:argType="boolean" />
+
+        <argument
+            android:name="currentLocation"
+            app:argType="com.google.android.gms.maps.model.LatLng" />
+        <argument
+            android:name="lostPetKey"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/foundDetailsFragment"
@@ -132,6 +142,9 @@
         <action
             android:id="@+id/action_foundEditFragment_to_foundDetailsFragment"
             app:destination="@id/foundDetailsFragment" />
+        <action
+            android:id="@+id/action_foundEditFragment_to_foundMapsFragment"
+            app:destination="@id/foundMapsFragment" />
     </fragment>
     <fragment
         android:id="@+id/lostEditFragment"

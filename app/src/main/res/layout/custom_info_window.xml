@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -8,13 +9,19 @@
     tools:ignore="MissingDefaultResource">
 
     <TextView
-        android:id="@+id/petNameTextView"
+        android:id="@+id/tvPinsName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:textAppearanceMedium"/>
 
+    <ImageView
+        android:id="@+id/ivPinsImage"
+        android:layout_width="match_parent"
+        android:layout_height="140dp"
+        app:srcCompat="@drawable/pets" />
+
     <TextView
-        android:id="@+id/lostDateTextView"
+        android:id="@+id/tvPinsDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:textAppearanceSmall"/>
@@ -23,6 +30,6 @@
         android:id="@+id/detailsButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="View Details"/>
+        android:text="Zobacz więcej"/>
 
 </LinearLayout>

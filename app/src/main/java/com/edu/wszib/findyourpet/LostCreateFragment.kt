@@ -190,10 +190,8 @@ class LostCreateFragment : Fragment() {
                 databaseRef.updateChildren(lostPetUpdates).addOnSuccessListener {
                     // Form uploaded successfully
                     Toast.makeText(context, "Form submitted", Toast.LENGTH_SHORT).show()
-                    val navController =
-                        requireActivity().findNavController(R.id.nav_host_fragment)
-                    navController.navigate(R.id.mainFragment)
-                    findNavController().popBackStack()
+                    findNavController().navigate(LostCreateFragmentDirections.actionLostCreateFragmentToMainFragment())
+                    //findNavController().popBackStack()
                 }
                     .addOnFailureListener { e ->
                         // Form upload failed

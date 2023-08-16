@@ -25,6 +25,7 @@ import com.edu.wszib.findyourpet.databinding.FragmentCreateFoundBinding
 import com.edu.wszib.findyourpet.inputmasks.DateInputMask
 import com.edu.wszib.findyourpet.models.FoundPetData
 import com.edu.wszib.findyourpet.models.FoundPetViewModel
+import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.FirebaseDatabase
@@ -113,16 +114,18 @@ class FoundCreateFragment : Fragment() {
         }
         binding.buttonGoToMap.setOnClickListener {
             saveFormData()
-            findNavController().navigate(FoundCreateFragmentDirections.actionFoundCreateFragmentToFoundMapsFragment())
+            findNavController().navigate(FoundCreateFragmentDirections.actionFoundCreateFragmentToFoundMapsFragment(false,
+                LatLng(52.06,19.25),
+                "foundpetkey"))
         }
         binding.buttonFoundAccept.setOnClickListener {
             uploadImageAndForm()
         }
         val foundPetData = foundPetViewModel.foundPetData
-        if (foundPetData != null) {
+        if (foundPetData != null && foundPetViewModel.imageUri != null) {
             binding.rgFoundType.findViewWithTag<RadioButton>(foundPetData.foundPetType)?.isChecked = true
             binding.rgFoundBehavior.findViewWithTag<RadioButton>(foundPetData.foundPetBehavior)?.isChecked = true
-            binding.ivFoundPet.setImageURI(foundPetData.foundPetImageUri)
+            binding.ivFoundPet.setImageURI(foundPetViewModel.imageUri)
             binding.etFoundAddress.setText(foundPetData.foundPetDecodedAddress)
             binding.etFoundPetDate.setText(foundPetData.foundPetDate)
             binding.etFoundPetAdditionalInfo.setText(foundPetData.foundPetAdditionalPetInfo)
@@ -130,7 +133,7 @@ class FoundCreateFragment : Fragment() {
             binding.etFoundFinderNumber.setText(foundPetData.foundPetPhoneNumber)
             binding.etFoundFinderEmail.setText(foundPetData.foundPetEmailAddress)
             binding.etFoundFinderAdditionalInfo.setText(foundPetData.foundPetAdditionalFinderInfo)
-            imageUri = foundPetData.foundPetImageUri
+            imageUri = foundPetViewModel.imageUri
         }
     }
 
@@ -174,7 +177,10 @@ class FoundCreateFragment : Fragment() {
                 databaseRef.updateChildren(foundPetUpdates).addOnSuccessListener {
                     // Form uploaded successfully
                     Toast.makeText(context, "Form submitted", Toast.LENGTH_SHORT).show()
+                    clearData()
+                    findNavController().popBackStack()
                     findNavController().navigate(FoundCreateFragmentDirections.actionFoundCreateFragmentToMainFragment())
+                    //findNavController().popBackStack()
                 }
                     .addOnFailureListener { e ->
                         // Form upload failed
@@ -200,11 +206,11 @@ class FoundCreateFragment : Fragment() {
             foundPetPhoneNumber = binding.etFoundFinderName.text.toString(),
             foundPetEmailAddress = binding.etFoundFinderName.text.toString(),
             foundPetAdditionalFinderInfo = binding.etFoundFinderName.text.toString(),
-            foundPetImageUri = ((if (imageUri != null) imageUri else foundPetViewModel.foundPetData?.foundPetImageUri)),
+            //foundPetImageUri = ((if (imageUri != null) imageUri else foundPetViewModel.foundPetData?.foundPetImageUri)),
             foundPetType = binding.rgFoundType.findViewById<RadioButton>(binding.rgFoundType.checkedRadioButtonId)?.text.toString(),
             foundPetBehavior = binding.rgFoundBehavior.findViewById<RadioButton>(binding.rgFoundBehavior.checkedRadioButtonId)?.text.toString()
         )
-        foundPetViewModel.saveFormData(foundPetData)
+        foundPetViewModel.saveFormData(foundPetData, imageUri)
     }
 
     private fun launchImagePicker() {
@@ -257,7 +263,6 @@ class FoundCreateFragment : Fragment() {
             additionalFinderInfo,
             dateAdded,
             imageUrl,
-            imageUri,
             locationData
         )
     }
@@ -267,7 +272,9 @@ class FoundCreateFragment : Fragment() {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
         return dateFormat.format(calendar.time)
     }
-
+    private fun clearData(){
+        foundPetViewModel.foundPetData = FoundPetData()
+    }
     companion object {
         private const val TAG = "foundCreateFragment"
     }

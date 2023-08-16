@@ -179,6 +179,13 @@ class LostDetailsFragment : Fragment() {
                         dialIntent.data = Uri.parse("tel:$phoneNumber")
                         startActivity(dialIntent)
                     }
+                    binding.lostDetailsSmsButton.setOnClickListener{
+                        val phoneNumber = lostPetData.lostPetPhoneNumber
+                        val smsUri = Uri.parse("smsto:$phoneNumber")
+                        val smsIntent = Intent(Intent.ACTION_SENDTO, smsUri)
+                        smsIntent.putExtra("sms_body", "Dzień dobry, kontaktuję się w sprawie zagubionego zwierzaka.") // Optional message
+                        startActivity(smsIntent)
+                    }
                 }
             }
 

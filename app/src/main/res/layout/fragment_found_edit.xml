@@ -1,14 +1,287 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraintLayoutCreateFoundEdit"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".FoundEditFragment">
+    tools:context=".FoundEditCreateFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="match_parent">
 
-</FrameLayout>
+        <TextView
+            android:id="@+id/tvFoundEditMain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:text="Informacje o odnalezionym zwierzęciu"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/ivFoundEditPet"
+            android:layout_width="166dp"
+            android:layout_height="168dp"
+            android:src="@drawable/pets"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvFoundEditMain" />
+
+        <Button
+            android:id="@+id/buttonChooseFoundEditPic"
+            android:layout_width="165dp"
+            android:layout_height="36dp"
+            android:text="Wybierz zdjęcie"
+            android:textSize="10sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ivFoundEditPet" />
+
+        <TextView
+            android:id="@+id/tvType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="Rodzaj odnalezionego zwięrzęcia"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/buttonChooseFoundEditPic" />
+
+        <RadioGroup
+            android:id="@+id/rgFoundEditType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvType">
+
+            <RadioButton
+                android:id="@+id/rbFoundEditDog"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Pies"
+                android:tag="Pies"/>
+
+            <RadioButton
+                android:id="@+id/rbFoundEditCat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Kot"
+                android:tag="Kot"/>
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/tvFoundEditPetDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Data odnalezienia"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rgFoundEditType" />
+
+        <EditText
+            android:id="@+id/etFoundEditPetDate"
+            android:layout_width="165dp"
+            android:layout_height="43dp"
+            android:layout_marginTop="10dp"
+            android:inputType="date"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvFoundEditPetDate" />
+
+        <TextView
+            android:id="@+id/tvFoundEditAddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="Adres odnalezienia"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etFoundEditPetDate" />
+
+        <EditText
+            android:id="@+id/etFoundEditAddress"
+            android:layout_width="164dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:ems="10"
+            android:inputType="textPersonName"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvFoundEditAddress" />
+
+        <Button
+            android:id="@+id/buttonGoToMap"
+            android:layout_width="171dp"
+            android:layout_height="38dp"
+            android:text="Włącz mapę"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etFoundEditAddress"
+            tools:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/tvFoundEditAggressive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Czy zwierze jest agresywne?"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/buttonGoToMap" />
+
+        <RadioGroup
+            android:id="@+id/rgFoundEditBehavior"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvFoundEditAggressive">
+
+            <RadioButton
+                android:id="@+id/rbFoundEditBehaviorYes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Agresywne"
+                android:tag="Agresywne"/>
+
+            <RadioButton
+                android:id="@+id/rbFoundEditBehaviorNo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Nie agresywne"
+                android:tag="Nie agresywne"/>
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/tvFoundEditPetAdditionalInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dodatkowe informacje(np. znagi szczególne)"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rgFoundEditBehavior" />
+
+        <EditText
+            android:id="@+id/etFoundEditPetAdditionalInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:ems="10"
+            android:gravity="start|top"
+            android:inputType="textMultiLine"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvFoundEditPetAdditionalInfo" />
+
+        <TextView
+            android:id="@+id/tvFoundEditFinderInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:text="Informacje o osobie która odnalazła zwierzę"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etFoundEditPetAdditionalInfo" />
+
+        <TextView
+            android:id="@+id/tvFoundEditFinderName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="Podaj swoje imię"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvFoundEditFinderInfo" />
+
+        <EditText
+            android:id="@+id/etFoundEditFinderName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:ems="10"
+            android:inputType="textPersonName"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvFoundEditFinderName" />
+
+        <TextView
+            android:id="@+id/tvFoundEditFinderNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="Podaj numer telefonu kontaktowego"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etFoundEditFinderName" />
+
+        <EditText
+            android:id="@+id/etFoundEditFinderNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:ems="10"
+            android:inputType="number"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvFoundEditFinderNumber" />
+
+        <TextView
+            android:id="@+id/tvFoundEditFinderEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Podaj kontaktowy e-mail"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etFoundEditFinderNumber" />
+
+        <EditText
+            android:id="@+id/etFoundEditFinderEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textEmailAddress"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvFoundEditFinderEmail" />
+
+        <TextView
+            android:id="@+id/tvFoundEditFinderAdditionalInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dodaj dodatkowe informacje"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etFoundEditFinderEmail"/>
+
+        <EditText
+            android:id="@+id/etFoundEditFinderAdditionalInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:gravity="start|top"
+            android:inputType="textMultiLine"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvFoundEditFinderAdditionalInfo" />
+
+        <Button
+            android:id="@+id/buttonFoundEditAccept"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Akceptuj"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etFoundEditFinderAdditionalInfo" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

@@ -1,14 +1,17 @@
 package com.edu.wszib.findyourpet
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 import com.edu.wszib.findyourpet.databinding.FragmentPinsMapBinding
 import com.edu.wszib.findyourpet.models.FoundPetData
 import com.edu.wszib.findyourpet.models.LostPetData
@@ -23,6 +26,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.squareup.picasso.Picasso
 
 class PinsMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.InfoWindowAdapter {
 
@@ -127,8 +131,11 @@ class PinsMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.InfoWindowAdap
         mapFragment.getMapAsync(this)
         Log.i(TAG,"onViewCreated")
         //fetchLocationDataFromDatabase()
+        Picasso.get().setIndicatorsEnabled(true)
+        Picasso.get().isLoggingEnabled = true
     }
 
+    @SuppressLint("MissingInflatedId")
     override fun getInfoContents(marker: Marker): View? {
         val inflater = LayoutInflater.from(requireContext())
         val view = inflater.inflate(R.layout.custom_info_window, null)
@@ -138,17 +145,28 @@ class PinsMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.InfoWindowAdap
 
         if (petData is FoundPetData) {
             // Handle FoundPetData
-            val finderNameTextView = view.findViewById<TextView>(R.id.petNameTextView)
-            val foundDateTextView = view.findViewById<TextView>(R.id.lostDateTextView)
+            val foundDateTextView = view.findViewById<TextView>(R.id.tvPinsDate)
+            val foundImageView = view.findViewById<ImageView>(R.id.ivPinsImage)
             Log.i(TAG,petData.toString())
-            finderNameTextView.text = petData.foundPetFinderName
             foundDateTextView.text = petData.foundPetDate
+            Picasso.get()
+                .load(petData.foundPetImageUrl)
+                .error(R.drawable.baseline_delete_24)
+                .into(foundImageView)
         } else if (petData is LostPetData) {
             // Handle LostPetData
-            val petNameTextView = view.findViewById<TextView>(R.id.petNameTextView)
-            val lostDateTextView = view.findViewById<TextView>(R.id.lostDateTextView)
+            val petNameTextView = view.findViewById<TextView>(R.id.tvPinsName)
+            val foundImageView = view.findViewById<ImageView>(R.id.ivPinsImage)
+            val lostDateTextView = view.findViewById<TextView>(R.id.tvPinsDate)
             Log.i(TAG,petData.toString())
             petNameTextView.text = petData.lostPetName
+            val imageUrl = "https://firebasestorage.googleapis.com/v0/b/findyourpet-e77a8.appspot.com/o/images%2Fac73977f-0d27-4360-b1b0-a2ec169ed566?alt=media&token=f00bc966-5237-4f17-a010-ba01e30c5f23"
+
+            Glide.with(this)
+                .load(imageUrl)
+                .placeholder(R.drawable.baseline_add_24) // Placeholder image while loading
+                .error(R.drawable.baseline_delete_24) // Image to display on error
+                .into(foundImageView)
             lostDateTextView.text = petData.lostPetDate
         }
 

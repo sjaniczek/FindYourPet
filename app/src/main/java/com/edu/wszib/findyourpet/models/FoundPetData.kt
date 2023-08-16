@@ -17,7 +17,6 @@ data class FoundPetData(
     var foundPetAdditionalFinderInfo: String? = "",
     var foundPetDateAdded: String? = "",
     var foundPetImageUrl: String? = "",
-    var foundPetImageUri: Uri? = null,
     var foundPetLocation: FoundLocation? = null
 ) {
     @Exclude

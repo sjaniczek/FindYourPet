@@ -1,15 +1,19 @@
 package com.edu.wszib.findyourpet
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.lifecycle.Lifecycle
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.edu.wszib.findyourpet.databinding.FragmentDetailsLostBinding
 import com.edu.wszib.findyourpet.databinding.FragmentFoundDetailsBinding
 import com.edu.wszib.findyourpet.models.FoundPetData
@@ -70,11 +74,11 @@ class FoundDetailsFragment : Fragment() {
                     // Handle the menu selection
                     return when (menuItem.itemId) {
                         R.id.action_edit_pet -> {
-                            // todo menu1
+                            navigateToLostPet()
                             true
                         }
                         R.id.action_delete_pet -> {
-                            // todo menu2
+                            deleteFoundPet()
                             true
                         }
                         else -> false
@@ -83,7 +87,44 @@ class FoundDetailsFragment : Fragment() {
             }, viewLifecycleOwner, Lifecycle.State.RESUMED)
         }
 
-        override fun onStart() {
+    private fun deleteFoundPet() {
+            val currentUser = FirebaseAuth.getInstance().currentUser
+            if (currentUser != null) {
+                val userId = currentUser.uid
+                val lostPetRef = databaseRef
+
+                val confirmationDialog = AlertDialog.Builder(requireContext())
+                    .setTitle("Delete Lost Pet")
+                    .setMessage("Are you sure you want to delete this lost pet?")
+                    .setPositiveButton("Yes") { _, _ ->
+                        // User clicked "Yes," proceed with the deletion
+                        // Create a map to delete the post from both locations in a single update
+                        val childUpdates = HashMap<String, Any?>()
+                        childUpdates["/found_pets/$foundPetKey"] = null
+                        childUpdates["/users/$userId/found_pets/$foundPetKey"] = null
+
+                        database.reference.updateChildren(childUpdates)
+                            .addOnSuccessListener {
+                                // Post deleted successfully
+                                // Navigate back to the previous fragment using NavController
+                                val navController = findNavController()
+                                navController.popBackStack()
+                            }
+                            .addOnFailureListener { e ->
+                                // Failed to delete post
+                                Toast.makeText(requireContext(), "Failed to delete post: ${e.message}", Toast.LENGTH_SHORT).show()
+                            }
+                    }
+                    .setNegativeButton("Cancel") { _, _ ->
+                        // User clicked "Cancel," do nothing
+                    }
+                    .create()
+
+                confirmationDialog.show()
+            }
+    }
+
+    override fun onStart() {
             super.onStart()
 
             // Add value event listener to the post
@@ -153,6 +194,13 @@ class FoundDetailsFragment : Fragment() {
                             dialIntent.data = Uri.parse("tel:$phoneNumber")
                             startActivity(dialIntent)
                         }
+                        binding.foundDetailsSmsButton.setOnClickListener{
+                            val phoneNumber = foundPetData.foundPetPhoneNumber
+                            val smsUri = Uri.parse("smsto:$phoneNumber")
+                            val smsIntent = Intent(Intent.ACTION_SENDTO, smsUri)
+                            smsIntent.putExtra("sms_body", "Dzień dobry, kontaktuję się w sprawie odnalezionego zwierzaka.") // Optional message
+                            startActivity(smsIntent)
+                        }
                     }
                 }
 
@@ -194,7 +242,12 @@ class FoundDetailsFragment : Fragment() {
             // Check if the ownerId matches the currently logged-in user's ID
             return ownerId == currentUserId
         }
+        private fun navigateToLostPet() {
+        val args = bundleOf(FoundEditFragment.FOUND_EDIT_POST_KEY to foundPetKey)
+        val navController = requireActivity().findNavController(R.id.nav_host_fragment)
+        navController.navigate(R.id.foundEditFragment, args)
 
+        }
         companion object {
             private const val DEFAULT_IMAGE_URL = "https://i.stack.imgur.com/l60Hf.png"
             private const val databaseUrl =
