@@ -151,7 +151,15 @@ class LostMapsFragment : Fragment(), OnMapReadyCallback {
                 lostPetViewModel.lostPetData?.lostPetLocation =
                     LostPetData.LostLocation(currentLocation.latitude, currentLocation.longitude)
 
-                findNavController().navigate(LostMapsFragmentDirections.actionLostMapsFragmentToLostCreateFragment())
+                if (isEditing) {
+                    val args = bundleOf(LostEditFragment.LOST_EDIT_POST_KEY to lostPetKey)
+                    val navController = requireActivity().findNavController(R.id.nav_host_fragment)
+                    navController.navigate(R.id.lostEditFragment, args)
+                }
+                else
+                {
+                    findNavController().navigate(LostMapsFragmentDirections.actionLostMapsFragmentToLostCreateFragment())
+                }
             } else {
                 Toast.makeText(
                     context,

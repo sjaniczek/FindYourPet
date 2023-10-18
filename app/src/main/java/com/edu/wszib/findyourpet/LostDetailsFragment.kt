@@ -56,7 +56,8 @@ class LostDetailsFragment : Fragment() {
 
         // Initialize Firebase auth
         auth = Firebase.auth
-
+        Picasso.get().setIndicatorsEnabled(true)
+        Picasso.get().isLoggingEnabled = true
         // Initialize Database
         database = Firebase.database(databaseUrl)
         databaseRef = database.reference.child("lost_pets").child(lostPetKey)

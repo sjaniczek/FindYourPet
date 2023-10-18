@@ -14,8 +14,10 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.edu.wszib.findyourpet.databinding.FragmentFoundMapsBinding
 import com.edu.wszib.findyourpet.models.FoundPetData
@@ -39,7 +41,8 @@ class FoundMapsFragment : Fragment(), OnMapReadyCallback {
     private lateinit var googleMap: GoogleMap
     private var _binding: FragmentFoundMapsBinding? = null
     private val binding get() = _binding!!
-
+    private var isEditing = false
+    private lateinit var foundPetKey: String
     private val requestLocationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -68,6 +71,10 @@ class FoundMapsFragment : Fragment(), OnMapReadyCallback {
         val mapFragment =
             childFragmentManager.findFragmentById(R.id.map_found_layout) as SupportMapFragment
         mapFragment.getMapAsync(this)
+        val args = FoundMapsFragmentArgs.fromBundle(requireArguments())
+        isEditing = args.isEditing
+        foundPetKey = args.lostPetKey
+        val currentLocation = args.currentLocation
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -99,6 +106,10 @@ class FoundMapsFragment : Fragment(), OnMapReadyCallback {
                             currentLocation.latitude,
                             currentLocation.longitude
                         )
+                        Log.i("decodeLocation",decodedAddress.toString())
+                        Log.i("decodeLocation",foundPetViewModel.foundPetData?.foundPetDecodedAddress.toString())
+                        Log.i("decodeLocation",foundPetViewModel.toString())
+                        Log.i("decodeLocation",foundPetViewModel.foundPetData?.foundPetLocation.toString())
                         activity?.runOnUiThread {
                             Toast.makeText(
                                 context,
@@ -106,7 +117,15 @@ class FoundMapsFragment : Fragment(), OnMapReadyCallback {
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
-                        findNavController().navigate(FoundMapsFragmentDirections.actionFoundMapsFragmentToFoundCreateFragment())
+                        if (isEditing) {
+                            val args = bundleOf(FoundEditFragment.FOUND_EDIT_POST_KEY to foundPetKey)
+                            val navController = requireActivity().findNavController(R.id.nav_host_fragment)
+                            navController.navigate(R.id.foundEditFragment, args)
+                        }
+                        else
+                        {
+                            findNavController().navigate(FoundMapsFragmentDirections.actionFoundMapsFragmentToFoundCreateFragment())
+                        }
                     }
 
                     override fun onError(errorMessage: String?) {
@@ -130,7 +149,15 @@ class FoundMapsFragment : Fragment(), OnMapReadyCallback {
                 foundPetViewModel.foundPetData?.foundPetLocation =
                     FoundPetData.FoundLocation(currentLocation.latitude, currentLocation.longitude)
 
-                findNavController().navigate(FoundMapsFragmentDirections.actionFoundMapsFragmentToFoundCreateFragment())
+                if (isEditing) {
+                    val args = bundleOf(FoundEditFragment.FOUND_EDIT_POST_KEY to foundPetKey)
+                    val navController = requireActivity().findNavController(R.id.nav_host_fragment)
+                    navController.navigate(R.id.foundEditFragment, args)
+                }
+                else
+                {
+                    findNavController().navigate(FoundMapsFragmentDirections.actionFoundMapsFragmentToFoundCreateFragment())
+                }
             } else {
                 Toast.makeText(
                     context,

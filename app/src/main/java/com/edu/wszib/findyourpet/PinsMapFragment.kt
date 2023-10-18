@@ -1,6 +1,9 @@
 package com.edu.wszib.findyourpet
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,6 +15,9 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.edu.wszib.findyourpet.databinding.FragmentPinsMapBinding
 import com.edu.wszib.findyourpet.models.FoundPetData
 import com.edu.wszib.findyourpet.models.LostPetData
@@ -26,7 +32,10 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
+import java.lang.Exception
+import javax.sql.DataSource
 
 class PinsMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.InfoWindowAdapter {
 
@@ -35,8 +44,6 @@ class PinsMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.InfoWindowAdap
     private lateinit var database: FirebaseDatabase
     private var _binding: FragmentPinsMapBinding? = null
     private val binding get() = _binding!!
-
-
     override fun onMapReady(googleMap: GoogleMap) {
         this.googleMap = googleMap
         googleMap.uiSettings.isZoomControlsEnabled = true
@@ -131,12 +138,11 @@ class PinsMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.InfoWindowAdap
         mapFragment.getMapAsync(this)
         Log.i(TAG,"onViewCreated")
         //fetchLocationDataFromDatabase()
-        Picasso.get().setIndicatorsEnabled(true)
         Picasso.get().isLoggingEnabled = true
     }
-
     @SuppressLint("MissingInflatedId")
     override fun getInfoContents(marker: Marker): View? {
+        Log.i(TAG,"getInfoSTART")
         val inflater = LayoutInflater.from(requireContext())
         val view = inflater.inflate(R.layout.custom_info_window, null)
 
@@ -144,32 +150,60 @@ class PinsMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.InfoWindowAdap
         val petData = marker.tag
 
         if (petData is FoundPetData) {
-            // Handle FoundPetData
+            val imageUrl = petData.foundPetImageUrl
             val foundDateTextView = view.findViewById<TextView>(R.id.tvPinsDate)
             val foundImageView = view.findViewById<ImageView>(R.id.ivPinsImage)
-            Log.i(TAG,petData.toString())
+
             foundDateTextView.text = petData.foundPetDate
+
             Picasso.get()
-                .load(petData.foundPetImageUrl)
-                .error(R.drawable.baseline_delete_24)
-                .into(foundImageView)
+                .load(imageUrl)
+                .resize(200,200)
+                .into(foundImageView, object : Callback {
+                    override fun onSuccess() {
+                        Log.i(TAG, "onsuccess")
+                        if (marker.isInfoWindowShown) {
+                            marker.hideInfoWindow()
+                            marker.showInfoWindow()
+                        }
+                    }
+
+                    override fun onError(e: Exception?) {
+                        TODO("Not yet implemented")
+                    }
+                })
+
         } else if (petData is LostPetData) {
             // Handle LostPetData
             val petNameTextView = view.findViewById<TextView>(R.id.tvPinsName)
-            val foundImageView = view.findViewById<ImageView>(R.id.ivPinsImage)
+            val lostImageView = view.findViewById<ImageView>(R.id.ivPinsImage)
             val lostDateTextView = view.findViewById<TextView>(R.id.tvPinsDate)
             Log.i(TAG,petData.toString())
             petNameTextView.text = petData.lostPetName
-            val imageUrl = "https://firebasestorage.googleapis.com/v0/b/findyourpet-e77a8.appspot.com/o/images%2Fac73977f-0d27-4360-b1b0-a2ec169ed566?alt=media&token=f00bc966-5237-4f17-a010-ba01e30c5f23"
+            val imageUrl = petData.lostPetImageUrl
 
-            Glide.with(this)
+            Picasso.get()
                 .load(imageUrl)
-                .placeholder(R.drawable.baseline_add_24) // Placeholder image while loading
-                .error(R.drawable.baseline_delete_24) // Image to display on error
-                .into(foundImageView)
-            lostDateTextView.text = petData.lostPetDate
+                .resize(140,140)
+                .into(lostImageView, object : Callback {
+                    override fun onSuccess() {
+                        Log.i(TAG, "onsuccess")
+                        if (marker.isInfoWindowShown) {
+                            marker.hideInfoWindow()
+                            marker.showInfoWindow()
+                        }
+                    }
+
+                    override fun onError(e: Exception?) {
+                        TODO("Not yet implemented")
+                    }
+                })
+
+
+                    lostDateTextView.text = petData.lostPetDate
         }
 
+        Log.i(TAG,"getInfoEND")
         return view
     }
 

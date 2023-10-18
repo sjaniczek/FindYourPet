@@ -19,6 +19,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.edu.wszib.findyourpet.databinding.FragmentCreateFoundBinding
@@ -163,7 +164,7 @@ class FoundCreateFragment : Fragment() {
                 .show()
             return
         }
-
+        binding.buttonFoundAccept.isVisible = false
         val uploadTask = fileRef.putFile(imageUri!!)
         uploadTask.addOnSuccessListener { taskSnapshot ->
             taskSnapshot.storage.downloadUrl.addOnSuccessListener { uri ->
@@ -176,11 +177,10 @@ class FoundCreateFragment : Fragment() {
                 )
                 databaseRef.updateChildren(foundPetUpdates).addOnSuccessListener {
                     // Form uploaded successfully
-                    Toast.makeText(context, "Form submitted", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Ogłoszenie dodane", Toast.LENGTH_SHORT).show()
                     clearData()
-                    findNavController().popBackStack()
-                    findNavController().navigate(FoundCreateFragmentDirections.actionFoundCreateFragmentToMainFragment())
                     //findNavController().popBackStack()
+                    findNavController().navigate(FoundCreateFragmentDirections.actionFoundCreateFragmentToMainFragment())
                 }
                     .addOnFailureListener { e ->
                         // Form upload failed

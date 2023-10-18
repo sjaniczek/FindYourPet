@@ -18,6 +18,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
@@ -25,6 +26,7 @@ import androidx.navigation.fragment.findNavController
 import com.edu.wszib.findyourpet.inputmasks.DateInputMask
 import com.edu.wszib.findyourpet.inputmasks.TimeInputMask
 import com.edu.wszib.findyourpet.databinding.FragmentCreateLostBinding
+import com.edu.wszib.findyourpet.models.FoundPetData
 import com.edu.wszib.findyourpet.models.LostPetData
 import com.edu.wszib.findyourpet.models.LostPetViewModel
 import com.google.android.gms.maps.model.LatLng
@@ -176,7 +178,7 @@ class LostCreateFragment : Fragment() {
                 .show()
             return
         }
-
+        binding.buttonLostAccept.isVisible = false
         val uploadTask = fileRef.putFile(imageUri!!)
         uploadTask.addOnSuccessListener { taskSnapshot ->
             taskSnapshot.storage.downloadUrl.addOnSuccessListener { uri ->
@@ -189,9 +191,10 @@ class LostCreateFragment : Fragment() {
                 )
                 databaseRef.updateChildren(lostPetUpdates).addOnSuccessListener {
                     // Form uploaded successfully
-                    Toast.makeText(context, "Form submitted", Toast.LENGTH_SHORT).show()
-                    findNavController().navigate(LostCreateFragmentDirections.actionLostCreateFragmentToMainFragment())
+                    Toast.makeText(context, "Ogłoszenie dodane", Toast.LENGTH_SHORT).show()
+                    clearData()
                     //findNavController().popBackStack()
+                    findNavController().navigate(LostCreateFragmentDirections.actionLostCreateFragmentToMainFragment())
                 }
                     .addOnFailureListener { e ->
                         // Form upload failed
@@ -207,6 +210,7 @@ class LostCreateFragment : Fragment() {
                 }
         }
     }
+
     private fun saveFormData() {
         val lostPetData = LostPetData(
             lostPetName = binding.etLostPetName.text.toString(),
@@ -293,6 +297,9 @@ class LostCreateFragment : Fragment() {
         val calendar = Calendar.getInstance()
         val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
         return dateFormat.format(calendar.time)
+    }
+    private fun clearData() {
+        lostPetViewModel.lostPetData = LostPetData()
     }
 
     companion object {

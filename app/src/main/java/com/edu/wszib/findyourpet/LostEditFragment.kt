@@ -19,6 +19,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
@@ -26,6 +27,7 @@ import com.edu.wszib.findyourpet.databinding.FragmentDetailsLostBinding
 import com.edu.wszib.findyourpet.databinding.FragmentLostEditBinding
 import com.edu.wszib.findyourpet.inputmasks.DateInputMask
 import com.edu.wszib.findyourpet.inputmasks.TimeInputMask
+import com.edu.wszib.findyourpet.models.FoundPetData
 import com.edu.wszib.findyourpet.models.LostPetData
 import com.edu.wszib.findyourpet.models.LostPetViewModel
 import com.google.android.gms.maps.model.LatLng
@@ -107,6 +109,8 @@ class LostEditFragment : Fragment() {
         activity?.title = "Edit";
         val lostPetData = lostPetViewModel.lostPetData
         imageUri = lostPetViewModel.imageUri
+        Log.i(TAG, lostPetViewModel.lostPetData.toString())
+        Log.i(TAG, lostPetViewModel.imageUri.toString())
         if (lostPetData != null) {
             with(binding) {
                 rgLostEditType.findViewWithTag<RadioButton>(lostPetData.lostPetType)?.isChecked =
@@ -236,14 +240,26 @@ class LostEditFragment : Fragment() {
         val databaseRef = database.reference
         val fileRef = storageRef.child("images/$fileName")
 
-        if (!validateFieldsAndImage(imageUri)) {
-            Toast.makeText(
-                context,
-                "Wypełnij lub zaznacz wszystkie pola oraz dodaj zdjęcie",
-                Toast.LENGTH_SHORT
-            ).show()
-            return
+        if (imageUri != null) {
+            if (!validateFieldsAndImage(imageUri)) {
+                Toast.makeText(
+                    context,
+                    "Wypełnij lub zaznacz wszystkie pola oraz dodaj zdjęcie",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return
+            }
+        } else {
+            if (!validateFields()) {
+                Toast.makeText(
+                    context,
+                    "Wypełnij lub zaznacz wszystkie pola",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return
+            }
         }
+        binding.buttonLostEditAccept.isVisible = false
         if (imageUri != null) {
             val uploadTask = fileRef.putFile(imageUri!!)
             uploadTask.addOnSuccessListener { taskSnapshot ->
@@ -257,12 +273,13 @@ class LostEditFragment : Fragment() {
                     )
                     databaseRef.updateChildren(lostPetUpdates).addOnSuccessListener {
                         // Form uploaded successfully
-                        Toast.makeText(context, "Form submitted", Toast.LENGTH_SHORT).show()
-                        Log.e(TAG, "Before nav")
-                        val navController =
-                            requireActivity().findNavController(R.id.nav_host_fragment)
-                        navController.navigate(R.id.mainFragment) // Navigate to MainFragment
-                        Log.e(TAG, "After nav")
+                        Toast.makeText(context, "Ogłoszenie dodane", Toast.LENGTH_SHORT).show()
+                        Log.i(TAG,"After send before clear$lostPetData")
+                        clearData()
+                        Log.i(TAG, "After clear data$lostPetData")
+                        clearData()
+                        //findNavController().popBackStack()
+                        findNavController().navigate(LostEditFragmentDirections.actionLostEditFragmentToMainFragment())
                     }
                         .addOnFailureListener { e ->
                             // Form upload failed
@@ -289,11 +306,10 @@ class LostEditFragment : Fragment() {
 
             databaseRef.updateChildren(lostPetUpdates).addOnSuccessListener {
                 // Form uploaded successfully
-                Toast.makeText(context, "Form submitted", Toast.LENGTH_SHORT).show()
-                Log.e(TAG, "Before nav")
-                val navController = requireActivity().findNavController(R.id.nav_host_fragment)
-                navController.navigate(R.id.mainFragment) // Navigate to MainFragment
-                Log.e(TAG, "After nav")
+                Toast.makeText(context, "Ogłoszenie dodane", Toast.LENGTH_SHORT).show()
+                clearData()
+                //findNavController().popBackStack()
+                findNavController().navigate(LostEditFragmentDirections.actionLostEditFragmentToMainFragment())
             }
                 .addOnFailureListener { e ->
                     // Form upload failed
@@ -335,7 +351,6 @@ class LostEditFragment : Fragment() {
     private fun validateFieldsAndImage(imageUri: Uri?): Boolean {
         val isAnyFieldEmpty = binding.etLostEditPetName.text.isNullOrEmpty() ||
                 binding.etLostEditAddress.text.isNullOrEmpty() ||
-                binding.etLostEditAge.text.isNullOrEmpty() ||
                 binding.etLostEditPetDate.text.isNullOrEmpty() ||
                 binding.etLostEditPetHour.text.isNullOrEmpty() ||
                 binding.etLostEditOwnerName.text.isNullOrEmpty() ||
@@ -348,14 +363,26 @@ class LostEditFragment : Fragment() {
 
         return !isAnyFieldEmpty
     }
+    private fun validateFields(): Boolean {
+        val isAnyFieldEmpty = binding.etLostEditPetName.text.isNullOrEmpty() ||
+                binding.etLostEditAddress.text.isNullOrEmpty() ||
+                binding.etLostEditPetDate.text.isNullOrEmpty() ||
+                binding.etLostEditPetHour.text.isNullOrEmpty() ||
+                binding.etLostEditOwnerName.text.isNullOrEmpty() ||
+                binding.etLostEditOwnerEmail.text.isNullOrEmpty() ||
+                binding.etLostEditOwnerNumber.text.isNullOrEmpty() ||
+                binding.rgLostEditType.checkedRadioButtonId == -1 ||
+                binding.rgLostEditBehavior.checkedRadioButtonId == -1 ||
+                binding.rgLostEditReacts.checkedRadioButtonId == -1
 
+        return !isAnyFieldEmpty
+    }
     private fun createFoundPetData(imageUrl: String?, lostPetKey: String?): LostPetData {
 
         val loggedUser = auth.currentUser?.uid
         val petName = binding.etLostEditPetName.text.toString()
         val petType =
             binding.rgLostEditType.findViewById<RadioButton>(binding.rgLostEditType.checkedRadioButtonId).text.toString()
-        val petAge = binding.etLostEditAge.text.toString()
         val lostDate = binding.etLostEditPetDate.text.toString()
         val lostHour = binding.etLostEditPetHour.text.toString()
         val ownerName = binding.etLostEditOwnerName.text.toString()
@@ -391,7 +418,10 @@ class LostEditFragment : Fragment() {
         )
 
     }
-
+    private fun clearData() {
+        lostPetViewModel.lostPetData = null
+        lostPetViewModel.imageUri = null
+    }
     companion object {
         private const val TAG = "LostEditFragment"
         private const val databaseUrl =
