@@ -1,4 +1,4 @@
-package com.edu.wszib.findyourpet
+package com.edu.wszib.findyourpet.lostfragments
 
 import android.Manifest
 import android.app.Activity
@@ -18,16 +18,12 @@ import android.widget.RadioButton
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
-import com.edu.wszib.findyourpet.databinding.FragmentDetailsLostBinding
 import com.edu.wszib.findyourpet.databinding.FragmentLostEditBinding
 import com.edu.wszib.findyourpet.inputmasks.DateInputMask
 import com.edu.wszib.findyourpet.inputmasks.TimeInputMask
-import com.edu.wszib.findyourpet.models.FoundPetData
 import com.edu.wszib.findyourpet.models.LostPetData
 import com.edu.wszib.findyourpet.models.LostPetViewModel
 import com.google.android.gms.maps.model.LatLng
@@ -41,7 +37,6 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
 import com.squareup.picasso.Picasso
 import java.lang.IllegalArgumentException
-import java.net.URL
 import java.util.*
 
 class LostEditFragment : Fragment() {
@@ -143,7 +138,7 @@ class LostEditFragment : Fragment() {
         binding.buttonGoToMap.setOnClickListener {
             saveFormData()
             findNavController().navigate(
-                LostEditFragmentDirections.actionLostEditFragmentToLostMapsFragment(
+                com.edu.wszib.findyourpet.lostfragments.LostEditFragmentDirections.actionLostEditFragmentToLostMapsFragment(
                     true,
                     currentLocation,
                     lostPetKey
@@ -279,7 +274,7 @@ class LostEditFragment : Fragment() {
                         Log.i(TAG, "After clear data$lostPetData")
                         clearData()
                         //findNavController().popBackStack()
-                        findNavController().navigate(LostEditFragmentDirections.actionLostEditFragmentToMainFragment())
+                        findNavController().navigate(com.edu.wszib.findyourpet.lostfragments.LostEditFragmentDirections.actionLostEditFragmentToMainFragment())
                     }
                         .addOnFailureListener { e ->
                             // Form upload failed
@@ -309,7 +304,7 @@ class LostEditFragment : Fragment() {
                 Toast.makeText(context, "Ogłoszenie dodane", Toast.LENGTH_SHORT).show()
                 clearData()
                 //findNavController().popBackStack()
-                findNavController().navigate(LostEditFragmentDirections.actionLostEditFragmentToMainFragment())
+                findNavController().navigate(com.edu.wszib.findyourpet.lostfragments.LostEditFragmentDirections.actionLostEditFragmentToMainFragment())
             }
                 .addOnFailureListener { e ->
                     // Form upload failed
@@ -395,8 +390,8 @@ class LostEditFragment : Fragment() {
             binding.rgLostEditReacts.findViewById<RadioButton>(binding.rgLostEditReacts.checkedRadioButtonId).text.toString()
         val petBehavior =
             binding.rgLostEditBehavior.findViewById<RadioButton>(binding.rgLostEditBehavior.checkedRadioButtonId).text.toString()
-        val locationData = lostPetViewModel.lostPetData?.lostPetLocation
-        val dateAdded = lostPetViewModel.lostPetData?.lostPetDateAdded
+        val locationData = (if(lostPetViewModel.lostPetData?.lostPetLocation != null) lostPetViewModel.lostPetData?.lostPetLocation else LostPetData.LostLocation(currentLocation)) //TODO
+        val dateAdded = lostPetViewModel.lostPetData?.lostPetDateAdded //todo
         return LostPetData(
             loggedUser,
             lostPetKey,
@@ -422,6 +417,13 @@ class LostEditFragment : Fragment() {
         lostPetViewModel.lostPetData = null
         lostPetViewModel.imageUri = null
     }
+
+    override fun onDestroy() {
+        clearData()
+        super.onDestroy()
+    }
+
+
     companion object {
         private const val TAG = "LostEditFragment"
         private const val databaseUrl =

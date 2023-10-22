@@ -6,14 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.edu.wszib.findyourpet.FoundDetailsFragment
-import com.edu.wszib.findyourpet.LostDetailsFragment
+import com.edu.wszib.findyourpet.foundfragments.FoundDetailsFragment
 import com.edu.wszib.findyourpet.R
 import com.edu.wszib.findyourpet.models.FoundPetData
 import com.edu.wszib.findyourpet.viewholders.FoundPetViewHolder
@@ -90,8 +88,6 @@ abstract class FoundListFragment : Fragment(){
                     // Launch PostDetailFragment
                     val navController = requireActivity().findNavController(R.id.nav_host_fragment)
                     val args = bundleOf(FoundDetailsFragment.EXTRA_POST_KEY to postKey)
-                    Toast.makeText(context, postKey, Toast.LENGTH_SHORT).show()
-                    //Toast.makeText(context,args.toString(),Toast.LENGTH_SHORT).show()
                     navController.navigate(R.id.foundDetailsFragment, args)
                 }
 

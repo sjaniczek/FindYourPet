@@ -42,7 +42,7 @@ class LoginFragment : Fragment() {
 
         auth = Firebase.auth
         binding.signInButton.setOnClickListener { startSignIn() }
-        binding.signOutButton.setOnClickListener { signOut() }
+        //binding.signOutButton.setOnClickListener { signOut() }
 
         (requireActivity() as MainActivity).setNavigationDrawerVisibility(false)
 
@@ -84,11 +84,11 @@ class LoginFragment : Fragment() {
             findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToMainFragment())
         } else {
             // Signed out
-            binding.status.setText(R.string.signed_out)
-            binding.detail.text = null
-
-            binding.signInButton.visibility = View.VISIBLE
-            binding.signOutButton.visibility = View.GONE
+//            binding.status.setText(R.string.signed_out)
+//            binding.detail.text = null
+//
+//            binding.signInButton.visibility = View.VISIBLE
+//            binding.signOutButton.visibility = View.GONE
         }
     }
 

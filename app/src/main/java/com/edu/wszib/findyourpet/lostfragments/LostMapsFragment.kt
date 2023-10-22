@@ -1,11 +1,10 @@
-package com.edu.wszib.findyourpet
+package com.edu.wszib.findyourpet.lostfragments
 
 import android.location.Address
 import android.location.Geocoder
 import android.os.Build
 import androidx.fragment.app.Fragment
 import android.Manifest
-import android.app.Activity
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
@@ -20,6 +19,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import com.edu.wszib.findyourpet.R
 import com.edu.wszib.findyourpet.databinding.FragmentLostMapsBinding
 import com.edu.wszib.findyourpet.models.LostPetData
 import com.edu.wszib.findyourpet.models.LostPetViewModel
@@ -73,7 +73,7 @@ class LostMapsFragment : Fragment(), OnMapReadyCallback {
         val mapFragment =
             childFragmentManager.findFragmentById(R.id.map_lost_layout) as SupportMapFragment
         mapFragment.getMapAsync(this)
-        val args = LostMapsFragmentArgs.fromBundle(requireArguments())
+        val args = com.edu.wszib.findyourpet.lostfragments.LostMapsFragmentArgs.fromBundle(requireArguments())
         isEditing = args.isEditing
         lostPetKey = args.lostPetKey
         val currentLocation = args.currentLocation
@@ -126,7 +126,7 @@ class LostMapsFragment : Fragment(), OnMapReadyCallback {
                         }
                         else
                         {
-                            findNavController().navigate(LostMapsFragmentDirections.actionLostMapsFragmentToLostCreateFragment())
+                            findNavController().navigate(com.edu.wszib.findyourpet.lostfragments.LostMapsFragmentDirections.actionLostMapsFragmentToLostCreateFragment())
                         }
                     }
 
@@ -158,7 +158,7 @@ class LostMapsFragment : Fragment(), OnMapReadyCallback {
                 }
                 else
                 {
-                    findNavController().navigate(LostMapsFragmentDirections.actionLostMapsFragmentToLostCreateFragment())
+                    findNavController().navigate(com.edu.wszib.findyourpet.lostfragments.LostMapsFragmentDirections.actionLostMapsFragmentToLostCreateFragment())
                 }
             } else {
                 Toast.makeText(

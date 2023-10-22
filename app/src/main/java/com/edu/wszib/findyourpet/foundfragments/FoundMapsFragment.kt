@@ -1,4 +1,4 @@
-package com.edu.wszib.findyourpet
+package com.edu.wszib.findyourpet.foundfragments
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import com.edu.wszib.findyourpet.R
 import com.edu.wszib.findyourpet.databinding.FragmentFoundMapsBinding
 import com.edu.wszib.findyourpet.models.FoundPetData
 import com.edu.wszib.findyourpet.models.FoundPetViewModel
@@ -71,7 +72,7 @@ class FoundMapsFragment : Fragment(), OnMapReadyCallback {
         val mapFragment =
             childFragmentManager.findFragmentById(R.id.map_found_layout) as SupportMapFragment
         mapFragment.getMapAsync(this)
-        val args = FoundMapsFragmentArgs.fromBundle(requireArguments())
+        val args = com.edu.wszib.findyourpet.foundfragments.FoundMapsFragmentArgs.fromBundle(requireArguments())
         isEditing = args.isEditing
         foundPetKey = args.lostPetKey
         val currentLocation = args.currentLocation
@@ -124,7 +125,7 @@ class FoundMapsFragment : Fragment(), OnMapReadyCallback {
                         }
                         else
                         {
-                            findNavController().navigate(FoundMapsFragmentDirections.actionFoundMapsFragmentToFoundCreateFragment())
+                            findNavController().navigate(com.edu.wszib.findyourpet.foundfragments.FoundMapsFragmentDirections.actionFoundMapsFragmentToFoundCreateFragment())
                         }
                     }
 
@@ -156,7 +157,7 @@ class FoundMapsFragment : Fragment(), OnMapReadyCallback {
                 }
                 else
                 {
-                    findNavController().navigate(FoundMapsFragmentDirections.actionFoundMapsFragmentToFoundCreateFragment())
+                    findNavController().navigate(com.edu.wszib.findyourpet.foundfragments.FoundMapsFragmentDirections.actionFoundMapsFragmentToFoundCreateFragment())
                 }
             } else {
                 Toast.makeText(

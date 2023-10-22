@@ -5,7 +5,7 @@
     android:id="@+id/constraintLayoutCreateLost"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LostCreateFragment">
+    tools:context=".lostfragments.LostCreateFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -89,7 +89,7 @@
 
         <EditText
             android:id="@+id/etLostPetName"
-            android:layout_width="wrap_content"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:ems="10"
@@ -111,7 +111,7 @@
 
         <EditText
             android:id="@+id/etLostPetDate"
-            android:layout_width="165dp"
+            android:layout_width="200dp"
             android:layout_height="43dp"
             android:layout_marginTop="10dp"
             android:inputType="date"
@@ -131,7 +131,7 @@
 
         <EditText
             android:id="@+id/etLostPetHour"
-            android:layout_width="165dp"
+            android:layout_width="200dp"
             android:layout_height="43dp"
             android:layout_marginTop="10dp"
             android:inputType="number"
@@ -152,7 +152,7 @@
 
         <EditText
             android:id="@+id/etLostAddress"
-            android:layout_width="164dp"
+            android:layout_width="200dp"
             android:layout_height="40dp"
             android:layout_marginTop="10dp"
             android:ems="10"
@@ -164,7 +164,7 @@
 
         <Button
             android:id="@+id/buttonGoToMap"
-            android:layout_width="171dp"
+            android:layout_width="200dp"
             android:layout_height="38dp"
             android:text="Włącz mapę"
             app:layout_constraintEnd_toEndOf="parent"
@@ -255,7 +255,7 @@
 
         <EditText
             android:id="@+id/etLostPetAdditionalInfo"
-            android:layout_width="wrap_content"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:ems="10"
@@ -288,7 +288,7 @@
 
         <EditText
             android:id="@+id/etLostOwnerName"
-            android:layout_width="wrap_content"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:ems="10"
@@ -309,7 +309,7 @@
 
         <EditText
             android:id="@+id/etLostOwnerNumber"
-            android:layout_width="wrap_content"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:ems="10"
@@ -329,7 +329,7 @@
 
         <EditText
             android:id="@+id/etLostOwnerEmail"
-            android:layout_width="wrap_content"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="textEmailAddress"
@@ -348,7 +348,7 @@
 
         <EditText
             android:id="@+id/etLostOwnerAdditionalInfo"
-            android:layout_width="wrap_content"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:ems="10"
             android:gravity="start|top"

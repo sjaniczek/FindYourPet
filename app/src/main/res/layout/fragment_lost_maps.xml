@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layoutDirection="ltr"
-    tools:context="LostMapsFragment">
+    tools:context=".lostfragments.LostMapsFragment">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/map_lost_layout"

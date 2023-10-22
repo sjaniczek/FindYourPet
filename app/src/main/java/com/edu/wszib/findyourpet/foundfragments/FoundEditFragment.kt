@@ -1,4 +1,4 @@
-package com.edu.wszib.findyourpet
+package com.edu.wszib.findyourpet.foundfragments
 
 import android.Manifest
 import android.app.Activity
@@ -18,17 +18,13 @@ import android.widget.RadioButton
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.edu.wszib.findyourpet.databinding.FragmentFoundEditBinding
 import com.edu.wszib.findyourpet.inputmasks.DateInputMask
-import com.edu.wszib.findyourpet.inputmasks.TimeInputMask
 import com.edu.wszib.findyourpet.models.FoundPetData
 import com.edu.wszib.findyourpet.models.FoundPetViewModel
-import com.edu.wszib.findyourpet.models.LostPetData
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -40,7 +36,6 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
 import com.squareup.picasso.Picasso
 import java.lang.IllegalArgumentException
-import java.net.URL
 import java.util.*
 
 class FoundEditFragment : Fragment() {
@@ -134,7 +129,7 @@ class FoundEditFragment : Fragment() {
         binding.buttonGoToMap.setOnClickListener {
             saveFormData()
             findNavController().navigate(
-                FoundEditFragmentDirections.actionFoundEditFragmentToFoundMapsFragment(
+                com.edu.wszib.findyourpet.foundfragments.FoundEditFragmentDirections.actionFoundEditFragmentToFoundMapsFragment(
                     true,
                     currentLocation,
                     foundPetKey
@@ -264,7 +259,7 @@ class FoundEditFragment : Fragment() {
                         Toast.makeText(context, "Ogłoszenie dodane", Toast.LENGTH_SHORT).show()
                         clearData()
                         //findNavController().popBackStack()
-                        findNavController().navigate(FoundEditFragmentDirections.actionFoundEditFragmentToMainFragment())
+                        findNavController().navigate(com.edu.wszib.findyourpet.foundfragments.FoundEditFragmentDirections.actionFoundEditFragmentToMainFragment())
                     }
                         .addOnFailureListener { e ->
                             // Form upload failed
@@ -294,7 +289,7 @@ class FoundEditFragment : Fragment() {
                 Toast.makeText(context, "Ogłoszenie dodane", Toast.LENGTH_SHORT).show()
                 clearData()
                 //findNavController().popBackStack()
-                findNavController().navigate(FoundEditFragmentDirections.actionFoundEditFragmentToMainFragment())
+                findNavController().navigate(com.edu.wszib.findyourpet.foundfragments.FoundEditFragmentDirections.actionFoundEditFragmentToMainFragment())
             }
                 .addOnFailureListener { e ->
                     // Form upload failed
@@ -392,6 +387,11 @@ class FoundEditFragment : Fragment() {
         foundPetViewModel.foundPetData = null
         foundPetViewModel.imageUri = null
     }
+    override fun onDestroy() {
+        clearData()
+        super.onDestroy()
+    }
+
     companion object {
         private const val TAG = "FoundEditFragment"
         private const val databaseUrl =

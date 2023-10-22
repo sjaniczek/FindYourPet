@@ -1,6 +1,7 @@
 package com.edu.wszib.findyourpet.models
 
 import android.net.Uri
+import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.database.Exclude
 import com.google.firebase.database.IgnoreExtraProperties
 
@@ -51,6 +52,6 @@ data class LostPetData(
         val latitude: Double = 0.0,
         val longitude: Double = 0.0
     ) {
-        constructor() : this(0.0, 0.0)
+        constructor(latLng: LatLng) : this(latLng.latitude, latLng.longitude)
     }
 }

@@ -7,7 +7,7 @@
     android:id="@+id/scrollViewDetails"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".FoundDetailsFragment" >
+    tools:context=".foundfragments.FoundDetailsFragment" >
 
 
 
@@ -59,7 +59,6 @@
             android:layout_marginTop="50dp"
             android:contentDescription="@string/pet_image"
             android:scaleType="centerCrop"
-            android:src="@drawable/pets"
             app:layout_constraintEnd_toStartOf="@+id/guideline2"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

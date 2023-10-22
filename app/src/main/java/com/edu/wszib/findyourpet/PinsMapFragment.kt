@@ -1,9 +1,6 @@
 package com.edu.wszib.findyourpet
 
 import android.annotation.SuppressLint
-import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,11 +11,9 @@ import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
 import com.edu.wszib.findyourpet.databinding.FragmentPinsMapBinding
+import com.edu.wszib.findyourpet.foundfragments.FoundDetailsFragment
+import com.edu.wszib.findyourpet.lostfragments.LostDetailsFragment
 import com.edu.wszib.findyourpet.models.FoundPetData
 import com.edu.wszib.findyourpet.models.LostPetData
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -35,7 +30,6 @@ import com.google.firebase.ktx.Firebase
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import java.lang.Exception
-import javax.sql.DataSource
 
 class PinsMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.InfoWindowAdapter {
 
@@ -138,7 +132,6 @@ class PinsMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.InfoWindowAdap
         mapFragment.getMapAsync(this)
         Log.i(TAG,"onViewCreated")
         //fetchLocationDataFromDatabase()
-        Picasso.get().isLoggingEnabled = true
     }
     @SuppressLint("MissingInflatedId")
     override fun getInfoContents(marker: Marker): View? {
@@ -150,28 +143,7 @@ class PinsMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.InfoWindowAdap
         val petData = marker.tag
 
         if (petData is FoundPetData) {
-            val imageUrl = petData.foundPetImageUrl
-            val foundDateTextView = view.findViewById<TextView>(R.id.tvPinsDate)
-            val foundImageView = view.findViewById<ImageView>(R.id.ivPinsImage)
 
-            foundDateTextView.text = petData.foundPetDate
-
-            Picasso.get()
-                .load(imageUrl)
-                .resize(200,200)
-                .into(foundImageView, object : Callback {
-                    override fun onSuccess() {
-                        Log.i(TAG, "onsuccess")
-                        if (marker.isInfoWindowShown) {
-                            marker.hideInfoWindow()
-                            marker.showInfoWindow()
-                        }
-                    }
-
-                    override fun onError(e: Exception?) {
-                        TODO("Not yet implemented")
-                    }
-                })
 
         } else if (petData is LostPetData) {
             // Handle LostPetData

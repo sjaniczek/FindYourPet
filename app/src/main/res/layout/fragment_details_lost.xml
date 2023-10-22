@@ -7,7 +7,7 @@
     android:id="@+id/scrollViewDetails"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LostDetailsFragment" >
+    tools:context=".lostfragments.LostDetailsFragment" >
 
 
 
@@ -57,7 +57,6 @@
             android:scaleType="centerCrop"
             android:layout_height="177dp"
             android:layout_marginTop="30dp"
-            android:src="@drawable/pets"
             app:layout_constraintEnd_toStartOf="@+id/guideline2"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvLostDetailsPetName"
@@ -68,7 +67,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:textColor="@color/black"
             android:textSize="25sp"
             app:layout_constraintEnd_toStartOf="@+id/guideline2"
             app:layout_constraintStart_toStartOf="parent"

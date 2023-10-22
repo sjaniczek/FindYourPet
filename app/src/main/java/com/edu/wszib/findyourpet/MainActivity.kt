@@ -15,6 +15,7 @@ import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import com.edu.wszib.findyourpet.databinding.ActivityMainBinding
+import com.firebase.ui.auth.AuthUI
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.squareup.picasso.Picasso
@@ -105,9 +106,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 return true
             }
             R.id.nav_logout -> {
-                auth = FirebaseAuth.getInstance()
-                auth.signOut()
-                navController.navigate(R.id.loginFragment)
+                AuthUI.getInstance()
+                    .signOut(this)
+                    .addOnCompleteListener{navController.navigate(R.id.loginFragment)}
                 drawerLayout.closeDrawers()
                 return true
             }

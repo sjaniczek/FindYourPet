@@ -1,4 +1,4 @@
-package com.edu.wszib.findyourpet
+package com.edu.wszib.findyourpet.foundfragments
 
 import android.app.AlertDialog
 import android.content.Intent
@@ -14,10 +14,9 @@ import androidx.core.view.MenuProvider
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
-import com.edu.wszib.findyourpet.databinding.FragmentDetailsLostBinding
+import com.edu.wszib.findyourpet.R
 import com.edu.wszib.findyourpet.databinding.FragmentFoundDetailsBinding
 import com.edu.wszib.findyourpet.models.FoundPetData
-import com.edu.wszib.findyourpet.models.LostPetData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
@@ -145,6 +144,8 @@ class FoundDetailsFragment : Fragment() {
                             } else {
                                 Picasso.get()
                                     .load(foundPetData.foundPetImageUrl)
+                                    .placeholder(R.drawable.pets)
+                                    .error(R.drawable.pets)
                                     .into(ivPetImage)
                             }
                             tvFoundDetailsPetDecodedAddress.text =
