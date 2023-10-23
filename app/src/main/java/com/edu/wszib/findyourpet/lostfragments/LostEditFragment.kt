@@ -129,9 +129,7 @@ class LostEditFragment : Fragment() {
 
                 imageUrl = lostPetData.lostPetImageUrl
             }
-        }
-        else
-        {
+        } else {
             fetchDataAndUpdateUI()
         }
 
@@ -145,7 +143,7 @@ class LostEditFragment : Fragment() {
                 )
             )
         }
-        binding.buttonLostEditAccept.setOnClickListener{
+        binding.buttonLostEditAccept.setOnClickListener {
             updateImageAndForm()
         }
         binding.buttonChooseLostEditPic.setOnClickListener {
@@ -182,7 +180,7 @@ class LostEditFragment : Fragment() {
     private fun fetchDataAndUpdateUI() {
         databaseRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                Log.i(TAG,"onDataChange")
+                Log.i(TAG, "onDataChange")
                 val lostPetData = snapshot.getValue<LostPetData>()
                 lostPetData?.let {
                     with(binding) {
@@ -226,7 +224,8 @@ class LostEditFragment : Fragment() {
     }
 
     private fun updateImageAndForm() {
-        val databaseUrl = "https://findyourpet-e77a8-default-rtdb.europe-west1.firebasedatabase.app/"
+        val databaseUrl =
+            "https://findyourpet-e77a8-default-rtdb.europe-west1.firebasedatabase.app/"
         database = Firebase.database(databaseUrl)
         storage = Firebase.storage
         val storageRef = storage.reference
@@ -269,7 +268,7 @@ class LostEditFragment : Fragment() {
                     databaseRef.updateChildren(lostPetUpdates).addOnSuccessListener {
                         // Form uploaded successfully
                         Toast.makeText(context, "Ogłoszenie dodane", Toast.LENGTH_SHORT).show()
-                        Log.i(TAG,"After send before clear$lostPetData")
+                        Log.i(TAG, "After send before clear$lostPetData")
                         clearData()
                         Log.i(TAG, "After clear data$lostPetData")
                         clearData()
@@ -289,9 +288,7 @@ class LostEditFragment : Fragment() {
                         Toast.makeText(context, "Error uploading image", Toast.LENGTH_SHORT).show()
                     }
             }
-        }
-        else
-        {
+        } else {
             val lostPetData = createFoundPetData(imageUrl, lostPetKey)
             val lostPetValues = lostPetData.toMap()
             val lostPetUpdates = hashMapOf<String, Any>(
@@ -334,7 +331,7 @@ class LostEditFragment : Fragment() {
             lostPetReact = binding.rgLostEditReacts.findViewById<RadioButton>(binding.rgLostEditReacts.checkedRadioButtonId)?.text.toString(),
             lostPetBehavior = binding.rgLostEditBehavior.findViewById<RadioButton>(binding.rgLostEditBehavior.checkedRadioButtonId)?.text.toString(),
             lostPetImageUrl = imageUrl
-            )
+        )
         lostPetViewModel.saveFormData(lostPetData, imageUri)
     }
 
@@ -358,6 +355,7 @@ class LostEditFragment : Fragment() {
 
         return !isAnyFieldEmpty
     }
+
     private fun validateFields(): Boolean {
         val isAnyFieldEmpty = binding.etLostEditPetName.text.isNullOrEmpty() ||
                 binding.etLostEditAddress.text.isNullOrEmpty() ||
@@ -372,6 +370,7 @@ class LostEditFragment : Fragment() {
 
         return !isAnyFieldEmpty
     }
+
     private fun createFoundPetData(imageUrl: String?, lostPetKey: String?): LostPetData {
 
         val loggedUser = auth.currentUser?.uid
@@ -390,8 +389,11 @@ class LostEditFragment : Fragment() {
             binding.rgLostEditReacts.findViewById<RadioButton>(binding.rgLostEditReacts.checkedRadioButtonId).text.toString()
         val petBehavior =
             binding.rgLostEditBehavior.findViewById<RadioButton>(binding.rgLostEditBehavior.checkedRadioButtonId).text.toString()
-        val locationData = (if(lostPetViewModel.lostPetData?.lostPetLocation != null) lostPetViewModel.lostPetData?.lostPetLocation else LostPetData.LostLocation(currentLocation)) //TODO
-        val dateAdded = lostPetViewModel.lostPetData?.lostPetDateAdded //todo
+        val locationData =
+            (if (lostPetViewModel.lostPetData?.lostPetLocation != null) lostPetViewModel.lostPetData?.lostPetLocation else LostPetData.LostLocation(
+                currentLocation
+            ))
+        val dateAdded = lostPetViewModel.lostPetData?.lostPetDateAdded
         return LostPetData(
             loggedUser,
             lostPetKey,
@@ -413,6 +415,7 @@ class LostEditFragment : Fragment() {
         )
 
     }
+
     private fun clearData() {
         lostPetViewModel.lostPetData = null
         lostPetViewModel.imageUri = null

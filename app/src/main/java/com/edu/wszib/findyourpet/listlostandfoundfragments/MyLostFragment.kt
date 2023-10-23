@@ -6,7 +6,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.Query
 import com.google.firebase.ktx.Firebase
 
-class MyLostFragment: LostListFragment() {
+class MyLostFragment : LostListFragment() {
     private lateinit var auth: FirebaseAuth
     override fun getQuery(databaseReference: DatabaseReference): Query {
         auth = Firebase.auth

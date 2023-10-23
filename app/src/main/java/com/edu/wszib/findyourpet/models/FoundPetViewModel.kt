@@ -7,7 +7,7 @@ class FoundPetViewModel : ViewModel() {
     var foundPetData: FoundPetData? = null
     var imageUri: Uri? = null
 
-    fun saveFormData(foundPetData: FoundPetData, imageUri: Uri?){
+    fun saveFormData(foundPetData: FoundPetData, imageUri: Uri?) {
         this.foundPetData = foundPetData
         this.imageUri = imageUri
     }

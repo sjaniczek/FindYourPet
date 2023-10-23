@@ -1,13 +1,12 @@
 package com.edu.wszib.findyourpet.foundfragments
 
-import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
@@ -20,6 +19,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.edu.wszib.findyourpet.databinding.FragmentCreateFoundBinding
@@ -128,8 +128,10 @@ class FoundCreateFragment : Fragment() {
         }
         val foundPetData = foundPetViewModel.foundPetData
         if (foundPetData != null && foundPetViewModel.imageUri != null) {
-            binding.rgFoundType.findViewWithTag<RadioButton>(foundPetData.foundPetType)?.isChecked = true
-            binding.rgFoundBehavior.findViewWithTag<RadioButton>(foundPetData.foundPetBehavior)?.isChecked = true
+            binding.rgFoundType.findViewWithTag<RadioButton>(foundPetData.foundPetType)?.isChecked =
+                true
+            binding.rgFoundBehavior.findViewWithTag<RadioButton>(foundPetData.foundPetBehavior)?.isChecked =
+                true
             binding.ivFoundPet.setImageURI(foundPetViewModel.imageUri)
             binding.etFoundAddress.setText(foundPetData.foundPetDecodedAddress)
             binding.etFoundPetDate.setText(foundPetData.foundPetDate)
@@ -276,10 +278,12 @@ class FoundCreateFragment : Fragment() {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
         return dateFormat.format(calendar.time)
     }
-    private fun clearData(){
+
+    private fun clearData() {
         foundPetViewModel.foundPetData = null
         foundPetViewModel.imageUri = null
     }
+
     override fun onDestroy() {
         clearData()
         super.onDestroy()

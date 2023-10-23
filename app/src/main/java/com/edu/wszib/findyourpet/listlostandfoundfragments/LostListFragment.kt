@@ -61,7 +61,8 @@ abstract class LostListFragment : Fragment() {
         manager.stackFromEnd = true
         recycler.layoutManager = manager
 
-        val databaseUrl = "https://findyourpet-e77a8-default-rtdb.europe-west1.firebasedatabase.app/"
+        val databaseUrl =
+            "https://findyourpet-e77a8-default-rtdb.europe-west1.firebasedatabase.app/"
         database = Firebase.database(databaseUrl).reference
 
         val postsQuery = getQuery(database)
@@ -76,7 +77,11 @@ abstract class LostListFragment : Fragment() {
                 return LostPetViewHolder(inflater.inflate(layout.lost_list_iem, viewGroup, false))
             }
 
-            override fun onBindViewHolder(viewHolder: LostPetViewHolder, position: Int, model: LostPetData) {
+            override fun onBindViewHolder(
+                viewHolder: LostPetViewHolder,
+                position: Int,
+                model: LostPetData
+            ) {
                 val postRef = getRef(position)
 
                 // Set click listener for the whole post view
@@ -90,6 +95,7 @@ abstract class LostListFragment : Fragment() {
 
                 viewHolder.bindToLostPet(model)
             }
+
             override fun onDataChanged() {
                 super.onDataChanged()
                 val textEmpty = view.findViewById<TextView>(R.id.tvLostPetRecyclerEmpty)
@@ -119,6 +125,7 @@ abstract class LostListFragment : Fragment() {
         super.onStop()
         adapter.stopListening()
     }
+
     abstract fun getQuery(databaseReference: DatabaseReference): Query
 
 }

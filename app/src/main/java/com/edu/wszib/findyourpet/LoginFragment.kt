@@ -27,7 +27,7 @@ class LoginFragment : Fragment() {
 
     private val signInLauncher = registerForActivityResult(
         FirebaseAuthUIActivityResultContract()
-    ) { result -> this.onSignInResult(result)}
+    ) { result -> this.onSignInResult(result) }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,10 +42,14 @@ class LoginFragment : Fragment() {
 
         auth = Firebase.auth
         binding.signInButton.setOnClickListener { startSignIn() }
-        //binding.signOutButton.setOnClickListener { signOut() }
+        binding.dontsignButton.setOnClickListener { continueWithoutLogin() }
 
         (requireActivity() as MainActivity).setNavigationDrawerVisibility(false)
 
+    }
+
+    private fun continueWithoutLogin() {
+        findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToMainFragment())
     }
 
     override fun onStart() {
@@ -67,12 +71,18 @@ class LoginFragment : Fragment() {
     private fun startSignIn() {
         val intent = AuthUI.getInstance().createSignInIntentBuilder()
             .setIsSmartLockEnabled(!BuildConfig.DEBUG)
-            .setAvailableProviders(listOf(AuthUI.IdpConfig.GoogleBuilder().build()))
+            .setAvailableProviders(
+                listOf(
+                    AuthUI.IdpConfig.GoogleBuilder().build(),
+                    AuthUI.IdpConfig.EmailBuilder().build()
+                )
+            )
             .setLogo(R.mipmap.ic_launcher)
             .build()
 
         signInLauncher.launch(intent)
     }
+
     private fun updateUI(user: FirebaseUser?) {
         if (user != null) {
             // Signed in

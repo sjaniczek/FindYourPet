@@ -1,13 +1,12 @@
 package com.edu.wszib.findyourpet.models
 
-import android.net.Uri
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.database.Exclude
 import com.google.firebase.database.IgnoreExtraProperties
 
 @IgnoreExtraProperties
 data class LostPetData(
-    var lostPetOwnerId: String? ="",
+    var lostPetOwnerId: String? = "",
     var lostPetId: String? = "",
     var lostPetName: String? = "",
     var lostPetType: String? = "",

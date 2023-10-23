@@ -20,7 +20,7 @@ class MainFragment : Fragment() {
     private lateinit var auth: FirebaseAuth
     private var _binding: FragmentMainBinding? = null
     private val binding: FragmentMainBinding
-    get() = _binding!!
+        get() = _binding!!
     private lateinit var pagerAdapter: FragmentStateAdapter
 
     override fun onCreateView(

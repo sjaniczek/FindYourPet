@@ -54,6 +54,6 @@ class MyLostFoundPetFragment : Fragment() {
                 }
             }.attach()
         }
-}
+    }
 }
 

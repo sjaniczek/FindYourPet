@@ -4,7 +4,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
 
-class DateInputMask(val input : EditText) {
+class DateInputMask(val input: EditText) {
 
     fun listen() {
         input.addTextChangedListener(mDateEntryWatcher)
@@ -37,7 +37,12 @@ class DateInputMask(val input : EditText) {
             input.setSelection(input.text.length)
         }
 
-        private fun manageDateDivider(working: String, position : Int, start: Int, before: Int) : String{
+        private fun manageDateDivider(
+            working: String,
+            position: Int,
+            start: Int,
+            before: Int
+        ): String {
             if (working.length == position) {
                 return if (before <= position && start < position)
                     working + dividerCharacter
@@ -47,9 +52,9 @@ class DateInputMask(val input : EditText) {
             return working
         }
 
-        private fun getEditText() : String {
+        private fun getEditText(): String {
             return if (input.text.length >= 10)
-                input.text.toString().substring(0,10)
+                input.text.toString().substring(0, 10)
             else
                 input.text.toString()
         }

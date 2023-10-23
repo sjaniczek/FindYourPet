@@ -73,7 +73,8 @@ class LostMapsFragment : Fragment(), OnMapReadyCallback {
         val mapFragment =
             childFragmentManager.findFragmentById(R.id.map_lost_layout) as SupportMapFragment
         mapFragment.getMapAsync(this)
-        val args = com.edu.wszib.findyourpet.lostfragments.LostMapsFragmentArgs.fromBundle(requireArguments())
+        val args =
+            com.edu.wszib.findyourpet.lostfragments.LostMapsFragmentArgs.fromBundle(requireArguments())
         isEditing = args.isEditing
         lostPetKey = args.lostPetKey
         val currentLocation = args.currentLocation
@@ -108,10 +109,16 @@ class LostMapsFragment : Fragment(), OnMapReadyCallback {
                             currentLocation.latitude,
                             currentLocation.longitude
                         )
-                        Log.i("decodeLocation",decodedAddress.toString())
-                        Log.i("decodeLocation",lostPetViewModel.lostPetData?.lostPetDecodedAddress.toString())
-                        Log.i("decodeLocation",lostPetViewModel.toString())
-                        Log.i("decodeLocation",lostPetViewModel.lostPetData?.lostPetLocation.toString())
+                        Log.i("decodeLocation", decodedAddress.toString())
+                        Log.i(
+                            "decodeLocation",
+                            lostPetViewModel.lostPetData?.lostPetDecodedAddress.toString()
+                        )
+                        Log.i("decodeLocation", lostPetViewModel.toString())
+                        Log.i(
+                            "decodeLocation",
+                            lostPetViewModel.lostPetData?.lostPetLocation.toString()
+                        )
                         activity?.runOnUiThread {
                             Toast.makeText(
                                 context,
@@ -121,11 +128,10 @@ class LostMapsFragment : Fragment(), OnMapReadyCallback {
                         }
                         if (isEditing) {
                             val args = bundleOf(LostEditFragment.LOST_EDIT_POST_KEY to lostPetKey)
-                            val navController = requireActivity().findNavController(R.id.nav_host_fragment)
+                            val navController =
+                                requireActivity().findNavController(R.id.nav_host_fragment)
                             navController.navigate(R.id.lostEditFragment, args)
-                        }
-                        else
-                        {
+                        } else {
                             findNavController().navigate(com.edu.wszib.findyourpet.lostfragments.LostMapsFragmentDirections.actionLostMapsFragmentToLostCreateFragment())
                         }
                     }
@@ -155,9 +161,7 @@ class LostMapsFragment : Fragment(), OnMapReadyCallback {
                     val args = bundleOf(LostEditFragment.LOST_EDIT_POST_KEY to lostPetKey)
                     val navController = requireActivity().findNavController(R.id.nav_host_fragment)
                     navController.navigate(R.id.lostEditFragment, args)
-                }
-                else
-                {
+                } else {
                     findNavController().navigate(com.edu.wszib.findyourpet.lostfragments.LostMapsFragmentDirections.actionLostMapsFragmentToLostCreateFragment())
                 }
             } else {

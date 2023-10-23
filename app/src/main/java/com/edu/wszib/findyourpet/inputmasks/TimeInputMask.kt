@@ -30,7 +30,12 @@ class TimeInputMask(val input: EditText) {
             input.setSelection(input.text.length)
         }
 
-        private fun manageTimeDivider(working: String, position: Int, start: Int, before: Int): String {
+        private fun manageTimeDivider(
+            working: String,
+            position: Int,
+            start: Int,
+            before: Int
+        ): String {
             if (working.length == position) {
                 return if (before <= position && start < position)
                     working + dividerCharacter

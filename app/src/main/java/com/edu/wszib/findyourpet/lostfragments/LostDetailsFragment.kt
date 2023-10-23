@@ -40,7 +40,6 @@ class LostDetailsFragment : Fragment() {
         get() = _binding!!
 
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -77,10 +76,12 @@ class LostDetailsFragment : Fragment() {
                         navigateToEditPet()
                         true
                     }
+
                     R.id.action_delete_pet -> {
                         deleteLostPet()
                         true
                     }
+
                     else -> false
                 }
             }
@@ -112,7 +113,11 @@ class LostDetailsFragment : Fragment() {
                         }
                         .addOnFailureListener { e ->
                             // Failed to delete post
-                            Toast.makeText(requireContext(), "Failed to delete post: ${e.message}", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                requireContext(),
+                                "Failed to delete post: ${e.message}",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                 }
                 .setNegativeButton("Cancel") { _, _ ->
@@ -138,14 +143,13 @@ class LostDetailsFragment : Fragment() {
                     editMenuItem.isVisible = isOwner(ownerId)
                     deleteMenuItem.isVisible = isOwner(ownerId)
 
-                    with(binding){
+                    with(binding) {
                         tvLostDetailsPetName.text = lostPetData.lostPetName
-                        if(lostPetData.lostPetImageUrl.isNullOrEmpty()){
+                        if (lostPetData.lostPetImageUrl.isNullOrEmpty()) {
                             Picasso.get()
                                 .load(DEFAULT_IMAGE_URL)
                                 .into(ivPetImage)
-                        }
-                        else {
+                        } else {
                             Picasso.get()
                                 .load(lostPetData.lostPetImageUrl)
                                 .placeholder(R.drawable.pets)
@@ -153,16 +157,34 @@ class LostDetailsFragment : Fragment() {
                                 .into(ivPetImage)
                         }
                         tvLostDetailsPetDecodedAddress.text = lostPetData.lostPetDecodedAddress
-                        tvLostDetailsPetType.text = getString(R.string.details_pet_type, lostPetData.lostPetType)
-                        tvLostDetailsPetDate.text = getString(R.string.details_pet_date, lostPetData.lostPetDate)
-                        tvLostDetailsPetHour.text = getString(R.string.details_pet_hour, lostPetData.lostPetHour)
-                        tvLostDetailsPetBehavior.text = getString(R.string.details_pet_behavior, lostPetData.lostPetBehavior)
-                        tvLostDetailsPetReact.text = getString(R.string.details_pet_react, lostPetData.lostPetReact)
-                        tvLostDetailsPetAdditionalInfo.text = getString(R.string.details_pet_additional, lostPetData.lostPetAdditionalPetInfo)
-                        tvLostDetailsPetOwnerName.text = getString(R.string.details_pet_owner_name, lostPetData.lostPetOwnerName)
-                        tvLostDetailsPetPhoneNumber.text = getString(R.string.details_pet_owner_number, lostPetData.lostPetPhoneNumber)
-                        tvLostDetailsPetEmailAddress.text = getString(R.string.details_pet_owner_email, lostPetData.lostPetEmailAddress)
-                        tvLostDetailsPetOwnerAdditionalInfo.text = getString(R.string.details_pet_owner_additional, lostPetData.lostPetAdditionalOwnerInfo)
+                        tvLostDetailsPetType.text =
+                            getString(R.string.details_pet_type, lostPetData.lostPetType)
+                        tvLostDetailsPetDate.text =
+                            getString(R.string.details_pet_date, lostPetData.lostPetDate)
+                        tvLostDetailsPetHour.text =
+                            getString(R.string.details_pet_hour, lostPetData.lostPetHour)
+                        tvLostDetailsPetBehavior.text =
+                            getString(R.string.details_pet_behavior, lostPetData.lostPetBehavior)
+                        tvLostDetailsPetReact.text =
+                            getString(R.string.details_pet_react, lostPetData.lostPetReact)
+                        tvLostDetailsPetAdditionalInfo.text = getString(
+                            R.string.details_pet_additional,
+                            lostPetData.lostPetAdditionalPetInfo
+                        )
+                        tvLostDetailsPetOwnerName.text =
+                            getString(R.string.details_pet_owner_name, lostPetData.lostPetOwnerName)
+                        tvLostDetailsPetPhoneNumber.text = getString(
+                            R.string.details_pet_owner_number,
+                            lostPetData.lostPetPhoneNumber
+                        )
+                        tvLostDetailsPetEmailAddress.text = getString(
+                            R.string.details_pet_owner_email,
+                            lostPetData.lostPetEmailAddress
+                        )
+                        tvLostDetailsPetOwnerAdditionalInfo.text = getString(
+                            R.string.details_pet_owner_additional,
+                            lostPetData.lostPetAdditionalOwnerInfo
+                        )
                     }
                     binding.lostDetailsMapButton.setOnClickListener {
                         val longitude = lostPetData.lostPetLocation?.longitude
@@ -174,17 +196,20 @@ class LostDetailsFragment : Fragment() {
                         mapIntent.setPackage("com.google.android.apps.maps") // This will ensure it opens in Google Maps
                         startActivity(mapIntent)
                     }
-                    binding.lostPetPhoneButton.setOnClickListener{
+                    binding.lostPetPhoneButton.setOnClickListener {
                         val phoneNumber = lostPetData.lostPetPhoneNumber
                         val dialIntent = Intent(Intent.ACTION_DIAL)
                         dialIntent.data = Uri.parse("tel:$phoneNumber")
                         startActivity(dialIntent)
                     }
-                    binding.lostDetailsSmsButton.setOnClickListener{
+                    binding.lostDetailsSmsButton.setOnClickListener {
                         val phoneNumber = lostPetData.lostPetPhoneNumber
                         val smsUri = Uri.parse("smsto:$phoneNumber")
                         val smsIntent = Intent(Intent.ACTION_SENDTO, smsUri)
-                        smsIntent.putExtra("sms_body", "Dzień dobry, kontaktuję się w sprawie zagubionego zwierzaka.") // Optional message
+                        smsIntent.putExtra(
+                            "sms_body",
+                            "Dzień dobry, kontaktuję się w sprawie zagubionego zwierzaka."
+                        ) // Optional message
                         startActivity(smsIntent)
                     }
                 }
@@ -193,8 +218,10 @@ class LostDetailsFragment : Fragment() {
             override fun onCancelled(databaseError: DatabaseError) {
                 // Getting Post failed, log a message
                 Log.w(TAG, "loadPost:onCancelled", databaseError.toException())
-                Toast.makeText(context, "Failed to load post.",
-                    Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context, "Failed to load post.",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
 
@@ -226,12 +253,14 @@ class LostDetailsFragment : Fragment() {
         // Check if the ownerId matches the currently logged-in user's ID
         return ownerId == currentUserId
     }
+
     private fun navigateToEditPet() {
         val args = bundleOf(LostEditFragment.LOST_EDIT_POST_KEY to lostPetKey)
         val navController = requireActivity().findNavController(R.id.nav_host_fragment)
         navController.navigate(R.id.lostEditFragment, args)
 
     }
+
     companion object {
         private const val DEFAULT_IMAGE_URL = "https://i.stack.imgur.com/l60Hf.png"
         private const val databaseUrl =

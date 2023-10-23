@@ -31,11 +31,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
         navController.setGraph(R.navigation.nav_graph)
         drawerLayout = findViewById(R.id.drawerLayout)
-        actionBarDrawerToggle = ActionBarDrawerToggle(this, drawerLayout, R.string.nav_open, R.string.nav_close)
+        actionBarDrawerToggle =
+            ActionBarDrawerToggle(this, drawerLayout, R.string.nav_open, R.string.nav_close)
 
         // pass the Open and Close toggle for the drawer layout listener
         // to toggle the button
@@ -53,8 +55,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val userName = auth.currentUser?.displayName
         usernameTextView.text = userName
         val userProfileImage = auth.currentUser?.photoUrl
-        if(userProfileImage != null)
-        {
+        if (userProfileImage != null) {
             Picasso.get()
                 .load(userProfileImage)
                 .into(profileImageView)
@@ -65,19 +66,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         profileImageView.setImageURI(auth.currentUser?.photoUrl)
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            Log.i("fab",destination.displayName)
+            Log.i("fab", destination.displayName)
             if (destination.id == R.id.mainFragment) {
                 binding.fab.isVisible = true
-                Log.i("fab","isVisible")
+                Log.i("fab", "isVisible")
                 binding.fab.setOnClickListener {
                     navController.navigate(R.id.chooseFragment)
                 }
             } else {
                 binding.fab.isVisible = false
-                Log.i("fab","isGone")
+                Log.i("fab", "isGone")
             }
         }
     }
+
     fun setNavigationDrawerVisibility(visible: Boolean) {
         if (visible) {
             drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
@@ -86,6 +88,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
         }
     }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
             return true
@@ -95,7 +98,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
         navController.setGraph(R.navigation.nav_graph)
 
@@ -105,17 +109,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 drawerLayout.closeDrawers()
                 return true
             }
+
             R.id.nav_logout -> {
                 AuthUI.getInstance()
                     .signOut(this)
-                    .addOnCompleteListener{navController.navigate(R.id.loginFragment)}
+                    .addOnCompleteListener { navController.navigate(R.id.loginFragment) }
                 drawerLayout.closeDrawers()
                 return true
             }
+
             R.id.nav_settings -> {
                 drawerLayout.closeDrawers()
                 return true
             }
+
             R.id.nav_my_lost_found -> {
                 navController.navigate(R.id.myLostFoundPetFragment)
                 drawerLayout.closeDrawers()
@@ -125,6 +132,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         return false
     }
+
     companion object {
         private const val DEFAULT_IMAGE_URL = "https://i.stack.imgur.com/l60Hf.png"
     }

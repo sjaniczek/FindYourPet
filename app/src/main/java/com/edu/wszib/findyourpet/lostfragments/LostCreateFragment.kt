@@ -154,6 +154,7 @@ class LostCreateFragment : Fragment() {
             }
         }
     }
+
     private fun uploadImageAndForm() {
         val databaseUrl =
             "https://findyourpet-e77a8-default-rtdb.europe-west1.firebasedatabase.app/"
@@ -228,7 +229,7 @@ class LostCreateFragment : Fragment() {
             lostPetReact = binding.rgLostReacts.findViewById<RadioButton>(binding.rgLostReacts.checkedRadioButtonId)?.text.toString(),
             lostPetBehavior = binding.rgLostBehavior.findViewById<RadioButton>(binding.rgLostBehavior.checkedRadioButtonId)?.text.toString(),
 
-        )
+            )
         lostPetViewModel.saveFormData(lostPetData, imageUri)
     }
 
@@ -236,6 +237,7 @@ class LostCreateFragment : Fragment() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         getImageLauncher.launch(intent)
     }
+
     private fun validateFieldsAndImage(imageUri: Uri?): Boolean {
         val isAnyFieldEmpty = binding.etLostPetName.text.isNullOrEmpty() ||
                 binding.etLostAddress.text.isNullOrEmpty() ||
@@ -299,10 +301,12 @@ class LostCreateFragment : Fragment() {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
         return dateFormat.format(calendar.time)
     }
+
     private fun clearData() {
         lostPetViewModel.lostPetData = null
         lostPetViewModel.imageUri = null
     }
+
     override fun onDestroy() {
         clearData()
         super.onDestroy()

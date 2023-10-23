@@ -9,7 +9,6 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,24 +18,29 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.edu.wszib.findyourpet.databinding.FragmentFoundEditBinding
 import com.edu.wszib.findyourpet.inputmasks.DateInputMask
 import com.edu.wszib.findyourpet.models.FoundPetData
 import com.edu.wszib.findyourpet.models.FoundPetViewModel
+import com.edu.wszib.findyourpet.models.LostPetData
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
 import com.squareup.picasso.Picasso
-import java.lang.IllegalArgumentException
-import java.util.*
+import java.util.UUID
 
 class FoundEditFragment : Fragment() {
 
@@ -120,9 +124,7 @@ class FoundEditFragment : Fragment() {
 
                 imageUrl = foundPetData.foundPetImageUrl
             }
-        }
-        else
-        {
+        } else {
             fetchDataAndUpdateUI()
         }
 
@@ -136,7 +138,7 @@ class FoundEditFragment : Fragment() {
                 )
             )
         }
-        binding.buttonFoundEditAccept.setOnClickListener{
+        binding.buttonFoundEditAccept.setOnClickListener {
             updateImageAndForm()
         }
         binding.buttonChooseFoundEditPic.setOnClickListener {
@@ -173,7 +175,7 @@ class FoundEditFragment : Fragment() {
     private fun fetchDataAndUpdateUI() {
         databaseRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                Log.i(TAG,"onDataChange")
+                Log.i(TAG, "onDataChange")
                 val foundPetData = snapshot.getValue<FoundPetData>()
                 foundPetData?.let {
                     with(binding) {
@@ -214,7 +216,8 @@ class FoundEditFragment : Fragment() {
     }
 
     private fun updateImageAndForm() {
-        val databaseUrl = "https://findyourpet-e77a8-default-rtdb.europe-west1.firebasedatabase.app/"
+        val databaseUrl =
+            "https://findyourpet-e77a8-default-rtdb.europe-west1.firebasedatabase.app/"
         database = Firebase.database(databaseUrl)
         storage = Firebase.storage
         val storageRef = storage.reference
@@ -274,9 +277,7 @@ class FoundEditFragment : Fragment() {
                         Toast.makeText(context, "Error uploading image", Toast.LENGTH_SHORT).show()
                     }
             }
-        }
-        else
-        {
+        } else {
             val foundPetData = createFoundPetData(imageUrl, foundPetKey)
             val foundPetValues = foundPetData.toMap()
             val foundPetUpdates = hashMapOf<String, Any>(
@@ -337,6 +338,7 @@ class FoundEditFragment : Fragment() {
 
         return !isAnyFieldEmpty
     }
+
     private fun validateFields(): Boolean {
         val isAnyFieldEmpty = binding.etFoundEditAddress.text.isNullOrEmpty() ||
                 binding.etFoundEditPetDate.text.isNullOrEmpty() ||
@@ -363,7 +365,10 @@ class FoundEditFragment : Fragment() {
         val additionalOwnerInfo = binding.etFoundEditFinderAdditionalInfo.text.toString()
         val petBehavior =
             binding.rgFoundEditBehavior.findViewById<RadioButton>(binding.rgFoundEditBehavior.checkedRadioButtonId).text.toString()
-        val locationData = foundPetViewModel.foundPetData?.foundPetLocation
+        val locationData =
+            (if (foundPetViewModel.foundPetData?.foundPetLocation != null) foundPetViewModel.foundPetData?.foundPetLocation else FoundPetData.FoundLocation(
+                currentLocation
+            ))
         val dateAdded = foundPetViewModel.foundPetData?.foundPetDateAdded
         return FoundPetData(
             loggedUser,
@@ -383,10 +388,12 @@ class FoundEditFragment : Fragment() {
         )
 
     }
+
     private fun clearData() {
         foundPetViewModel.foundPetData = null
         foundPetViewModel.imageUri = null
     }
+
     override fun onDestroy() {
         clearData()
         super.onDestroy()

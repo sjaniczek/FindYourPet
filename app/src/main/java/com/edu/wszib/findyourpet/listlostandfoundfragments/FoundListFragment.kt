@@ -24,8 +24,9 @@ import com.google.firebase.database.Query
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
-abstract class FoundListFragment : Fragment(){
+abstract class FoundListFragment : Fragment() {
     private lateinit var database: DatabaseReference
+
     // [END define_database_reference]
     private lateinit var auth: FirebaseAuth
     private lateinit var recycler: RecyclerView
@@ -61,7 +62,8 @@ abstract class FoundListFragment : Fragment(){
         manager.stackFromEnd = true
         recycler.layoutManager = manager
 
-        val databaseUrl = "https://findyourpet-e77a8-default-rtdb.europe-west1.firebasedatabase.app/"
+        val databaseUrl =
+            "https://findyourpet-e77a8-default-rtdb.europe-west1.firebasedatabase.app/"
         database = Firebase.database(databaseUrl).reference
 
         val postsQuery = getQuery(database)
@@ -74,12 +76,21 @@ abstract class FoundListFragment : Fragment(){
 
             override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): FoundPetViewHolder {
                 val inflater = LayoutInflater.from(viewGroup.context)
-                return FoundPetViewHolder(inflater.inflate(R.layout.found_list_item, viewGroup, false))
+                return FoundPetViewHolder(
+                    inflater.inflate(
+                        R.layout.found_list_item,
+                        viewGroup,
+                        false
+                    )
+                )
             }
 
 
-
-            override fun onBindViewHolder(viewHolder: FoundPetViewHolder, position: Int, model: FoundPetData) {
+            override fun onBindViewHolder(
+                viewHolder: FoundPetViewHolder,
+                position: Int,
+                model: FoundPetData
+            ) {
                 val postRef = getRef(position)
 
                 // Set click listener for the whole post view
@@ -93,6 +104,7 @@ abstract class FoundListFragment : Fragment(){
 
                 viewHolder.bindToLostPet(model)
             }
+
             override fun onDataChanged() {
                 super.onDataChanged()
                 val textEmpty = view.findViewById<TextView>(R.id.tvFoundPetRecyclerEmpty)
@@ -124,6 +136,7 @@ abstract class FoundListFragment : Fragment(){
         super.onStop()
         adapter.stopListening()
     }
+
     abstract fun getQuery(databaseReference: DatabaseReference): Query
 
 }

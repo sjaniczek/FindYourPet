@@ -72,7 +72,9 @@ class FoundMapsFragment : Fragment(), OnMapReadyCallback {
         val mapFragment =
             childFragmentManager.findFragmentById(R.id.map_found_layout) as SupportMapFragment
         mapFragment.getMapAsync(this)
-        val args = com.edu.wszib.findyourpet.foundfragments.FoundMapsFragmentArgs.fromBundle(requireArguments())
+        val args = com.edu.wszib.findyourpet.foundfragments.FoundMapsFragmentArgs.fromBundle(
+            requireArguments()
+        )
         isEditing = args.isEditing
         foundPetKey = args.lostPetKey
         val currentLocation = args.currentLocation
@@ -103,14 +105,21 @@ class FoundMapsFragment : Fragment(), OnMapReadyCallback {
                     override fun onGeocode(addresses: MutableList<Address>) {
                         val decodedAddress = addresses[0].getAddressLine(0)
                         foundPetViewModel.foundPetData?.foundPetDecodedAddress = decodedAddress
-                        foundPetViewModel.foundPetData?.foundPetLocation = FoundPetData.FoundLocation(
-                            currentLocation.latitude,
-                            currentLocation.longitude
+                        foundPetViewModel.foundPetData?.foundPetLocation =
+                            FoundPetData.FoundLocation(
+                                currentLocation.latitude,
+                                currentLocation.longitude
+                            )
+                        Log.i("decodeLocation", decodedAddress.toString())
+                        Log.i(
+                            "decodeLocation",
+                            foundPetViewModel.foundPetData?.foundPetDecodedAddress.toString()
                         )
-                        Log.i("decodeLocation",decodedAddress.toString())
-                        Log.i("decodeLocation",foundPetViewModel.foundPetData?.foundPetDecodedAddress.toString())
-                        Log.i("decodeLocation",foundPetViewModel.toString())
-                        Log.i("decodeLocation",foundPetViewModel.foundPetData?.foundPetLocation.toString())
+                        Log.i("decodeLocation", foundPetViewModel.toString())
+                        Log.i(
+                            "decodeLocation",
+                            foundPetViewModel.foundPetData?.foundPetLocation.toString()
+                        )
                         activity?.runOnUiThread {
                             Toast.makeText(
                                 context,
@@ -119,12 +128,12 @@ class FoundMapsFragment : Fragment(), OnMapReadyCallback {
                             ).show()
                         }
                         if (isEditing) {
-                            val args = bundleOf(FoundEditFragment.FOUND_EDIT_POST_KEY to foundPetKey)
-                            val navController = requireActivity().findNavController(R.id.nav_host_fragment)
+                            val args =
+                                bundleOf(FoundEditFragment.FOUND_EDIT_POST_KEY to foundPetKey)
+                            val navController =
+                                requireActivity().findNavController(R.id.nav_host_fragment)
                             navController.navigate(R.id.foundEditFragment, args)
-                        }
-                        else
-                        {
+                        } else {
                             findNavController().navigate(com.edu.wszib.findyourpet.foundfragments.FoundMapsFragmentDirections.actionFoundMapsFragmentToFoundCreateFragment())
                         }
                     }
@@ -154,9 +163,7 @@ class FoundMapsFragment : Fragment(), OnMapReadyCallback {
                     val args = bundleOf(FoundEditFragment.FOUND_EDIT_POST_KEY to foundPetKey)
                     val navController = requireActivity().findNavController(R.id.nav_host_fragment)
                     navController.navigate(R.id.foundEditFragment, args)
-                }
-                else
-                {
+                } else {
                     findNavController().navigate(com.edu.wszib.findyourpet.foundfragments.FoundMapsFragmentDirections.actionFoundMapsFragmentToFoundCreateFragment())
                 }
             } else {
@@ -189,6 +196,7 @@ class FoundMapsFragment : Fragment(), OnMapReadyCallback {
                 if (location == null)
                     Toast.makeText(context, "Cannot get location.", Toast.LENGTH_SHORT).show()
                 else {
+
                     val lat = location.latitude
                     val lng = location.longitude
                     val latLng = LatLng(lat, lng)
