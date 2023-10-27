@@ -11,9 +11,9 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.edu.wszib.findyourpet.lostfragments.LostDetailsFragment
 import com.edu.wszib.findyourpet.R
 import com.edu.wszib.findyourpet.R.*
+import com.edu.wszib.findyourpet.lostfragments.LostDetailsFragment
 import com.edu.wszib.findyourpet.models.LostPetData
 import com.edu.wszib.findyourpet.viewholders.LostPetViewHolder
 import com.firebase.ui.database.FirebaseRecyclerAdapter
@@ -25,9 +25,8 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
 abstract class LostListFragment : Fragment() {
-    private lateinit var database: DatabaseReference
-    // [END define_database_reference]
 
+    private lateinit var database: DatabaseReference
     private lateinit var recycler: RecyclerView
     private lateinit var manager: LinearLayoutManager
     private lateinit var adapter: FirebaseRecyclerAdapter<LostPetData, LostPetViewHolder>
@@ -42,10 +41,6 @@ abstract class LostListFragment : Fragment() {
     ): View? {
         super.onCreateView(inflater, container, savedInstanceState)
         val rootView = inflater.inflate(layout.fragment_recycler_lost, container, false)
-
-        // [START create_database_reference]
-
-        // [END create_database_reference]
 
         recycler = rootView.findViewById(R.id.recyclerViewLost)
         recycler.setHasFixedSize(true)

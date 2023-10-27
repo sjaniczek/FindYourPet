@@ -5,7 +5,7 @@
     android:id="@+id/constraintLayoutCreateFoundEdit"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".FoundEditCreateFragment">
+    tools:context=".foundfragments.FoundEditFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -66,14 +66,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Pies"
-                android:tag="Pies"/>
+                android:tag="Pies" />
 
             <RadioButton
                 android:id="@+id/rbFoundEditCat"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Kot"
-                android:tag="Kot"/>
+                android:tag="Kot" />
         </RadioGroup>
 
         <TextView
@@ -151,14 +151,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Agresywne"
-                android:tag="Agresywne"/>
+                android:tag="Agresywne" />
 
             <RadioButton
                 android:id="@+id/rbFoundEditBehaviorNo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Nie agresywne"
-                android:tag="Nie agresywne"/>
+                android:tag="Nie agresywne" />
         </RadioGroup>
 
         <TextView
@@ -262,7 +262,7 @@
             android:text="Dodaj dodatkowe informacje"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etFoundEditFinderEmail"/>
+            app:layout_constraintTop_toBottomOf="@+id/etFoundEditFinderEmail" />
 
         <EditText
             android:id="@+id/etFoundEditFinderAdditionalInfo"

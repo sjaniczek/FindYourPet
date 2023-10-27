@@ -83,9 +83,9 @@ class FoundMapsFragment : Fragment(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         this.googleMap = googleMap
 
-        googleMap.uiSettings.isZoomControlsEnabled = true
         googleMap.uiSettings.setAllGesturesEnabled(true)
-        googleMap.animateCamera(CameraUpdateFactory.zoomTo(5.0F))
+        val polandCenter = LatLng(52.051373, 19.090859)
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(polandCenter, 6f))
 
         getCurrentLocation()
         binding.buttonLostMapSend.setOnClickListener {

@@ -37,7 +37,7 @@
                 android:src="@drawable/pets"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/listLostPetName" />
+                app:layout_constraintTop_toBottomOf="@+id/listLostPetDateAdded" />
 
             <TextView
                 android:id="@+id/listLostPetName"
@@ -49,6 +49,16 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <TextView
+                android:id="@+id/listLostPetDateAdded"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:text="Date"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toTopOf="@+id/listLostPetImg"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/listLostPetName" />
             <!-- Guideline to separate listLostPetAddress and listLostPetDate -->
 
             <!-- LinearLayout to hold listLostPetAddress and listLostPetDate -->
@@ -59,7 +69,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
                 android:text="@string/app_name"
-                android:textSize="20sp"
+                android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/listLostPetImg" />
@@ -70,7 +80,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="20dp"
                 android:text="@string/app_name"
-                android:textSize="20sp"
+                android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/listLostPetAddress" />

@@ -1,14 +1,12 @@
 package com.edu.wszib.findyourpet.lostfragments
 
-import android.location.Address
-import android.location.Geocoder
-import android.os.Build
-import androidx.fragment.app.Fragment
 import android.Manifest
 import android.content.pm.PackageManager
+import android.location.Address
+import android.location.Geocoder
 import android.location.Location
+import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +14,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
@@ -83,9 +82,9 @@ class LostMapsFragment : Fragment(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         this.googleMap = googleMap
 
-        googleMap.uiSettings.isZoomControlsEnabled = true
         googleMap.uiSettings.setAllGesturesEnabled(true)
-        googleMap.animateCamera(CameraUpdateFactory.zoomTo(5.0F))
+        val polandCenter = LatLng(52.051373, 19.090859)
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(polandCenter, 6f))
 
         getCurrentLocation()
         binding.buttonLostMapSend.setOnClickListener {
@@ -108,16 +107,6 @@ class LostMapsFragment : Fragment(), OnMapReadyCallback {
                         lostPetViewModel.lostPetData?.lostPetLocation = LostPetData.LostLocation(
                             currentLocation.latitude,
                             currentLocation.longitude
-                        )
-                        Log.i("decodeLocation", decodedAddress.toString())
-                        Log.i(
-                            "decodeLocation",
-                            lostPetViewModel.lostPetData?.lostPetDecodedAddress.toString()
-                        )
-                        Log.i("decodeLocation", lostPetViewModel.toString())
-                        Log.i(
-                            "decodeLocation",
-                            lostPetViewModel.lostPetData?.lostPetLocation.toString()
                         )
                         activity?.runOnUiThread {
                             Toast.makeText(
@@ -201,6 +190,6 @@ class LostMapsFragment : Fragment(), OnMapReadyCallback {
                     googleMap.animateCamera(CameraUpdateFactory.zoomTo(6F))
                 }
             }
-        }//WHAT IF DENIED?
+        }
     }
 }

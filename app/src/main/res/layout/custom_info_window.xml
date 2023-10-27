@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
@@ -12,7 +11,9 @@
         android:id="@+id/tvPinsName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:textAppearanceMedium"/>
+        android:textAppearance="?android:textAppearanceMedium"
+        android:layout_gravity="center"
+        android:textColor="@color/grey_500" />
 
     <ImageView
         android:id="@+id/ivPinsImage"
@@ -24,12 +25,13 @@
         android:id="@+id/tvPinsDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:textAppearanceSmall"/>
+        android:layout_gravity="center"
+        android:textColor="@color/grey_500" />
 
     <Button
         android:id="@+id/detailsButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Zobacz więcej"/>
+        android:text="Zobacz więcej" />
 
 </LinearLayout>

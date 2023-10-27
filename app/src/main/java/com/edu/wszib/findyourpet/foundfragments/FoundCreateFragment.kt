@@ -52,7 +52,6 @@ class FoundCreateFragment : Fragment() {
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
-                Log.i("permission", "Permission granted")
                 launchImagePicker()
             } else {
                 Log.i("permission", "Permission denied")
@@ -185,20 +184,19 @@ class FoundCreateFragment : Fragment() {
                     // Form uploaded successfully
                     Toast.makeText(context, "Ogłoszenie dodane", Toast.LENGTH_SHORT).show()
                     clearData()
-                    //findNavController().popBackStack()
                     findNavController().navigate(com.edu.wszib.findyourpet.foundfragments.FoundCreateFragmentDirections.actionFoundCreateFragmentToMainFragment())
                 }
                     .addOnFailureListener { e ->
                         // Form upload failed
                         Log.e(TAG, "Error uploading form: ${e.message}", e)
-                        Toast.makeText(context, "Error submitting form", Toast.LENGTH_SHORT)
+                        Toast.makeText(context, "Błąd podczas dodawnia postu", Toast.LENGTH_SHORT)
                             .show()
                     }
             }
                 .addOnFailureListener { e ->
                     // Image upload failed
                     Log.e(TAG, "Error uploading image: ${e.message}", e)
-                    Toast.makeText(context, "Error uploading image", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Błąd podczas dodawania zdjęcia", Toast.LENGTH_SHORT).show()
                 }
         }
     }
@@ -253,8 +251,7 @@ class FoundCreateFragment : Fragment() {
             binding.rgFoundBehavior.findViewById<RadioButton>(binding.rgFoundBehavior.checkedRadioButtonId).text.toString()
         val locationData = foundPetViewModel.foundPetData?.foundPetLocation
         val dateAdded = getCurrentDateTime()
-        // Perform validation or handle errors if necessary
-        // Return the created FoundPetData instance
+
         return FoundPetData(
             loggedUser,
             foundPetKey,
@@ -292,5 +289,4 @@ class FoundCreateFragment : Fragment() {
     companion object {
         private const val TAG = "foundCreateFragment"
     }
-
 }

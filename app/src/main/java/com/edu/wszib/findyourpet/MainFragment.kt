@@ -2,10 +2,11 @@ package com.edu.wszib.findyourpet
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.edu.wszib.findyourpet.databinding.FragmentMainBinding
 import com.edu.wszib.findyourpet.listlostandfoundfragments.*
@@ -16,7 +17,7 @@ import com.google.firebase.ktx.Firebase
 
 
 class MainFragment : Fragment() {
-
+    private lateinit var sortMenuItem: MenuItem
     private lateinit var auth: FirebaseAuth
     private var _binding: FragmentMainBinding? = null
     private val binding: FragmentMainBinding
@@ -36,6 +37,7 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (requireActivity() as MainActivity).setNavigationDrawerVisibility(true)
+
         auth = Firebase.auth
         pagerAdapter =
             object : FragmentStateAdapter(childFragmentManager, viewLifecycleOwner.lifecycle) {
@@ -64,21 +66,6 @@ class MainFragment : Fragment() {
             }.attach()
         }
     }
-
-
-//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-//        inflater.inflate(R.menu.menu_main, menu)
-//    }
-//
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        return if (item.itemId == R.id.action_logout) {
-//            Firebase.auth.signOut()
-//            findNavController().navigate(R.id.action_MainFragment_to_SignInFragment)
-//            true
-//        } else {
-//            super.onOptionsItemSelected(item)
-//        }
-//    }
 
     override fun onDestroy() {
         super.onDestroy()

@@ -11,13 +11,12 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.edu.wszib.findyourpet.foundfragments.FoundDetailsFragment
 import com.edu.wszib.findyourpet.R
+import com.edu.wszib.findyourpet.foundfragments.FoundDetailsFragment
 import com.edu.wszib.findyourpet.models.FoundPetData
 import com.edu.wszib.findyourpet.viewholders.FoundPetViewHolder
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.Query
@@ -25,10 +24,8 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
 abstract class FoundListFragment : Fragment() {
-    private lateinit var database: DatabaseReference
 
-    // [END define_database_reference]
-    private lateinit var auth: FirebaseAuth
+    private lateinit var database: DatabaseReference
     private lateinit var recycler: RecyclerView
     private lateinit var manager: LinearLayoutManager
     private lateinit var adapter: FirebaseRecyclerAdapter<FoundPetData, FoundPetViewHolder>
@@ -43,10 +40,6 @@ abstract class FoundListFragment : Fragment() {
     ): View? {
         super.onCreateView(inflater, container, savedInstanceState)
         val rootView = inflater.inflate(R.layout.fragment_recycler_found, container, false)
-
-        // [START create_database_reference]
-
-        // [END create_database_reference]
 
         recycler = rootView.findViewById(R.id.recyclerViewFound)
         recycler.setHasFixedSize(true)
@@ -136,7 +129,6 @@ abstract class FoundListFragment : Fragment() {
         super.onStop()
         adapter.stopListening()
     }
-
     abstract fun getQuery(databaseReference: DatabaseReference): Query
 
 }

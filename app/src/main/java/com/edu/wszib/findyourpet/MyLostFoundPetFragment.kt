@@ -1,17 +1,15 @@
 package com.edu.wszib.findyourpet
 
+//import com.edu.wszib.findyourpet.listlostfragments.MyFoundFragment
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.edu.wszib.findyourpet.databinding.FragmentMyLostFoundPetBinding
 import com.edu.wszib.findyourpet.listlostandfoundfragments.MyFoundFragment
-//import com.edu.wszib.findyourpet.listlostfragments.MyFoundFragment
 import com.edu.wszib.findyourpet.listlostandfoundfragments.MyLostFragment
-import com.edu.wszib.findyourpet.listlostandfoundfragments.TopFoundFragment
-import com.edu.wszib.findyourpet.listlostandfoundfragments.TopLostFragment
 import com.google.android.material.tabs.TabLayoutMediator
 
 class MyLostFoundPetFragment : Fragment() {

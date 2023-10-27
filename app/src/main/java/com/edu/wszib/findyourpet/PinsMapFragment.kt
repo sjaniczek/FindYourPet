@@ -29,7 +29,6 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
-import java.lang.Exception
 
 class PinsMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.InfoWindowAdapter {
 
@@ -40,10 +39,10 @@ class PinsMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.InfoWindowAdap
     private val binding get() = _binding!!
     override fun onMapReady(googleMap: GoogleMap) {
         this.googleMap = googleMap
-        googleMap.uiSettings.isZoomControlsEnabled = true
+        //googleMap.uiSettings.isZoomControlsEnabled = true
         googleMap.uiSettings.setAllGesturesEnabled(true)
-
-        googleMap.animateCamera(CameraUpdateFactory.zoomTo(5.0F))
+        val polandCenter = LatLng(52.051373, 19.090859)
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(polandCenter, 6f))
         val databaseUrl =
             "https://findyourpet-e77a8-default-rtdb.europe-west1.firebasedatabase.app/"
         database = Firebase.database(databaseUrl)
@@ -104,8 +103,6 @@ class PinsMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.InfoWindowAdap
         googleMap.setOnInfoWindowClickListener { marker ->
             // Retrieve adData from marker's tag
             val petData = marker.tag
-            // Perform any necessary actions or navigation here
-            // Example: Navigating to AdDetailsFragment with adData
 
             if (petData is LostPetData) {
                 petData.let {
@@ -134,7 +131,6 @@ class PinsMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.InfoWindowAdap
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentPinsMapBinding.inflate(inflater, container, false)
-        Log.i(TAG, "onCreateView")
         return binding.root
     }
 
@@ -142,13 +138,10 @@ class PinsMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.InfoWindowAdap
         super.onViewCreated(view, savedInstanceState)
         mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
-        Log.i(TAG, "onViewCreated")
-        //fetchLocationDataFromDatabase()
     }
 
     @SuppressLint("MissingInflatedId")
     override fun getInfoContents(marker: Marker): View? {
-        Log.i(TAG, "getInfoSTART")
         val inflater = LayoutInflater.from(requireContext())
         val view = inflater.inflate(R.layout.custom_info_window, null)
 
@@ -157,7 +150,28 @@ class PinsMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.InfoWindowAdap
 
         if (petData is FoundPetData) {
 
+            val foundImageView = view.findViewById<ImageView>(R.id.ivPinsImage)
+            val foundDateTextView = view.findViewById<TextView>(R.id.tvPinsDate)
+            Log.i(TAG, petData.toString())
+            foundDateTextView.text = petData.foundPetDate
+            val imageUrl = petData.foundPetImageUrl
 
+            Picasso.get()
+                .load(imageUrl)
+                .resize(140, 140)
+                .into(foundImageView, object : Callback {
+                    override fun onSuccess() {
+                        Log.i(TAG, "onsuccess")
+                        if (marker.isInfoWindowShown) {
+                            marker.hideInfoWindow()
+                            marker.showInfoWindow()
+                        }
+                    }
+
+                    override fun onError(e: Exception?) {
+                        return
+                    }
+                })
         } else if (petData is LostPetData) {
             // Handle LostPetData
             val petNameTextView = view.findViewById<TextView>(R.id.tvPinsName)
@@ -165,6 +179,7 @@ class PinsMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.InfoWindowAdap
             val lostDateTextView = view.findViewById<TextView>(R.id.tvPinsDate)
             Log.i(TAG, petData.toString())
             petNameTextView.text = petData.lostPetName
+            lostDateTextView.text = petData.lostPetDate
             val imageUrl = petData.lostPetImageUrl
 
             Picasso.get()
@@ -180,15 +195,11 @@ class PinsMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.InfoWindowAdap
                     }
 
                     override fun onError(e: Exception?) {
-                        TODO("Not yet implemented")
+                        return
                     }
                 })
-
-
-            lostDateTextView.text = petData.lostPetDate
         }
 
-        Log.i(TAG, "getInfoEND")
         return view
     }
 
@@ -196,33 +207,6 @@ class PinsMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.InfoWindowAdap
         return null
     }
 
-
-    //    private fun fetchLocationDataFromDatabase() {
-//        val databaseUrl =
-//            "https://findyourpet-e77a8-default-rtdb.europe-west1.firebasedatabase.app/"
-//        database = Firebase.database(databaseUrl)
-//        Log.i(TAG,"fetchLocationDataFromDatabase")
-//        val databaseRef = database.reference.child("found_pets")
-//        databaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
-//            override fun onDataChange(dataSnapshot: DataSnapshot) {
-//                Log.i(TAG,"fetchLocationDataFromDatabase - onDataChange")
-//                val locationDataList = mutableListOf<FoundPetData.FoundLocation>()
-//
-//                for (snapshot in dataSnapshot.children) {
-//                    val foundPetData = snapshot.getValue(FoundPetData::class.java)
-//                    foundPetData?.foundPetLocation?.let { locationData ->
-//                        locationDataList.add(locationData)
-//
-//                    }
-//                }
-//                Log.d(TAG, locationDataList.toString())
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//                Log.e(TAG, "Error fetching location data: ${error.message}")
-//            }
-//        })
-//    }
     companion object {
         private const val TAG = "pinsMapFragment"
     }

@@ -1,18 +1,13 @@
 package com.edu.wszib.findyourpet
 
 import android.os.Bundle
-import android.util.Log
-import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.navigation.NavController
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import com.edu.wszib.findyourpet.databinding.ActivityMainBinding
 import com.firebase.ui.auth.AuthUI
@@ -39,12 +34,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         actionBarDrawerToggle =
             ActionBarDrawerToggle(this, drawerLayout, R.string.nav_open, R.string.nav_close)
 
-        // pass the Open and Close toggle for the drawer layout listener
-        // to toggle the button
         drawerLayout.addDrawerListener(actionBarDrawerToggle)
         actionBarDrawerToggle.syncState()
         setNavigationDrawerVisibility(true)
-        // to make the Navigation drawer icon always appear on the action bar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding.navigationView.setNavigationItemSelectedListener(this)
         auth = FirebaseAuth.getInstance()
@@ -66,16 +58,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         profileImageView.setImageURI(auth.currentUser?.photoUrl)
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            Log.i("fab", destination.displayName)
             if (destination.id == R.id.mainFragment) {
                 binding.fab.isVisible = true
-                Log.i("fab", "isVisible")
                 binding.fab.setOnClickListener {
                     navController.navigate(R.id.chooseFragment)
                 }
             } else {
                 binding.fab.isVisible = false
-                Log.i("fab", "isGone")
             }
         }
     }
@@ -118,17 +107,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 return true
             }
 
-            R.id.nav_settings -> {
-                drawerLayout.closeDrawers()
-                return true
-            }
 
             R.id.nav_my_lost_found -> {
                 navController.navigate(R.id.myLostFoundPetFragment)
                 drawerLayout.closeDrawers()
                 return true
             }
-            // Add more items if needed
         }
         return false
     }

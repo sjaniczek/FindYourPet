@@ -7,8 +7,7 @@
     android:id="@+id/scrollViewDetails"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".foundfragments.FoundDetailsFragment" >
-
+    tools:context=".foundfragments.FoundDetailsFragment">
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -40,8 +39,7 @@
                 android:layout_marginBottom="20dp"
                 android:src="@drawable/baseline_location_on_24"
                 android:background="@drawable/bg_transparent"
-                android:contentDescription="@string/location_icon"
-                />
+                android:contentDescription="@string/location_icon" />
 
             <ImageButton
                 android:id="@+id/foundDetailsSmsButton"
@@ -95,6 +93,7 @@
             android:layout_marginStart="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
             <TextView
                 android:id="@+id/tvFoundPetInfo"
                 android:layout_width="match_parent"
@@ -103,6 +102,7 @@
                 android:text="Informacje o odnalezionym zwierzęciu"
                 android:gravity="center"
                 android:textSize="20sp" />
+
             <TextView
                 android:id="@+id/tvFoundDetailsPetType"
                 android:layout_width="match_parent"
@@ -153,12 +153,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:textSize="16sp" />
+
             <TextView
                 android:id="@+id/tvFoundDetailsPetEmailAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:textSize="16sp" />
+
             <TextView
                 android:id="@+id/tvFoundDetailsPetOwnerAdditionalInfo"
                 android:layout_width="match_parent"

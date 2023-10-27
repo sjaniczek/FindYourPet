@@ -9,7 +9,6 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +18,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.edu.wszib.findyourpet.databinding.FragmentLostEditBinding
@@ -29,15 +29,18 @@ import com.edu.wszib.findyourpet.models.LostPetViewModel
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
 import com.squareup.picasso.Picasso
-import java.lang.IllegalArgumentException
-import java.util.*
+import java.util.UUID
 
 class LostEditFragment : Fragment() {
 
@@ -52,6 +55,7 @@ class LostEditFragment : Fragment() {
     private var imageUrl: String? = null
     private var imageUri: Uri? = null
     private lateinit var currentLocation: LatLng
+    private lateinit var dateAdded: String
     private val lostPetViewModel: LostPetViewModel by activityViewModels()
 
 
@@ -126,7 +130,7 @@ class LostEditFragment : Fragment() {
                 etLostEditOwnerNumber.setText(lostPetData.lostPetPhoneNumber)
                 etLostEditOwnerEmail.setText(lostPetData.lostPetEmailAddress)
                 etLostEditOwnerAdditionalInfo.setText(lostPetData.lostPetAdditionalOwnerInfo)
-
+                dateAdded = lostPetData.lostPetDateAdded.toString()
                 imageUrl = lostPetData.lostPetImageUrl
             }
         } else {
@@ -204,6 +208,7 @@ class LostEditFragment : Fragment() {
                         etLostEditOwnerNumber.setText(lostPetData.lostPetPhoneNumber)
                         etLostEditOwnerEmail.setText(lostPetData.lostPetEmailAddress)
                         etLostEditOwnerAdditionalInfo.setText(lostPetData.lostPetAdditionalOwnerInfo)
+                        dateAdded = lostPetData.lostPetDateAdded.toString()
                         currentLocation = LatLng(
                             lostPetData.lostPetLocation?.latitude ?: 1.0,
                             lostPetData.lostPetLocation?.longitude ?: 1.0
@@ -326,11 +331,11 @@ class LostEditFragment : Fragment() {
             lostPetPhoneNumber = binding.etLostEditOwnerNumber.text.toString(),
             lostPetEmailAddress = binding.etLostEditOwnerEmail.text.toString(),
             lostPetAdditionalOwnerInfo = binding.etLostEditOwnerAdditionalInfo.text.toString(),
-            //lostPetImageUri = ((if (imageUri != null) imageUri else lostPetViewModel.lostPetData?.lostPetImageUri)),
             lostPetType = binding.rgLostEditType.findViewById<RadioButton>(binding.rgLostEditType.checkedRadioButtonId)?.text.toString(),
             lostPetReact = binding.rgLostEditReacts.findViewById<RadioButton>(binding.rgLostEditReacts.checkedRadioButtonId)?.text.toString(),
             lostPetBehavior = binding.rgLostEditBehavior.findViewById<RadioButton>(binding.rgLostEditBehavior.checkedRadioButtonId)?.text.toString(),
-            lostPetImageUrl = imageUrl
+            lostPetImageUrl = imageUrl,
+            lostPetDateAdded = dateAdded
         )
         lostPetViewModel.saveFormData(lostPetData, imageUri)
     }
@@ -393,25 +398,25 @@ class LostEditFragment : Fragment() {
             (if (lostPetViewModel.lostPetData?.lostPetLocation != null) lostPetViewModel.lostPetData?.lostPetLocation else LostPetData.LostLocation(
                 currentLocation
             ))
-        val dateAdded = lostPetViewModel.lostPetData?.lostPetDateAdded
+        val dateAdded = (if (lostPetViewModel.lostPetData?.lostPetDateAdded != null) lostPetViewModel.lostPetData?.lostPetDateAdded else dateAdded)
         return LostPetData(
-            loggedUser,
-            lostPetKey,
-            petName,
-            petType,
-            lostDate,
-            lostHour,
-            ownerName,
-            phoneNumber,
-            emailAddress,
-            decodedAddress,
-            petBehavior,
-            petReact,
-            additionalPetInfo,
-            additionalOwnerInfo,
-            dateAdded,
-            imageUrl,
-            locationData
+            lostPetOwnerId = loggedUser,
+            lostPetId = lostPetKey,
+            lostPetName = petName,
+            lostPetType = petType,
+            lostPetDate = lostDate,
+            lostPetHour = lostHour,
+            lostPetOwnerName = ownerName,
+            lostPetPhoneNumber = phoneNumber,
+            lostPetEmailAddress = emailAddress,
+            lostPetDecodedAddress = decodedAddress,
+            lostPetBehavior = petBehavior,
+            lostPetReact = petReact,
+            lostPetAdditionalPetInfo = additionalPetInfo,
+            lostPetAdditionalOwnerInfo = additionalOwnerInfo,
+            lostPetDateAdded = dateAdded,
+            lostPetImageUrl = imageUrl,
+            lostPetLocation = locationData,
         )
 
     }

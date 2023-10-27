@@ -9,18 +9,18 @@
         android:id="@+id/loginFragment"
         android:name="com.edu.wszib.findyourpet.LoginFragment"
         android:label="fragment_login"
-        tools:layout="@layout/fragment_login" >
+        tools:layout="@layout/fragment_login">
         <action
             android:id="@+id/action_loginFragment_to_mainFragment"
             app:destination="@id/mainFragment"
             app:popUpTo="@id/loginFragment"
-            app:popUpToInclusive="true"/>
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/mainFragment"
         android:name="com.edu.wszib.findyourpet.MainFragment"
         android:label="fragment_main"
-        tools:layout="@layout/fragment_main" >
+        tools:layout="@layout/fragment_main">
         <action
             android:id="@+id/action_mainFragment_to_chooseFragment"
             app:destination="@id/chooseFragment" />
@@ -38,7 +38,7 @@
         android:id="@+id/lostCreateFragment"
         android:name="com.edu.wszib.findyourpet.lostfragments.LostCreateFragment"
         android:label="fragment_create_lost"
-        tools:layout="@layout/fragment_create_lost" >
+        tools:layout="@layout/fragment_create_lost">
         <action
             android:id="@+id/action_lostCreateFragment_to_lostMapsFragment"
             app:destination="@id/lostMapsFragment" />
@@ -50,7 +50,7 @@
         android:id="@+id/lostDetailsFragment"
         android:name="com.edu.wszib.findyourpet.lostfragments.LostDetailsFragment"
         android:label="fragment_details_lost"
-        tools:layout="@layout/fragment_details_lost" >
+        tools:layout="@layout/fragment_details_lost">
         <action
             android:id="@+id/action_lostDetailsFragment_to_lostEditFragment"
             app:destination="@id/lostEditFragment" />
@@ -59,7 +59,7 @@
         android:id="@+id/lostMapsFragment"
         android:name="com.edu.wszib.findyourpet.lostfragments.LostMapsFragment"
         android:label="fragment_lost_maps"
-        tools:layout="@layout/fragment_lost_maps" >
+        tools:layout="@layout/fragment_lost_maps">
 
         <action
             android:id="@+id/action_lostMapsFragment_to_lostCreateFragment"
@@ -82,7 +82,7 @@
         android:id="@+id/chooseFragment"
         android:name="com.edu.wszib.findyourpet.ChooseFragment"
         android:label="fragment_choose"
-        tools:layout="@layout/fragment_choose" >
+        tools:layout="@layout/fragment_choose">
         <action
             android:id="@+id/action_chooseFragment_to_lostCreateFragment"
             app:destination="@id/lostCreateFragment" />
@@ -97,7 +97,7 @@
         android:id="@+id/foundCreateFragment"
         android:name="com.edu.wszib.findyourpet.foundfragments.FoundCreateFragment"
         android:label="fragment_create_found"
-        tools:layout="@layout/fragment_create_found" >
+        tools:layout="@layout/fragment_create_found">
         <action
             android:id="@+id/action_foundCreateFragment_to_foundMapsFragment"
             app:destination="@id/foundMapsFragment" />
@@ -109,7 +109,7 @@
         android:id="@+id/foundMapsFragment"
         android:name="com.edu.wszib.findyourpet.foundfragments.FoundMapsFragment"
         android:label="fragment_found_maps"
-        tools:layout="@layout/fragment_found_maps" >
+        tools:layout="@layout/fragment_found_maps">
         <action
             android:id="@+id/action_foundMapsFragment_to_foundCreateFragment"
             app:destination="@id/foundCreateFragment" />
@@ -128,7 +128,7 @@
         android:id="@+id/foundDetailsFragment"
         android:name="com.edu.wszib.findyourpet.foundfragments.FoundDetailsFragment"
         android:label="fragment_found_details"
-        tools:layout="@layout/fragment_found_details" >
+        tools:layout="@layout/fragment_found_details">
         <action
             android:id="@+id/action_foundDetailsFragment_to_foundEditFragment"
             app:destination="@id/foundEditFragment" />
@@ -141,7 +141,7 @@
         android:id="@+id/foundEditFragment"
         android:name="com.edu.wszib.findyourpet.foundfragments.FoundEditFragment"
         android:label="fragment_found_edit"
-        tools:layout="@layout/fragment_found_edit" >
+        tools:layout="@layout/fragment_found_edit">
         <action
             android:id="@+id/action_foundEditFragment_to_foundDetailsFragment"
             app:destination="@id/foundDetailsFragment" />
@@ -158,7 +158,7 @@
         android:id="@+id/lostEditFragment"
         android:name="com.edu.wszib.findyourpet.lostfragments.LostEditFragment"
         android:label="fragment_lost_edit"
-        tools:layout="@layout/fragment_lost_edit" >
+        tools:layout="@layout/fragment_lost_edit">
         <action
             android:id="@+id/action_lostEditFragment_to_lostMapsFragment"
             app:destination="@id/lostMapsFragment" />

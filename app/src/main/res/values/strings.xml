@@ -26,6 +26,7 @@
     <string name="informacje_o_wlascicielu">Informacje o właścicielu</string>
     <string name="informacje_o_odnalezionym_zwierzeciu">Informacje o odnalezionym zwierzęciu</string>
     <string name="informacje_o_zaginionym_zwierzeciu">Informacje o zaginionym zwierzęciu</string>
+    <string name="date_added">Dodano: $s</string>
     <string name="chat_icon">Chat icon</string>
     <string name="location_icon">location_icon</string>
     <string name="phone_icon">phone_icon</string>
@@ -33,4 +34,11 @@
 
     <string name="nav_open">Open</string>
     <string name="nav_close">Close</string>
+    <string name="user_name">User Name</string>
+    <string name="user_image">User Image</string>
+    <string name="informacje_o_zaginionym_zwierz_ciu">Informacje o zaginionym zwierzęciu</string>
+    <string name="wybierz_zdj_cie">Wybierz zdjęcie</string>
+    <string name="rodzaj_zagubionego_zwi_rz_cia">Rodzaj zagubionego zwięrzęcia</string>
+    <string name="pies">Pies</string>
+    <string name="kot">Kot</string>
 </resources>

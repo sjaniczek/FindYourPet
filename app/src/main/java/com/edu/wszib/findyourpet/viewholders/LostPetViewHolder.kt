@@ -12,13 +12,20 @@ class LostPetViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val listLostPetName: TextView = itemView.findViewById(R.id.listLostPetName)
     private val listLostPetAddress: TextView = itemView.findViewById(R.id.listLostPetAddress)
     private val listLostPetDate: TextView = itemView.findViewById(R.id.listLostPetDate)
+    private val listLostPetDateAdded: TextView = itemView.findViewById(R.id.listLostPetDateAdded)
     private val listLostPetImg: ImageView = itemView.findViewById(R.id.listLostPetImg)
 
     fun bindToLostPet(lostPet: LostPetData) {
         listLostPetName.text = lostPet.lostPetName
-        listLostPetDate.text = lostPet.lostPetDate
+        listLostPetDate.text = buildString {
+            append("Zagubiony: ")
+            append(lostPet.lostPetDate)
+        }
         listLostPetAddress.text = lostPet.lostPetDecodedAddress
-
+        listLostPetDateAdded.text = buildString {
+            append("Dodano: ")
+            append(lostPet.lostPetDateAdded)
+        }
         val lostImageUrl = if (lostPet.lostPetImageUrl.isNullOrEmpty()) {
             DEFAULT_IMAGE_URL
         } else {

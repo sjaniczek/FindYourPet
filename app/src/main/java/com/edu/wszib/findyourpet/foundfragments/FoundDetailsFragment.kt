@@ -51,7 +51,7 @@ class FoundDetailsFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentFoundDetailsBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -100,12 +100,11 @@ class FoundDetailsFragment : Fragment() {
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser != null) {
             val userId = currentUser.uid
-            val lostPetRef = databaseRef
 
             val confirmationDialog = AlertDialog.Builder(requireContext())
-                .setTitle("Delete Lost Pet")
-                .setMessage("Are you sure you want to delete this lost pet?")
-                .setPositiveButton("Yes") { _, _ ->
+                .setTitle("Usuniecie postu")
+                .setMessage("Jesteś pewnien że chcesz usunąć ten post?")
+                .setPositiveButton("Tak") { _, _ ->
                     // User clicked "Yes," proceed with the deletion
                     // Create a map to delete the post from both locations in a single update
                     val childUpdates = HashMap<String, Any?>()
@@ -123,12 +122,12 @@ class FoundDetailsFragment : Fragment() {
                             // Failed to delete post
                             Toast.makeText(
                                 requireContext(),
-                                "Failed to delete post: ${e.message}",
+                                "Błąd podczas usuwania postu: ${e.message}",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
                 }
-                .setNegativeButton("Cancel") { _, _ ->
+                .setNegativeButton("Anuluj") { _, _ ->
                     // User clicked "Cancel," do nothing
                 }
                 .create()
@@ -226,7 +225,7 @@ class FoundDetailsFragment : Fragment() {
                 // Getting Post failed, log a message
                 Log.w(TAG, "loadPost:onCancelled", databaseError.toException())
                 Toast.makeText(
-                    context, "Failed to load post.",
+                    context, "Błąd podczas ładowania postu.",
                     Toast.LENGTH_SHORT
                 ).show()
             }

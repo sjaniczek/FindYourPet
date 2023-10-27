@@ -22,9 +22,9 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.edu.wszib.findyourpet.databinding.FragmentCreateLostBinding
 import com.edu.wszib.findyourpet.inputmasks.DateInputMask
 import com.edu.wszib.findyourpet.inputmasks.TimeInputMask
-import com.edu.wszib.findyourpet.databinding.FragmentCreateLostBinding
 import com.edu.wszib.findyourpet.models.LostPetData
 import com.edu.wszib.findyourpet.models.LostPetViewModel
 import com.google.android.gms.maps.model.LatLng

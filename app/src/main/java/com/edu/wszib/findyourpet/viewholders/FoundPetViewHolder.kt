@@ -8,14 +8,24 @@ import com.edu.wszib.findyourpet.R
 import com.edu.wszib.findyourpet.models.FoundPetData
 import com.squareup.picasso.Picasso
 
+
 class FoundPetViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val listFoundPetAddress: TextView = itemView.findViewById(R.id.listFoundPetAddress)
     private val listFoundPetDate: TextView = itemView.findViewById(R.id.listFoundPetDate)
+    private val listFoundPetDateAdded: TextView = itemView.findViewById(R.id.listFoundPetDateAdded)
     private val listFoundPetImg: ImageView = itemView.findViewById(R.id.listFoundPetImg)
 
+
     fun bindToLostPet(foundPet: FoundPetData) {
-        listFoundPetDate.text = foundPet.foundPetDate
+        listFoundPetDate.text = buildString {
+            append("Odnaleziony: ")
+            append(foundPet.foundPetDate)
+        }
         listFoundPetAddress.text = foundPet.foundPetDecodedAddress
+        listFoundPetDateAdded.text = buildString {
+        append("Dodano: ")
+        append(foundPet.foundPetDateAdded)
+    }
 
         val lostImageUrl = if (foundPet.foundPetImageUrl.isNullOrEmpty()) {
             DEFAULT_IMAGE_URL

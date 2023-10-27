@@ -25,7 +25,6 @@ import com.edu.wszib.findyourpet.databinding.FragmentFoundEditBinding
 import com.edu.wszib.findyourpet.inputmasks.DateInputMask
 import com.edu.wszib.findyourpet.models.FoundPetData
 import com.edu.wszib.findyourpet.models.FoundPetViewModel
-import com.edu.wszib.findyourpet.models.LostPetData
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -55,6 +54,7 @@ class FoundEditFragment : Fragment() {
     private var imageUrl: String? = null
     private var imageUri: Uri? = null
     private lateinit var currentLocation: LatLng
+    private lateinit var dateAdded: String
     private val foundPetViewModel: FoundPetViewModel by activityViewModels()
 
 
@@ -121,7 +121,7 @@ class FoundEditFragment : Fragment() {
                 etFoundEditFinderNumber.setText(foundPetData.foundPetPhoneNumber)
                 etFoundEditFinderEmail.setText(foundPetData.foundPetEmailAddress)
                 etFoundEditFinderAdditionalInfo.setText(foundPetData.foundPetAdditionalFinderInfo)
-
+                dateAdded = foundPetData.foundPetDateAdded.toString()
                 imageUrl = foundPetData.foundPetImageUrl
             }
         } else {
@@ -196,10 +196,12 @@ class FoundEditFragment : Fragment() {
                         etFoundEditFinderNumber.setText(foundPetData.foundPetPhoneNumber)
                         etFoundEditFinderEmail.setText(foundPetData.foundPetEmailAddress)
                         etFoundEditFinderAdditionalInfo.setText(foundPetData.foundPetAdditionalFinderInfo)
+                        dateAdded = foundPetData.foundPetDateAdded.toString()
                         currentLocation = LatLng(
                             foundPetData.foundPetLocation?.latitude ?: 1.0,
                             foundPetData.foundPetLocation?.longitude ?: 1.0
                         )
+
                     }
                 }
             }
@@ -289,8 +291,7 @@ class FoundEditFragment : Fragment() {
                 // Form uploaded successfully
                 Toast.makeText(context, "Ogłoszenie dodane", Toast.LENGTH_SHORT).show()
                 clearData()
-                //findNavController().popBackStack()
-                findNavController().navigate(com.edu.wszib.findyourpet.foundfragments.FoundEditFragmentDirections.actionFoundEditFragmentToMainFragment())
+                findNavController().navigate(FoundEditFragmentDirections.actionFoundEditFragmentToMainFragment())
             }
                 .addOnFailureListener { e ->
                     // Form upload failed
@@ -313,10 +314,10 @@ class FoundEditFragment : Fragment() {
             foundPetPhoneNumber = binding.etFoundEditFinderNumber.text.toString(),
             foundPetEmailAddress = binding.etFoundEditFinderEmail.text.toString(),
             foundPetAdditionalFinderInfo = binding.etFoundEditFinderAdditionalInfo.text.toString(),
-            //foundPetImageUri = ((if (imageUri != null) imageUri else foundPetViewModel.foundPetData?.foundPetImageUri)),
             foundPetType = binding.rgFoundEditType.findViewById<RadioButton>(binding.rgFoundEditType.checkedRadioButtonId)?.text.toString(),
             foundPetBehavior = binding.rgFoundEditBehavior.findViewById<RadioButton>(binding.rgFoundEditBehavior.checkedRadioButtonId)?.text.toString(),
-            foundPetImageUrl = imageUrl
+            foundPetImageUrl = imageUrl,
+            foundPetDateAdded = dateAdded
         )
         foundPetViewModel.saveFormData(foundPetData, imageUri)
     }
@@ -369,22 +370,22 @@ class FoundEditFragment : Fragment() {
             (if (foundPetViewModel.foundPetData?.foundPetLocation != null) foundPetViewModel.foundPetData?.foundPetLocation else FoundPetData.FoundLocation(
                 currentLocation
             ))
-        val dateAdded = foundPetViewModel.foundPetData?.foundPetDateAdded
+        val dateAdded = (if (foundPetViewModel.foundPetData?.foundPetDateAdded != null) foundPetViewModel.foundPetData?.foundPetDateAdded else dateAdded)
         return FoundPetData(
-            loggedUser,
-            foundPetKey,
-            petType,
-            foundDate,
-            ownerName,
-            phoneNumber,
-            emailAddress,
-            decodedAddress,
-            petBehavior,
-            additionalPetInfo,
-            additionalOwnerInfo,
-            dateAdded,
-            imageUrl,
-            locationData
+            foundPetOwnerId = loggedUser,
+            foundPetId = foundPetKey,
+            foundPetType = petType,
+            foundPetDate = foundDate,
+            foundPetFinderName = ownerName,
+            foundPetPhoneNumber = phoneNumber,
+            foundPetEmailAddress = emailAddress,
+            foundPetDecodedAddress = decodedAddress,
+            foundPetBehavior = petBehavior,
+            foundPetAdditionalPetInfo = additionalPetInfo,
+            foundPetAdditionalFinderInfo = additionalOwnerInfo,
+            foundPetDateAdded = dateAdded,
+            foundPetImageUrl = imageUrl,
+            foundPetLocation = locationData
         )
 
     }

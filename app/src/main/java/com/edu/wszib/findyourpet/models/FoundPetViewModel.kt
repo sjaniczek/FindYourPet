@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 
 class FoundPetViewModel : ViewModel() {
+
     var foundPetData: FoundPetData? = null
     var imageUri: Uri? = null
 
