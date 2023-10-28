@@ -117,8 +117,6 @@ class LostCreateFragment : Fragment() {
         }
         binding.buttonGoToMap.setOnClickListener {
             saveFormData()
-            binding.buttonGoToMap.setOnClickListener {
-                saveFormData()
                 findNavController().navigate(
                     com.edu.wszib.findyourpet.lostfragments.LostCreateFragmentDirections.actionLostCreateFragmentToLostMapsFragment(
                         false,
@@ -126,7 +124,6 @@ class LostCreateFragment : Fragment() {
                         "lostpetkey"
                     )
                 )
-            }
         }
         binding.buttonLostAccept.setOnClickListener {
             uploadImageAndForm()
