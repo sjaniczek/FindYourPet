@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "300885537276",
+    "firebase_url": "https://findyourpet-e77a8-default-rtdb.europe-west1.firebasedatabase.app",
     "project_id": "findyourpet-e77a8",
     "storage_bucket": "findyourpet-e77a8.appspot.com"
   },
@@ -14,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "300885537276-45fe9akhofhatosnc2pjs3826890qigb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.edu.wszib.findyourpet",
+            "certificate_hash": "22ecd8e8a3347cc0244dd6fc5ca339633fe068c1"
+          }
+        },
+        {
           "client_id": "300885537276-62i1fl7sm6f3vg1m6imc49slr3k452v9.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -22,7 +31,15 @@
           }
         },
         {
-          "client_id": "300885537276-rdvd33eu9ugna5lu0745905evqes2v7i.apps.googleusercontent.com",
+          "client_id": "300885537276-til7uivhic6bnca8uai3qlbgvb0qr5kc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.edu.wszib.findyourpet",
+            "certificate_hash": "433321a986bef95e5dbabbca2ed099fd375e80d3"
+          }
+        },
+        {
+          "client_id": "300885537276-i4dk7pgtq3do57b82v13o1s3l85ugdet.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -35,7 +52,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "300885537276-rdvd33eu9ugna5lu0745905evqes2v7i.apps.googleusercontent.com",
+              "client_id": "300885537276-i4dk7pgtq3do57b82v13o1s3l85ugdet.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
