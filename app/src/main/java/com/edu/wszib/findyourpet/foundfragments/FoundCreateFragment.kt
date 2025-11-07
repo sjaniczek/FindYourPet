@@ -55,7 +55,6 @@ class FoundCreateFragment : Fragment() {
                 launchImagePicker()
             } else {
                 Log.i("permission", "Permission denied")
-                // Handle permission denied case
             }
         }
     private val getImageLauncher =

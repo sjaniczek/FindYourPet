@@ -163,7 +163,7 @@ class LostCreateFragment : Fragment() {
         val databaseRef = database.reference
         val lostPetKey = databaseRef.child("lost_pets").push().key
         if (lostPetKey == null) {
-            Log.w(TAG, "Couldn't get push key for lostPetKey")
+            Log.w(TAG, "Nie udało się otrzymać klucza lostPetKey")
             return
         }
         val fileRef = storageRef.child("images/$fileName")
@@ -198,14 +198,14 @@ class LostCreateFragment : Fragment() {
                     .addOnFailureListener { e ->
                         // Form upload failed
                         Log.e(TAG, "Error uploading form: ${e.message}", e)
-                        Toast.makeText(context, "Error submitting form", Toast.LENGTH_SHORT)
+                        Toast.makeText(context, "Błąd podczas dodawnia postu", Toast.LENGTH_SHORT)
                             .show()
                     }
             }
                 .addOnFailureListener { e ->
                     // Image upload failed
                     Log.e(TAG, "Error uploading image: ${e.message}", e)
-                    Toast.makeText(context, "Error uploading image", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Błąd podczas dodawania zdjęcia", Toast.LENGTH_SHORT).show()
                 }
         }
     }

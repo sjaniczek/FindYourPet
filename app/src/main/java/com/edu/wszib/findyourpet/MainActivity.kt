@@ -57,15 +57,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 .into(profileImageView)
         }
         profileImageView.setImageURI(auth.currentUser?.photoUrl)
+        val fabVisibleDestinations = setOf(
+            R.id.mainFragment,
+            R.id.lostDetailsFragment,
+            R.id.foundDetailsFragment
+        )
+
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            if (destination.id == R.id.mainFragment) {
-                binding.fab.isVisible = true
-                binding.fab.setOnClickListener {
-                    navController.navigate(R.id.chooseFragment)
-                }
+            if (destination.id in fabVisibleDestinations) {
+                binding.fab.show()
             } else {
-                binding.fab.isVisible = false
+                binding.fab.hide()
             }
+        }
+
+        binding.fab.setOnClickListener {
+            navController.navigate(R.id.chooseFragment)
         }
     }
 

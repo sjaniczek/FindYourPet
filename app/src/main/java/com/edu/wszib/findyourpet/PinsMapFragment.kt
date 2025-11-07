@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -39,7 +40,6 @@ class PinsMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.InfoWindowAdap
     private val binding get() = _binding!!
     override fun onMapReady(googleMap: GoogleMap) {
         this.googleMap = googleMap
-        //googleMap.uiSettings.isZoomControlsEnabled = true
         googleMap.uiSettings.setAllGesturesEnabled(true)
         val polandCenter = LatLng(52.051373, 19.090859)
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(polandCenter, 6f))
@@ -161,7 +161,6 @@ class PinsMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.InfoWindowAdap
                 .resize(140, 140)
                 .into(foundImageView, object : Callback {
                     override fun onSuccess() {
-                        Log.i(TAG, "onsuccess")
                         if (marker.isInfoWindowShown) {
                             marker.hideInfoWindow()
                             marker.showInfoWindow()
@@ -169,7 +168,9 @@ class PinsMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.InfoWindowAdap
                     }
 
                     override fun onError(e: Exception?) {
-                        return
+                        Toast.makeText(requireContext(), "Wystąpił błąd podczas ładowania zdjęcia",
+                            Toast.LENGTH_SHORT).show()
+                        Log.e(TAG, "Błąd ładowania zdjęcia: ${e?.message}")
                     }
                 })
         } else if (petData is LostPetData) {

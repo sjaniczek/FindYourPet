@@ -6,7 +6,9 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.edu.wszib.findyourpet.databinding.FragmentMainBinding
 import com.edu.wszib.findyourpet.listlostandfoundfragments.*
@@ -66,7 +68,6 @@ class MainFragment : Fragment() {
             }.attach()
         }
     }
-
     override fun onDestroy() {
         super.onDestroy()
         _binding = null

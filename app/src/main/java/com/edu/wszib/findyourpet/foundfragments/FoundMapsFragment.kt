@@ -1,6 +1,7 @@
 package com.edu.wszib.findyourpet.foundfragments
 
 import android.Manifest
+import android.app.AlertDialog
 import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
@@ -11,6 +12,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -78,6 +80,9 @@ class FoundMapsFragment : Fragment(), OnMapReadyCallback {
         isEditing = args.isEditing
         foundPetKey = args.lostPetKey
         val currentLocation = args.currentLocation
+        binding.buttonSearchAddress.setOnClickListener {
+            showSearchDialog()
+        }
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -94,7 +99,45 @@ class FoundMapsFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    private fun decodeLocation(currentLocation: LatLng) {
+    private fun showSearchDialog() {
+        val editText = EditText(requireContext()).apply {
+            hint = "Wpisz adres lub miasto"
+            setPadding(50, 40, 50, 40)
+            setTextColor(ContextCompat.getColor(requireContext(), android.R.color.black))
+            setHintTextColor(ContextCompat.getColor(requireContext(), android.R.color.darker_gray))
+        }
+
+        val dialog = AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
+            .setTitle("Wyszukaj lokalizację")
+            .setView(editText)
+            .setPositiveButton("Szukaj") { _, _ ->
+                val address = editText.text.toString()
+                if (address.isNotEmpty()) {
+                    searchLocation(address)
+                } else {
+                    Toast.makeText(requireContext(), "Podaj adres", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .setNegativeButton("Anuluj", null)
+            .create()
+
+        dialog.show()
+    }
+    private fun searchLocation(query: String) {
+        val geocoder = Geocoder(requireContext(), Locale.getDefault())
+        try {
+            val addresses = geocoder.getFromLocationName(query, 1)
+            if (!addresses.isNullOrEmpty()) {
+                val location = LatLng(addresses[0].latitude, addresses[0].longitude)
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 14f))
+            } else {
+                Toast.makeText(requireContext(), "Nie znaleziono lokalizacji", Toast.LENGTH_SHORT).show()
+            }
+        } catch (e: Exception) {
+            Toast.makeText(requireContext(), "Błąd: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+        private fun decodeLocation(currentLocation: LatLng) {
         val geocoder = Geocoder(requireContext(), Locale.getDefault())
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             val addresses = geocoder.getFromLocation(
