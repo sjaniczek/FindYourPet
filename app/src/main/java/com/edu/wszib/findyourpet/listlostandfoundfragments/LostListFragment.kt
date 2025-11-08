@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -30,6 +31,7 @@ abstract class LostListFragment : Fragment() {
     private lateinit var recycler: RecyclerView
     private lateinit var manager: LinearLayoutManager
     private lateinit var adapter: FirebaseRecyclerAdapter<LostPetData, LostPetViewHolder>
+    private lateinit var etSearchLost: EditText
 
     val uid: String
         get() = Firebase.auth.currentUser!!.uid
