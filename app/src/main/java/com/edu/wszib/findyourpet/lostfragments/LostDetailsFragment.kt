@@ -11,6 +11,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.core.view.MenuHost
@@ -93,6 +94,31 @@ class LostDetailsFragment : Fragment() {
                 }
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+
+        binding.buttonReportLost.setOnClickListener {
+            val builder = AlertDialog.Builder(requireContext())
+            builder.setTitle("Zgłoś ogłoszenie")
+
+            val input = EditText(requireContext())
+            input.hint = "Wpisz powód zgłoszenia"
+            builder.setView(input)
+
+            builder.setPositiveButton("Wyślij") { dialog, _ ->
+                val message = input.text.toString().trim()
+                if (message.isNotEmpty()) {
+                    sendReportToFirebase(message)
+                    Toast.makeText(requireContext(), "Zgłoszenie wysłane", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(requireContext(), "Treść zgłoszenia nie może być pusta", Toast.LENGTH_SHORT).show()
+                }
+                dialog.dismiss()
+            }
+            builder.setNegativeButton("Anuluj") { dialog, _ ->
+                dialog.cancel()
+            }
+
+            builder.show()
+        }
     }
 
     private fun deleteLostPet() {
@@ -237,7 +263,17 @@ class LostDetailsFragment : Fragment() {
         // Keep copy of post listener so we can remove it when app stops
         this.lostPetListener = lostPetListener
 
-
+    }
+    private fun sendReportToFirebase(message: String) {
+        val currentPostId = arguments?.getString(EXTRA_POST_KEY)
+        val reportRef = Firebase.database.reference.child("reports").push()
+        val reportData = mapOf(
+            "postId" to currentPostId,          // ID ogłoszenia, które jest zgłaszane
+            "userId" to Firebase.auth.currentUser?.uid,
+            "message" to message,
+            "timestamp" to System.currentTimeMillis()
+        )
+        reportRef.setValue(reportData)
     }
 
     override fun onStop() {

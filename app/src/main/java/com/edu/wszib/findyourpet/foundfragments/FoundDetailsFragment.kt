@@ -11,6 +11,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.core.view.MenuHost
@@ -21,6 +22,8 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.edu.wszib.findyourpet.R
 import com.edu.wszib.findyourpet.databinding.FragmentFoundDetailsBinding
+import com.edu.wszib.findyourpet.lostfragments.LostDetailsFragment
+import com.edu.wszib.findyourpet.lostfragments.LostDetailsFragment.Companion
 import com.edu.wszib.findyourpet.models.FoundPetData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -94,6 +97,31 @@ class FoundDetailsFragment : Fragment() {
                 }
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+
+        binding.buttonReportFound.setOnClickListener {
+            val builder = AlertDialog.Builder(requireContext())
+            builder.setTitle("Zgłoś ogłoszenie")
+
+            val input = EditText(requireContext())
+            input.hint = "Wpisz powód zgłoszenia"
+            builder.setView(input)
+
+            builder.setPositiveButton("Wyślij") { dialog, _ ->
+                val message = input.text.toString().trim()
+                if (message.isNotEmpty()) {
+                    sendReportToFirebase(message)
+                    Toast.makeText(requireContext(), "Zgłoszenie wysłane", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(requireContext(), "Treść zgłoszenia nie może być pusta", Toast.LENGTH_SHORT).show()
+                }
+                dialog.dismiss()
+            }
+            builder.setNegativeButton("Anuluj") { dialog, _ ->
+                dialog.cancel()
+            }
+
+            builder.show()
+        }
     }
 
     private fun deleteFoundPet() {
@@ -236,7 +264,18 @@ class FoundDetailsFragment : Fragment() {
         // Keep copy of post listener so we can remove it when app stops
         this.foundPetListener = foundPetListener
 
+    }
 
+    private fun sendReportToFirebase(message: String) {
+        val currentPostId = arguments?.getString(LostDetailsFragment.EXTRA_POST_KEY)
+        val reportRef = Firebase.database.reference.child("reports").push()
+        val reportData = mapOf(
+            "postId" to currentPostId,          // ID ogłoszenia, które jest zgłaszane
+            "userId" to Firebase.auth.currentUser?.uid,
+            "message" to message,
+            "timestamp" to System.currentTimeMillis()
+        )
+        reportRef.setValue(reportData)
     }
 
     override fun onStop() {
