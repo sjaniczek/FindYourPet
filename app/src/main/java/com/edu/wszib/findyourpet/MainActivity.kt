@@ -1,11 +1,21 @@
 package com.edu.wszib.findyourpet
 
+import android.content.Intent
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
 import android.view.MenuItem
+import android.view.View
+import android.webkit.WebView
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.fragment.NavHostFragment
@@ -33,7 +43,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         drawerLayout = findViewById(R.id.drawerLayout)
         actionBarDrawerToggle =
             ActionBarDrawerToggle(this, drawerLayout, R.string.nav_open, R.string.nav_close)
-
+        showConsentDialogIfNeeded()
         drawerLayout.addDrawerListener(actionBarDrawerToggle)
         actionBarDrawerToggle.syncState()
         setNavigationDrawerVisibility(true)
@@ -57,17 +67,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 .into(profileImageView)
         }
         profileImageView.setImageURI(auth.currentUser?.photoUrl)
-        val fabVisibleDestinations = setOf(
-            R.id.mainFragment,
-            R.id.lostDetailsFragment,
-            R.id.foundDetailsFragment
+        val fabHiddenDestinations = setOf(
+            R.id.lostCreateFragment,
+            R.id.lostEditFragment,
+            R.id.foundCreateFragment,
+            R.id.foundEditFragment,
+            R.id.chooseFragment
         )
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            if (destination.id in fabVisibleDestinations) {
-                binding.fab.show()
-            } else {
+            if (destination.id in fabHiddenDestinations) {
                 binding.fab.hide()
+            } else {
+                binding.fab.show()
             }
         }
 
@@ -114,14 +126,97 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 return true
             }
 
-
             R.id.nav_my_lost_found -> {
                 navController.navigate(R.id.myLostFoundPetFragment)
                 drawerLayout.closeDrawers()
                 return true
             }
+
+            R.id.nav_delete_account -> {
+                drawerLayout.closeDrawers()
+                deleteAccount()
+                return true
+            }
+
+            R.id.nav_withdraw_consent -> {
+                drawerLayout.closeDrawers()
+                withdrawConsent()
+                return true
+            }
         }
         return false
+    }
+    private fun deleteAccount() {
+        val user = auth.currentUser
+        AlertDialog.Builder(this)
+            .setTitle("Usuwanie konta")
+            .setMessage("Czy na pewno chcesz usunąć swoje konto? Tej operacji nie można cofnąć.")
+            .setPositiveButton("Tak, usuń") { _, _ ->
+                user?.delete()?.addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        PrefsManager(this).setConsentGiven(false)
+                        Toast.makeText(this, "Konto zostało usunięte", Toast.LENGTH_SHORT).show()
+
+                        val navHostFragment =
+                            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+                        navHostFragment.navController.navigate(R.id.loginFragment)
+                    } else {
+                        Toast.makeText(this, "Nie udało się usunąć konta", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+            .setNegativeButton("Anuluj", null)
+            .show()
+    }
+
+    private fun withdrawConsent() {
+        AlertDialog.Builder(this)
+            .setTitle("Cofnięcie zgody")
+            .setMessage("Czy na pewno chcesz cofnąć zgodę na przetwarzanie danych? Aplikacja zostanie zamknięta.")
+            .setPositiveButton("Tak, cofam") { _, _ ->
+                PrefsManager(this).setConsentGiven(false)
+                Toast.makeText(this, "Zgoda została cofnięta", Toast.LENGTH_SHORT).show()
+                finishAffinity() 
+            }
+            .setNegativeButton("Anuluj", null)
+            .show()
+    }
+    private fun showConsentDialogIfNeeded() {
+        val prefsManager = PrefsManager(this)
+        if (!prefsManager.isConsentGiven()) {
+            val message = "Aby korzystać z aplikacji, musisz wyrazić zgodę na przetwarzanie danych osobowych.\n\n" +
+                    "Kliknij tutaj, aby przeczytać politykę prywatności."
+
+            val spannableMessage = SpannableString(message)
+            val start = message.indexOf("Kliknij tutaj")
+            val end = start + "Kliknij tutaj".length
+
+            spannableMessage.setSpan(object : ClickableSpan() {
+                override fun onClick(widget: View) {
+                    val intent = Intent(this@MainActivity, PrivacyPolicyActivity::class.java)
+                    startActivity(intent)
+                }
+            }, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+            val textView = TextView(this).apply {
+                text = spannableMessage
+                movementMethod = LinkMovementMethod.getInstance()
+                setPadding(50, 50, 50, 50)
+            }
+
+            AlertDialog.Builder(this)
+                .setTitle("Zgoda na przetwarzanie danych")
+                .setView(textView)
+                .setCancelable(false)
+                .setPositiveButton("Zgadzam się") { _, _ ->
+                    prefsManager.setConsentGiven()
+                }
+                .setNegativeButton("Nie zgadzam się") { _, _ ->
+                    Toast.makeText(this, "Nie możesz korzystać z aplikacji bez zgody", Toast.LENGTH_SHORT).show()
+                    finish()
+                }
+                .show()
+            }
     }
 
     companion object {

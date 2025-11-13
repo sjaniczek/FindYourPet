@@ -1,14 +1,18 @@
 package com.edu.wszib.findyourpet
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
+import android.location.Geocoder
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -30,6 +34,7 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
+import java.util.Locale
 
 class PinsMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.InfoWindowAdapter {
 
@@ -124,7 +129,44 @@ class PinsMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.InfoWindowAdap
             }
         }
     }
+    private fun showSearchDialog() {
+        val editText = EditText(requireContext()).apply {
+            hint = "Wpisz adres lub miasto"
+            setPadding(50, 40, 50, 40)
+            setTextColor(ContextCompat.getColor(requireContext(), android.R.color.black))
+            setHintTextColor(ContextCompat.getColor(requireContext(), android.R.color.darker_gray))
+        }
 
+        val dialog = AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
+            .setTitle("Wyszukaj lokalizację")
+            .setView(editText)
+            .setPositiveButton("Szukaj") { _, _ ->
+                val address = editText.text.toString()
+                if (address.isNotEmpty()) {
+                    searchLocation(address)
+                } else {
+                    Toast.makeText(requireContext(), "Podaj adres", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .setNegativeButton("Anuluj", null)
+            .create()
+
+        dialog.show()
+    }
+    private fun searchLocation(query: String) {
+        val geocoder = Geocoder(requireContext(), Locale.getDefault())
+        try {
+            val addresses = geocoder.getFromLocationName(query, 1)
+            if (!addresses.isNullOrEmpty()) {
+                val location = LatLng(addresses[0].latitude, addresses[0].longitude)
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 14f))
+            } else {
+                Toast.makeText(requireContext(), "Nie znaleziono lokalizacji", Toast.LENGTH_SHORT).show()
+            }
+        } catch (e: Exception) {
+            Toast.makeText(requireContext(), "Błąd: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -138,6 +180,9 @@ class PinsMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.InfoWindowAdap
         super.onViewCreated(view, savedInstanceState)
         mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+        binding.buttonSearchAddress.setOnClickListener {
+            showSearchDialog()
+        }
     }
 
     @SuppressLint("MissingInflatedId")

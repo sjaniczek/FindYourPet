@@ -110,9 +110,14 @@ class FoundDetailsFragment : Fragment() {
                 val message = input.text.toString().trim()
                 if (message.isNotEmpty()) {
                     sendReportToFirebase(message)
-                    Toast.makeText(requireContext(), "Zgłoszenie wysłane", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Zgłoszenie wysłane", Toast.LENGTH_SHORT)
+                        .show()
                 } else {
-                    Toast.makeText(requireContext(), "Treść zgłoszenia nie może być pusta", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        "Treść zgłoszenia nie może być pusta",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
                 dialog.dismiss()
             }
@@ -130,8 +135,8 @@ class FoundDetailsFragment : Fragment() {
             val userId = currentUser.uid
 
             val confirmationDialog = AlertDialog.Builder(requireContext())
-                .setTitle("Usuniecie postu")
-                .setMessage("Jesteś pewnien że chcesz usunąć ten post?")
+                .setTitle("Usuń ogłoszenie")
+                .setMessage("Czy jesteś pewny, że chcesz usunąć to ogłoszenie?")
                 .setPositiveButton("Tak") { _, _ ->
                     // User clicked "Yes," proceed with the deletion
                     // Create a map to delete the post from both locations in a single update
@@ -150,7 +155,7 @@ class FoundDetailsFragment : Fragment() {
                             // Failed to delete post
                             Toast.makeText(
                                 requireContext(),
-                                "Błąd podczas usuwania postu: ${e.message}",
+                                "Nie udało się usunąć: ${e.message}",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
@@ -275,7 +280,17 @@ class FoundDetailsFragment : Fragment() {
             "message" to message,
             "timestamp" to System.currentTimeMillis()
         )
+
         reportRef.setValue(reportData)
+            .addOnSuccessListener {
+                // Operacja powiodła się
+                Toast.makeText(context, "Zgłoszenie wysłane", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener { e ->
+                // Wystąpił błąd
+                Log.e("SendReport", "Błąd wysyłania zgłoszenia: ${e.message}", e)
+                Toast.makeText(context, "Błąd podczas wysyłania zgłoszenia", Toast.LENGTH_SHORT).show()
+            }
     }
 
     override fun onStop() {

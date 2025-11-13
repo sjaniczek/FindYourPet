@@ -128,9 +128,9 @@ class LostDetailsFragment : Fragment() {
             val lostPetRef = databaseRef
 
             val confirmationDialog = AlertDialog.Builder(requireContext())
-                .setTitle("Delete Lost Pet")
-                .setMessage("Are you sure you want to delete this lost pet?")
-                .setPositiveButton("Yes") { _, _ ->
+                .setTitle("Usuń ogłoszenie")
+                .setMessage("Czy jesteś pewny, że chcesz usunąć to ogłoszenie?")
+                .setPositiveButton("Tak") { _, _ ->
                     // User clicked "Yes," proceed with the deletion
                     // Create a map to delete the post from both locations in a single update
                     val childUpdates = HashMap<String, Any?>()
@@ -148,12 +148,12 @@ class LostDetailsFragment : Fragment() {
                             // Failed to delete post
                             Toast.makeText(
                                 requireContext(),
-                                "Failed to delete post: ${e.message}",
+                                "Nie udało się usunąć: ${e.message}",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
                 }
-                .setNegativeButton("Cancel") { _, _ ->
+                .setNegativeButton("Anuluj") { _, _ ->
                     // User clicked "Cancel," do nothing
                 }
                 .create()
@@ -265,7 +265,7 @@ class LostDetailsFragment : Fragment() {
 
     }
     private fun sendReportToFirebase(message: String) {
-        val currentPostId = arguments?.getString(EXTRA_POST_KEY)
+        val currentPostId = arguments?.getString(LostDetailsFragment.EXTRA_POST_KEY)
         val reportRef = Firebase.database.reference.child("reports").push()
         val reportData = mapOf(
             "postId" to currentPostId,          // ID ogłoszenia, które jest zgłaszane
@@ -273,7 +273,17 @@ class LostDetailsFragment : Fragment() {
             "message" to message,
             "timestamp" to System.currentTimeMillis()
         )
+
         reportRef.setValue(reportData)
+            .addOnSuccessListener {
+                // Operacja powiodła się
+                Toast.makeText(context, "Zgłoszenie wysłane", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener { e ->
+                // Wystąpił błąd
+                Log.e("SendReport", "Błąd wysyłania zgłoszenia: ${e.message}", e)
+                Toast.makeText(context, "Błąd podczas wysyłania zgłoszenia", Toast.LENGTH_SHORT).show()
+            }
     }
 
     override fun onStop() {

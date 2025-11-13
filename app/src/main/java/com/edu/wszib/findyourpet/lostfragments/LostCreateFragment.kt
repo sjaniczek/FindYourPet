@@ -35,6 +35,7 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
+import com.google.firebase.storage.storageMetadata
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -152,62 +153,99 @@ class LostCreateFragment : Fragment() {
         }
     }
 
+    private var isUploading = false
+
     private fun uploadImageAndForm() {
+        if (isUploading) return
+        isUploading = true
+        binding.buttonLostAccept.isEnabled = false
+        binding.progressBar.visibility = View.VISIBLE
+
         val databaseUrl =
             "https://findyourpet-e77a8-default-rtdb.europe-west1.firebasedatabase.app/"
         database = Firebase.database(databaseUrl)
         storage = Firebase.storage
         val storageRef = storage.reference
-        val userId = auth.currentUser?.uid
+        val userId = auth.currentUser?.uid ?: run {
+            Toast.makeText(context, "Brak zalogowanego użytkownika", Toast.LENGTH_SHORT).show()
+            resetUploadUI()
+            return
+        }
+
         val fileName = UUID.randomUUID().toString()
         val databaseRef = database.reference
-        val lostPetKey = databaseRef.child("lost_pets").push().key
-        if (lostPetKey == null) {
+        val lostPetKey = databaseRef.child("lost_pets").push().key ?: run {
             Log.w(TAG, "Nie udało się otrzymać klucza lostPetKey")
+            resetUploadUI()
             return
         }
-        val fileRef = storageRef.child("images/$fileName")
 
         if (!validateFieldsAndImage(imageUri)) {
-            Toast.makeText(
-                context,
-                "Wypełnij lub zaznacz wszystkie pola oraz dodaj zdjęcie",
-                Toast.LENGTH_SHORT
-            )
-                .show()
+            Toast.makeText(context, "Wypełnij wszystkie pola i dodaj zdjęcie", Toast.LENGTH_SHORT).show()
+            resetUploadUI()
             return
         }
-        binding.buttonLostAccept.isVisible = false
-        val uploadTask = fileRef.putFile(imageUri!!)
+
+        val mimeType = context?.contentResolver?.getType(imageUri!!) ?: "image/jpeg"
+        if (mimeType != "image/jpeg" && mimeType != "image/png" && mimeType != "image/webp") {
+            Toast.makeText(context, "Dodaj tylko plik JPEG, PNG lub WEBP", Toast.LENGTH_SHORT).show()
+            resetUploadUI()
+            return
+        }
+
+        val fileSize = context?.contentResolver?.openFileDescriptor(imageUri!!, "r")?.use { it.statSize }
+        if (fileSize != null && fileSize > 10 * 1024 * 1024) {
+            Toast.makeText(context, "Plik jest za duży (max 10 MB)", Toast.LENGTH_SHORT).show()
+            resetUploadUI()
+            return
+        }
+
+        val metadata = storageMetadata {
+            setContentType(mimeType)
+            setCustomMetadata("owner", userId)
+            setCustomMetadata("postId", lostPetKey)
+        }
+
+        val fileRef = storageRef.child("images/$fileName")
+        val uploadTask = fileRef.putFile(imageUri!!, metadata)
+
         uploadTask.addOnSuccessListener { taskSnapshot ->
             taskSnapshot.storage.downloadUrl.addOnSuccessListener { uri ->
                 val imageUrl = uri.toString()
-                val lostPetData = createFoundPetData(imageUrl, lostPetKey)
+                val lostPetData = createLostPetData(imageUrl, lostPetKey)
                 val lostPetValues = lostPetData.toMap()
                 val lostPetUpdates = hashMapOf<String, Any>(
                     "/lost_pets/$lostPetKey" to lostPetValues,
-                    "/users/$userId/lost_pets/$lostPetKey" to lostPetValues,
+                    "/users/$userId/lost_pets/$lostPetKey" to lostPetValues
                 )
-                databaseRef.updateChildren(lostPetUpdates).addOnSuccessListener {
-                    // Form uploaded successfully
+                database.reference.updateChildren(lostPetUpdates).addOnSuccessListener {
                     Toast.makeText(context, "Ogłoszenie dodane", Toast.LENGTH_SHORT).show()
                     clearData()
-                    //findNavController().popBackStack()
-                    findNavController().navigate(com.edu.wszib.findyourpet.lostfragments.LostCreateFragmentDirections.actionLostCreateFragmentToMainFragment())
+                    findNavController().navigate(
+                        com.edu.wszib.findyourpet.lostfragments.LostCreateFragmentDirections
+                            .actionLostCreateFragmentToMainFragment()
+                    )
+                }.addOnFailureListener { e ->
+                    Log.e(TAG, "Error uploading form: ${e.message}", e)
+                    Toast.makeText(context, "Błąd podczas dodawania postu", Toast.LENGTH_SHORT).show()
+                    resetUploadUI()
                 }
-                    .addOnFailureListener { e ->
-                        // Form upload failed
-                        Log.e(TAG, "Error uploading form: ${e.message}", e)
-                        Toast.makeText(context, "Błąd podczas dodawnia postu", Toast.LENGTH_SHORT)
-                            .show()
-                    }
+            }.addOnFailureListener { e ->
+                Log.e(TAG, "Error getting download URL: ${e.message}", e)
+                Toast.makeText(context, "Błąd podczas dodawania zdjęcia", Toast.LENGTH_SHORT).show()
+                resetUploadUI()
             }
-                .addOnFailureListener { e ->
-                    // Image upload failed
-                    Log.e(TAG, "Error uploading image: ${e.message}", e)
-                    Toast.makeText(context, "Błąd podczas dodawania zdjęcia", Toast.LENGTH_SHORT).show()
-                }
+        }.addOnFailureListener { e ->
+            Log.e(TAG, "Upload failed: ${e.message}", e)
+            Toast.makeText(context, "Błąd podczas uploadu obrazu", Toast.LENGTH_SHORT).show()
+            resetUploadUI()
         }
+    }
+
+    private fun resetUploadUI() {
+        isUploading = false
+        binding.buttonLostAccept.isEnabled = true
+        binding.progressBar.visibility = View.GONE
     }
 
     private fun saveFormData() {
@@ -251,7 +289,7 @@ class LostCreateFragment : Fragment() {
         return !isAnyFieldEmpty
     }
 
-    private fun createFoundPetData(imageUrl: String?, lostPetKey: String?): LostPetData {
+    private fun createLostPetData(imageUrl: String?, lostPetKey: String?): LostPetData {
 
         val loggedUser = auth.currentUser?.uid
         val petName = binding.etLostPetName.text.toString()

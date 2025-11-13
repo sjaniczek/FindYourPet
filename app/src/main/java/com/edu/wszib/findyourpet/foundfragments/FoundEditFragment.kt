@@ -102,7 +102,6 @@ class FoundEditFragment : Fragment() {
         // Initialize Database
         database = Firebase.database(databaseUrl)
         databaseRef = database.reference.child("found_pets").child(foundPetKey)
-        activity?.title = "Edit";
         val foundPetData = foundPetViewModel.foundPetData
         imageUri = foundPetViewModel.imageUri
         if (foundPetData != null) {
@@ -217,91 +216,131 @@ class FoundEditFragment : Fragment() {
         })
     }
 
+    private var isUploading = false
+
     private fun updateImageAndForm() {
+        if (isUploading) return
+        isUploading = true
+        binding.buttonFoundEditAccept.isEnabled = false
+        binding.progressBar.visibility = View.VISIBLE
+
         val databaseUrl =
             "https://findyourpet-e77a8-default-rtdb.europe-west1.firebasedatabase.app/"
         database = Firebase.database(databaseUrl)
         storage = Firebase.storage
         val storageRef = storage.reference
-        val userId = auth.currentUser?.uid
-        val fileName = UUID.randomUUID().toString()
+        val userId = auth.currentUser?.uid ?: run {
+            Toast.makeText(context, "Brak zalogowanego użytkownika", Toast.LENGTH_SHORT).show()
+            resetUploadUI()
+            return
+        }
+
         val databaseRef = database.reference
-        val fileRef = storageRef.child("images/$fileName")
+
 
         if (imageUri != null) {
             if (!validateFieldsAndImage(imageUri)) {
                 Toast.makeText(
                     context,
-                    "Wypełnij lub zaznacz wszystkie pola oraz dodaj zdjęcie",
+                    "Wypełnij wszystkie pola i dodaj zdjęcie",
                     Toast.LENGTH_SHORT
                 ).show()
+                resetUploadUI()
                 return
             }
-        } else {
-            if (!validateFields()) {
-                Toast.makeText(
-                    context,
-                    "Wypełnij lub zaznacz wszystkie pola",
-                    Toast.LENGTH_SHORT
-                ).show()
+
+            // Sprawdzenie MIME typu
+            val mimeType = context?.contentResolver?.getType(imageUri!!) ?: "image/jpeg"
+            if (mimeType != "image/jpeg" && mimeType != "image/png" && mimeType != "image/webp") {
+                Toast.makeText(context, "Dodaj tylko plik JPG, PNG lub WEBP", Toast.LENGTH_SHORT)
+                    .show()
+                resetUploadUI()
                 return
             }
-        }
-        binding.buttonFoundEditAccept.isVisible = false
-        if (imageUri != null) {
-            val uploadTask = fileRef.putFile(imageUri!!)
-            uploadTask.addOnSuccessListener { taskSnapshot ->
+
+            // Sprawdzenie rozmiaru
+            val fileSize =
+                context?.contentResolver?.openFileDescriptor(imageUri!!, "r")?.use { it.statSize }
+            if (fileSize != null && fileSize > 10 * 1024 * 1024) {
+                Toast.makeText(context, "Plik jest za duży (max 10 MB)", Toast.LENGTH_SHORT).show()
+                resetUploadUI()
+                return
+            }
+
+            val fileName = UUID.randomUUID().toString()
+            val fileRef = storageRef.child("images/$fileName")
+            val metadata = com.google.firebase.storage.StorageMetadata.Builder()
+                .setContentType(mimeType)
+                .setCustomMetadata("owner", userId)
+                .setCustomMetadata("postId", foundPetKey)
+                .build()
+
+            fileRef.putFile(imageUri!!, metadata).addOnSuccessListener { taskSnapshot ->
                 taskSnapshot.storage.downloadUrl.addOnSuccessListener { uri ->
-                    val imageUrl = uri.toString()
-                    val foundPetData = createFoundPetData(imageUrl, foundPetKey)
+                    val foundPetData = createFoundPetData(uri.toString(), foundPetKey)
                     val foundPetValues = foundPetData.toMap()
                     val foundPetUpdates = hashMapOf<String, Any>(
                         "/found_pets/$foundPetKey" to foundPetValues,
-                        "/users/$userId/found_pets/$foundPetKey" to foundPetValues,
+                        "/users/$userId/found_pets/$foundPetKey" to foundPetValues
                     )
                     databaseRef.updateChildren(foundPetUpdates).addOnSuccessListener {
-                        // Form uploaded successfully
-                        Toast.makeText(context, "Ogłoszenie dodane", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Ogłoszenie edytowane", Toast.LENGTH_SHORT).show()
                         clearData()
-                        //findNavController().popBackStack()
-                        findNavController().navigate(com.edu.wszib.findyourpet.foundfragments.FoundEditFragmentDirections.actionFoundEditFragmentToMainFragment())
+                        resetUploadUI()
+                        findNavController().navigate(
+                            FoundEditFragmentDirections.actionFoundEditFragmentToMainFragment()
+                        )
+                    }.addOnFailureListener { e ->
+                        Log.e(TAG, "Error uploading form: ${e.message}", e)
+                        Toast.makeText(context, "Błąd podczas aktualizacji", Toast.LENGTH_SHORT)
+                            .show()
+                        resetUploadUI()
                     }
-                        .addOnFailureListener { e ->
-                            // Form upload failed
-                            Log.e(TAG, "Error uploading form: ${e.message}", e)
-                            Toast.makeText(context, "Error submitting form", Toast.LENGTH_SHORT)
-                                .show()
-                        }
+                }.addOnFailureListener { e ->
+                    Log.e(TAG, "Error getting download URL: ${e.message}", e)
+                    Toast.makeText(context, "Błąd podczas uploadu zdjęcia", Toast.LENGTH_SHORT)
+                        .show()
+                    resetUploadUI()
                 }
-                    .addOnFailureListener { e ->
-                        // Image upload failed
-                        Log.e(TAG, "Error uploading image: ${e.message}", e)
-                        Toast.makeText(context, "Error uploading image", Toast.LENGTH_SHORT).show()
-                    }
+            }.addOnFailureListener { e ->
+                Log.e(TAG, "Upload failed: ${e.message}", e)
+                Toast.makeText(context, "Błąd podczas uploadu zdjęcia", Toast.LENGTH_SHORT).show()
+                resetUploadUI()
             }
+
         } else {
+            // Nie zmieniamy zdjęcia, tylko aktualizujemy resztę danych
+            if (!validateFields()) {
+                Toast.makeText(context, "Wypełnij wszystkie pola", Toast.LENGTH_SHORT).show()
+                resetUploadUI()
+                return
+            }
+
             val foundPetData = createFoundPetData(imageUrl, foundPetKey)
             val foundPetValues = foundPetData.toMap()
             val foundPetUpdates = hashMapOf<String, Any>(
                 "/found_pets/$foundPetKey" to foundPetValues,
-                "/users/$userId/found_pets/$foundPetKey" to foundPetValues,
+                "/users/$userId/found_pets/$foundPetKey" to foundPetValues
             )
-
             databaseRef.updateChildren(foundPetUpdates).addOnSuccessListener {
-                // Form uploaded successfully
-                Toast.makeText(context, "Ogłoszenie dodane", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Ogłoszenie edytowane", Toast.LENGTH_SHORT).show()
                 clearData()
-                findNavController().navigate(FoundEditFragmentDirections.actionFoundEditFragmentToMainFragment())
+                resetUploadUI()
+                findNavController().navigate(
+                    FoundEditFragmentDirections.actionFoundEditFragmentToMainFragment()
+                )
+            }.addOnFailureListener { e ->
+                Log.e(TAG, "Error uploading form: ${e.message}", e)
+                Toast.makeText(context, "Błąd podczas aktualizacji", Toast.LENGTH_SHORT).show()
+                resetUploadUI()
             }
-                .addOnFailureListener { e ->
-                    // Form upload failed
-                    Log.e(TAG, "Error uploading form: ${e.message}", e)
-                    Toast.makeText(context, "Error submitting form", Toast.LENGTH_SHORT)
-                        .show()
-                }
-            return
         }
+    }
 
+    private fun resetUploadUI() {
+        isUploading = false
+        binding.buttonFoundEditAccept.isEnabled = true
+        binding.progressBar.visibility = View.GONE
     }
 
     private fun saveFormData() {
@@ -370,7 +409,8 @@ class FoundEditFragment : Fragment() {
             (if (foundPetViewModel.foundPetData?.foundPetLocation != null) foundPetViewModel.foundPetData?.foundPetLocation else FoundPetData.FoundLocation(
                 currentLocation
             ))
-        val dateAdded = (if (foundPetViewModel.foundPetData?.foundPetDateAdded != null) foundPetViewModel.foundPetData?.foundPetDateAdded else dateAdded)
+        val dateAdded =
+            (if (foundPetViewModel.foundPetData?.foundPetDateAdded != null) foundPetViewModel.foundPetData?.foundPetDateAdded else dateAdded)
         return FoundPetData(
             foundPetOwnerId = loggedUser,
             foundPetId = foundPetKey,
