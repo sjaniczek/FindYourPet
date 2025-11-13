@@ -12,7 +12,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.edu.wszib.findyourpet.R
-import com.edu.wszib.findyourpet.foundfragments.FoundDetailsFragment
+import com.edu.wszib.findyourpet.ui.foundfragments.FoundDetailsFragment
 import com.edu.wszib.findyourpet.models.FoundPetData
 import com.edu.wszib.findyourpet.viewholders.FoundPetViewHolder
 import com.firebase.ui.database.FirebaseRecyclerAdapter

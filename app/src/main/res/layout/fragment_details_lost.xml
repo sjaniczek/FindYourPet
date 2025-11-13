@@ -7,7 +7,7 @@
     android:id="@+id/scrollViewDetails"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".lostfragments.LostDetailsFragment">
+    tools:context=".ui.lostfragments.LostDetailsFragment">
 
 
     <androidx.constraintlayout.widget.ConstraintLayout

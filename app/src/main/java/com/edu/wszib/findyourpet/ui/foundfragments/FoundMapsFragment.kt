@@ -1,4 +1,4 @@
-package com.edu.wszib.findyourpet.foundfragments
+package com.edu.wszib.findyourpet.ui.foundfragments
 
 import android.Manifest
 import android.app.AlertDialog
@@ -23,6 +23,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.edu.wszib.findyourpet.R
 import com.edu.wszib.findyourpet.databinding.FragmentFoundMapsBinding
+
 import com.edu.wszib.findyourpet.models.FoundPetData
 import com.edu.wszib.findyourpet.models.FoundPetViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -74,7 +75,7 @@ class FoundMapsFragment : Fragment(), OnMapReadyCallback {
         val mapFragment =
             childFragmentManager.findFragmentById(R.id.map_found_layout) as SupportMapFragment
         mapFragment.getMapAsync(this)
-        val args = com.edu.wszib.findyourpet.foundfragments.FoundMapsFragmentArgs.fromBundle(
+        val args = FoundMapsFragmentArgs.fromBundle(
             requireArguments()
         )
         isEditing = args.isEditing
@@ -177,7 +178,7 @@ class FoundMapsFragment : Fragment(), OnMapReadyCallback {
                                 requireActivity().findNavController(R.id.nav_host_fragment)
                             navController.navigate(R.id.foundEditFragment, args)
                         } else {
-                            findNavController().navigate(com.edu.wszib.findyourpet.foundfragments.FoundMapsFragmentDirections.actionFoundMapsFragmentToFoundCreateFragment())
+                            findNavController().navigate(FoundMapsFragmentDirections.actionFoundMapsFragmentToFoundCreateFragment())
                         }
                     }
 
@@ -207,7 +208,7 @@ class FoundMapsFragment : Fragment(), OnMapReadyCallback {
                     val navController = requireActivity().findNavController(R.id.nav_host_fragment)
                     navController.navigate(R.id.foundEditFragment, args)
                 } else {
-                    findNavController().navigate(com.edu.wszib.findyourpet.foundfragments.FoundMapsFragmentDirections.actionFoundMapsFragmentToFoundCreateFragment())
+                    findNavController().navigate(FoundMapsFragmentDirections.actionFoundMapsFragmentToFoundCreateFragment())
                 }
             } else {
                 Toast.makeText(

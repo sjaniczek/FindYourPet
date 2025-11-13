@@ -5,7 +5,7 @@
     android:id="@+id/constraintLayoutCreateFoundEdit"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".foundfragments.FoundEditFragment">
+    tools:context=".ui.foundfragments.FoundEditFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

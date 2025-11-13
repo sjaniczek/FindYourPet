@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.edu.wszib.findyourpet.R
 import com.edu.wszib.findyourpet.R.*
-import com.edu.wszib.findyourpet.lostfragments.LostDetailsFragment
+import com.edu.wszib.findyourpet.ui.lostfragments.LostDetailsFragment
 import com.edu.wszib.findyourpet.models.LostPetData
 import com.edu.wszib.findyourpet.viewholders.LostPetViewHolder
 import com.firebase.ui.database.FirebaseRecyclerAdapter

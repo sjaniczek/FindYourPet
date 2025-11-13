@@ -1,4 +1,4 @@
-package com.edu.wszib.findyourpet.lostfragments
+package com.edu.wszib.findyourpet.ui.lostfragments
 
 import android.app.AlertDialog
 import android.content.Intent
@@ -265,7 +265,7 @@ class LostDetailsFragment : Fragment() {
 
     }
     private fun sendReportToFirebase(message: String) {
-        val currentPostId = arguments?.getString(LostDetailsFragment.EXTRA_POST_KEY)
+        val currentPostId = arguments?.getString(EXTRA_POST_KEY)
         val reportRef = Firebase.database.reference.child("reports").push()
         val reportData = mapOf(
             "postId" to currentPostId,          // ID ogłoszenia, które jest zgłaszane

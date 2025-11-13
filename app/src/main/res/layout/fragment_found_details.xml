@@ -7,7 +7,7 @@
     android:id="@+id/scrollViewDetails"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".foundfragments.FoundDetailsFragment">
+    tools:context=".ui.foundfragments.FoundDetailsFragment">
 
 
     <androidx.constraintlayout.widget.ConstraintLayout

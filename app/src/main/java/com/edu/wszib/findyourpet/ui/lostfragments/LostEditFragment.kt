@@ -1,4 +1,4 @@
-package com.edu.wszib.findyourpet.lostfragments
+package com.edu.wszib.findyourpet.ui.lostfragments
 
 import android.Manifest
 import android.app.Activity

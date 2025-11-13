@@ -1,4 +1,4 @@
-package com.edu.wszib.findyourpet.lostfragments
+package com.edu.wszib.findyourpet.ui.foundfragments
 
 import android.Manifest
 import android.app.Activity
@@ -19,11 +19,11 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import com.edu.wszib.findyourpet.databinding.FragmentCreateLostBinding
+import com.edu.wszib.findyourpet.databinding.FragmentCreateFoundBinding
+
 import com.edu.wszib.findyourpet.inputmasks.DateInputMask
-import com.edu.wszib.findyourpet.inputmasks.TimeInputMask
-import com.edu.wszib.findyourpet.models.LostPetData
-import com.edu.wszib.findyourpet.models.LostPetViewModel
+import com.edu.wszib.findyourpet.models.FoundPetData
+import com.edu.wszib.findyourpet.models.FoundPetViewModel
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -36,18 +36,18 @@ import com.google.firebase.storage.storageMetadata
 import java.text.SimpleDateFormat
 import java.util.*
 
-class LostCreateFragment : Fragment() {
+class FoundCreateFragment : Fragment() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
     private lateinit var storage: FirebaseStorage
-    private var _binding: FragmentCreateLostBinding? = null
+    private var _binding: FragmentCreateFoundBinding? = null
     private val binding get() = _binding!!
     private var imageUri: Uri? = null
-    private val lostPetViewModel: LostPetViewModel by activityViewModels()
+    private val foundPetViewModel: FoundPetViewModel by activityViewModels()
 
     companion object {
-        private const val TAG = "LostCreateFragment"
+        private const val TAG = "FoundCreateFragment"
     }
 
     private val requestPermissionLauncher =
@@ -60,7 +60,8 @@ class LostCreateFragment : Fragment() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK && result.data != null) {
                 imageUri = result.data?.data
-                binding.ivLostPet.setImageURI(imageUri)
+                Log.d(TAG, "Selected imageUri: $imageUri")
+                binding.ivFoundPet.setImageURI(imageUri)
             }
         }
 
@@ -68,7 +69,7 @@ class LostCreateFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentCreateLostBinding.inflate(inflater, container, false)
+        _binding = FragmentCreateFoundBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -78,66 +79,55 @@ class LostCreateFragment : Fragment() {
         auth = Firebase.auth
         database = Firebase.database("https://findyourpet-e77a8-default-rtdb.europe-west1.firebasedatabase.app/")
         storage = Firebase.storage
-
-        DateInputMask(binding.etLostPetDate).listen()
-        TimeInputMask(binding.etLostPetHour).listen()
-
+        DateInputMask(binding.etFoundPetDate).listen()
         restoreDataFromViewModel()
 
-        binding.buttonChooseLostPic.setOnClickListener { checkPermissionAndPickImage() }
+        binding.buttonChooseFoundPic.setOnClickListener { checkPermissionAndPickImage() }
 
         binding.buttonGoToMap.setOnClickListener {
             saveFormDataToViewModel()
             findNavController().navigate(
-                LostCreateFragmentDirections.actionLostCreateFragmentToLostMapsFragment(
-                    false,
-                    LatLng(52.06, 19.25),
-                    "lostpetkey"
+                FoundCreateFragmentDirections.actionFoundCreateFragmentToFoundMapsFragment(
+                    false, LatLng(52.06, 19.25), "foundpetkey"
                 )
             )
         }
 
-        binding.buttonLostAccept.setOnClickListener { uploadImageAndForm() }
+        binding.buttonFoundAccept.setOnClickListener {
+            uploadImageAndForm()
+        }
     }
 
     private fun restoreDataFromViewModel() {
-        lostPetViewModel.lostPetData?.let { data ->
-            with(binding) {
-                rgLostType.findViewWithTag<RadioButton>(data.lostPetType)?.isChecked = true
-                rgLostBehavior.findViewWithTag<RadioButton>(data.lostPetBehavior)?.isChecked = true
-                rgLostReacts.findViewWithTag<RadioButton>(data.lostPetReact)?.isChecked = true
-                etLostPetName.setText(data.lostPetName)
-                etLostAddress.setText(data.lostPetDecodedAddress)
-                etLostPetDate.setText(data.lostPetDate)
-                etLostPetHour.setText(data.lostPetHour)
-                etLostPetAdditionalInfo.setText(data.lostPetAdditionalPetInfo)
-                etLostOwnerName.setText(data.lostPetOwnerName)
-                etLostOwnerNumber.setText(data.lostPetPhoneNumber)
-                etLostOwnerEmail.setText(data.lostPetEmailAddress)
-                etLostOwnerAdditionalInfo.setText(data.lostPetAdditionalOwnerInfo)
-                imageUri = lostPetViewModel.imageUri
-                if (imageUri != null) ivLostPet.setImageURI(imageUri)
-            }
+        foundPetViewModel.foundPetData?.let { data ->
+            binding.rgFoundType.findViewWithTag<RadioButton>(data.foundPetType)?.isChecked = true
+            binding.rgFoundBehavior.findViewWithTag<RadioButton>(data.foundPetBehavior)?.isChecked = true
+            binding.etFoundAddress.setText(data.foundPetDecodedAddress)
+            binding.etFoundPetDate.setText(data.foundPetDate)
+            binding.etFoundPetAdditionalInfo.setText(data.foundPetAdditionalPetInfo)
+            binding.etFoundFinderName.setText(data.foundPetFinderName)
+            binding.etFoundFinderNumber.setText(data.foundPetPhoneNumber)
+            binding.etFoundFinderEmail.setText(data.foundPetEmailAddress)
+            binding.etFoundFinderAdditionalInfo.setText(data.foundPetAdditionalFinderInfo)
+            imageUri = foundPetViewModel.imageUri
+            if (imageUri != null) binding.ivFoundPet.setImageURI(imageUri)
         }
     }
 
     private fun saveFormDataToViewModel() {
-        val data = LostPetData(
-            lostPetName = binding.etLostPetName.text.toString(),
-            lostPetDate = binding.etLostPetDate.text.toString(),
-            lostPetHour = binding.etLostPetHour.text.toString(),
-            lostPetDecodedAddress = binding.etLostAddress.text.toString(),
-            lostPetAdditionalPetInfo = binding.etLostPetAdditionalInfo.text.toString(),
-            lostPetOwnerName = binding.etLostOwnerName.text.toString(),
-            lostPetPhoneNumber = binding.etLostOwnerNumber.text.toString(),
-            lostPetEmailAddress = binding.etLostOwnerEmail.text.toString(),
-            lostPetAdditionalOwnerInfo = binding.etLostOwnerAdditionalInfo.text.toString(),
-            lostPetType = binding.rgLostType.findViewById<RadioButton>(binding.rgLostType.checkedRadioButtonId)?.text.toString(),
-            lostPetReact = binding.rgLostReacts.findViewById<RadioButton>(binding.rgLostReacts.checkedRadioButtonId)?.text.toString(),
-            lostPetBehavior = binding.rgLostBehavior.findViewById<RadioButton>(binding.rgLostBehavior.checkedRadioButtonId)?.text.toString(),
-            lostPetLocation = lostPetViewModel.lostPetData?.lostPetLocation
+        val data = FoundPetData(
+            foundPetDate = binding.etFoundPetDate.text.toString(),
+            foundPetDecodedAddress = binding.etFoundAddress.text.toString(),
+            foundPetAdditionalPetInfo = binding.etFoundPetAdditionalInfo.text.toString(),
+            foundPetFinderName = binding.etFoundFinderName.text.toString(),
+            foundPetPhoneNumber = binding.etFoundFinderNumber.text.toString(),
+            foundPetEmailAddress = binding.etFoundFinderEmail.text.toString(),
+            foundPetAdditionalFinderInfo = binding.etFoundFinderAdditionalInfo.text.toString(),
+            foundPetType = binding.rgFoundType.findViewById<RadioButton>(binding.rgFoundType.checkedRadioButtonId)?.text.toString(),
+            foundPetBehavior = binding.rgFoundBehavior.findViewById<RadioButton>(binding.rgFoundBehavior.checkedRadioButtonId)?.text.toString(),
+            foundPetLocation = foundPetViewModel.foundPetData?.foundPetLocation
         )
-        lostPetViewModel.saveFormData(data, imageUri)
+        foundPetViewModel.saveFormData(data, imageUri)
     }
 
     private fun checkPermissionAndPickImage() {
@@ -158,22 +148,20 @@ class LostCreateFragment : Fragment() {
     }
 
     private fun validateFieldsAndImage(): Boolean {
-        return !(binding.etLostPetName.text.isNullOrEmpty() ||
-                binding.etLostAddress.text.isNullOrEmpty() ||
-                binding.etLostPetDate.text.isNullOrEmpty() ||
-                binding.etLostPetHour.text.isNullOrEmpty() ||
-                binding.etLostOwnerName.text.isNullOrEmpty() ||
-                binding.etLostOwnerEmail.text.isNullOrEmpty() ||
-                binding.etLostOwnerNumber.text.isNullOrEmpty() ||
-                binding.rgLostType.checkedRadioButtonId == -1 ||
-                binding.rgLostBehavior.checkedRadioButtonId == -1 ||
-                binding.rgLostReacts.checkedRadioButtonId == -1 ||
+        return !(binding.etFoundAddress.text.isNullOrEmpty() ||
+                binding.etFoundPetDate.text.isNullOrEmpty() ||
+                binding.etFoundFinderName.text.isNullOrEmpty() ||
+                binding.etFoundFinderEmail.text.isNullOrEmpty() ||
+                binding.etFoundFinderNumber.text.isNullOrEmpty() ||
+                binding.rgFoundType.checkedRadioButtonId == -1 ||
+                binding.rgFoundBehavior.checkedRadioButtonId == -1 ||
                 imageUri == null)
     }
 
     private var isUploading = false
     private fun uploadImageAndForm() {
         if (isUploading) return
+
         saveFormDataToViewModel()
 
         if (!validateFieldsAndImage()) {
@@ -182,7 +170,7 @@ class LostCreateFragment : Fragment() {
         }
 
         isUploading = true
-        binding.buttonLostAccept.isEnabled = false
+        binding.buttonFoundAccept.isEnabled = false
         binding.progressBar.visibility = View.VISIBLE
 
         val userId = auth.currentUser?.uid ?: run {
@@ -192,8 +180,8 @@ class LostCreateFragment : Fragment() {
         }
 
         val databaseRef = database.reference
-        val lostPetKey = databaseRef.child("lost_pets").push().key ?: run {
-            Log.w(TAG, "Nie udało się otrzymać klucza lostPetKey")
+        val foundPetKey = databaseRef.child("found_pets").push().key ?: run {
+            Log.w(TAG, "Nie udało się otrzymać klucza foundPetKey")
             resetUploadUI()
             return
         }
@@ -209,30 +197,30 @@ class LostCreateFragment : Fragment() {
         val metadata = storageMetadata {
             setContentType(mimeType)
             setCustomMetadata("owner", userId)
-            setCustomMetadata("postId", lostPetKey)
+            setCustomMetadata("postId", foundPetKey)
         }
 
         val fileRef = storage.reference.child("images/${UUID.randomUUID()}")
         fileRef.putFile(imageUri!!, metadata).addOnSuccessListener { taskSnapshot ->
             taskSnapshot.storage.downloadUrl.addOnSuccessListener { uri ->
                 val imageUrl = uri.toString()
-                val formData = lostPetViewModel.lostPetData!!
-                val lostPetData = formData.copy(
-                    lostPetId = lostPetKey,
-                    lostPetOwnerId = userId,
-                    lostPetImageUrl = imageUrl,
-                    lostPetDateAdded = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
+                val formData = foundPetViewModel.foundPetData!!
+                val foundPetData = formData.copy(
+                    foundPetId = foundPetKey,
+                    foundPetOwnerId = userId,
+                    foundPetImageUrl = imageUrl,
+                    foundPetDateAdded = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
                 )
-                val lostPetValues = lostPetData.toMap()
+                val foundPetValues = foundPetData.toMap()
                 val updates = hashMapOf<String, Any>(
-                    "/lost_pets/$lostPetKey" to lostPetValues,
-                    "/users/$userId/lost_pets/$lostPetKey" to lostPetValues
+                    "/found_pets/$foundPetKey" to foundPetValues,
+                    "/users/$userId/found_pets/$foundPetKey" to foundPetValues
                 )
                 database.reference.updateChildren(updates).addOnSuccessListener {
                     Toast.makeText(context, "Ogłoszenie dodane", Toast.LENGTH_SHORT).show()
                     clearData()
                     findNavController().navigate(
-                        LostCreateFragmentDirections.actionLostCreateFragmentToMainFragment()
+                        FoundCreateFragmentDirections.actionFoundCreateFragmentToMainFragment()
                     )
                 }.addOnFailureListener { e ->
                     Log.e(TAG, "Error uploading form: ${e.message}", e)
@@ -253,13 +241,13 @@ class LostCreateFragment : Fragment() {
 
     private fun resetUploadUI() {
         isUploading = false
-        binding.buttonLostAccept.isEnabled = true
+        binding.buttonFoundAccept.isEnabled = true
         binding.progressBar.visibility = View.GONE
     }
 
     private fun clearData() {
-        lostPetViewModel.lostPetData = null
-        lostPetViewModel.imageUri = null
+        foundPetViewModel.foundPetData = null
+        foundPetViewModel.imageUri = null
         imageUri = null
     }
 

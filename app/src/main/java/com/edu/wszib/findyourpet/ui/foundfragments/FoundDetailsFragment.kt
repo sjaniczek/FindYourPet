@@ -1,4 +1,4 @@
-package com.edu.wszib.findyourpet.foundfragments
+package com.edu.wszib.findyourpet.ui.foundfragments
 
 import android.app.AlertDialog
 import android.content.Intent
@@ -22,8 +22,8 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.edu.wszib.findyourpet.R
 import com.edu.wszib.findyourpet.databinding.FragmentFoundDetailsBinding
-import com.edu.wszib.findyourpet.lostfragments.LostDetailsFragment
-import com.edu.wszib.findyourpet.lostfragments.LostDetailsFragment.Companion
+import com.edu.wszib.findyourpet.ui.lostfragments.LostDetailsFragment
+import com.edu.wszib.findyourpet.ui.lostfragments.LostDetailsFragment.Companion
 import com.edu.wszib.findyourpet.models.FoundPetData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth

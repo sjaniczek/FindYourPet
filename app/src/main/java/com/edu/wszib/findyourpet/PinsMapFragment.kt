@@ -17,8 +17,8 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.edu.wszib.findyourpet.databinding.FragmentPinsMapBinding
-import com.edu.wszib.findyourpet.foundfragments.FoundDetailsFragment
-import com.edu.wszib.findyourpet.lostfragments.LostDetailsFragment
+import com.edu.wszib.findyourpet.ui.foundfragments.FoundDetailsFragment
+import com.edu.wszib.findyourpet.ui.lostfragments.LostDetailsFragment
 import com.edu.wszib.findyourpet.models.FoundPetData
 import com.edu.wszib.findyourpet.models.LostPetData
 import com.google.android.gms.maps.CameraUpdateFactory
