@@ -6,8 +6,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.edu.wszib.findyourpet.databinding.FragmentChooseBinding
+import com.edu.wszib.findyourpet.models.FoundPetViewModel
+import com.edu.wszib.findyourpet.models.FoundPetViewModelFactory
+import com.edu.wszib.findyourpet.models.LostPetViewModel
+import com.edu.wszib.findyourpet.models.LostPetViewModelFactory
+import com.edu.wszib.findyourpet.repository.FoundRepository
+import com.edu.wszib.findyourpet.repository.LostRepository
 import com.google.firebase.auth.FirebaseAuth
 
 
@@ -16,6 +23,12 @@ class ChooseFragment : Fragment() {
     private var _binding: FragmentChooseBinding? = null
     private val binding: FragmentChooseBinding
         get() = _binding!!
+    private val foundViewModel: FoundPetViewModel by activityViewModels {
+        FoundPetViewModelFactory(FoundRepository())
+    }
+    private val lostViewModel: LostPetViewModel by activityViewModels {
+        LostPetViewModelFactory(LostRepository())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,6 +44,9 @@ class ChooseFragment : Fragment() {
         val user = FirebaseAuth.getInstance().currentUser
         binding.buttonGoToLostPet.setOnClickListener {
             if (user != null) {
+                lostViewModel.clearData()
+                lostViewModel.resetEditData()
+                lostViewModel.resetAllStates()
                 findNavController().navigate(ChooseFragmentDirections.actionChooseFragmentToLostCreateFragment())
             } else {
                 showDialog()
@@ -38,6 +54,9 @@ class ChooseFragment : Fragment() {
         }
         binding.buttonGoToFoundPet.setOnClickListener {
             if (user != null) {
+                foundViewModel.clearData()
+                foundViewModel.resetEditData()
+                foundViewModel.resetAllStates()
                 findNavController().navigate(ChooseFragmentDirections.actionChooseFragmentToFoundCreateFragment())
             } else {
                 showDialog()

@@ -1,8 +1,7 @@
 package com.edu.wszib.findyourpet.repository
 
 import android.net.Uri
-import android.util.Log
-import com.edu.wszib.findyourpet.models.FoundPetData
+import com.edu.wszib.findyourpet.models.LostPetData
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
@@ -16,7 +15,7 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.util.UUID
 
-class FoundRepository {
+class LostRepository {
 
     private val auth = FirebaseAuth.getInstance()
     private val database = Firebase.database(
@@ -25,11 +24,11 @@ class FoundRepository {
     private val storage = FirebaseStorage.getInstance()
 
     // Pobranie pojedynczego wpisu (once)
-    fun getFoundPetOnce(foundPetId: String, callback: (FoundPetData?) -> Unit) {
-        database.reference.child("found_pets").child(foundPetId)
+    fun getLostPetOnce(lostPetId: String, callback: (LostPetData?) -> Unit) {
+        database.reference.child("lost_pets").child(lostPetId)
             .get()
             .addOnSuccessListener { snapshot ->
-                val data = snapshot.getValue(FoundPetData::class.java)
+                val data = snapshot.getValue(LostPetData::class.java)
                 callback(data)
             }
             .addOnFailureListener {
@@ -37,21 +36,21 @@ class FoundRepository {
             }
     }
 
-    suspend fun uploadFoundPet(data: FoundPetData, imageUri: Uri): Result<Unit> = withContext(Dispatchers.IO) {
+    suspend fun uploadLostPet(data: LostPetData, imageUri: Uri): Result<Unit> = withContext(Dispatchers.IO) {
         try {
             val userId = auth.currentUser?.uid ?: return@withContext Result.failure(Exception("Brak użytkownika"))
-            val key = database.reference.child("found_pets").push().key
+            val key = database.reference.child("lost_pets").push().key
                 ?: return@withContext Result.failure(Exception("Nie udało się wygenerować klucza"))
 
             val fileRef = storage.reference.child("images/${UUID.randomUUID()}")
             fileRef.putFile(imageUri).await()
             val imageUrl = fileRef.downloadUrl.await().toString()
 
-            val updatedData = data.copy(foundPetOwnerId = userId, foundPetId = key, foundPetImageUrl = imageUrl)
+            val updatedData = data.copy(lostPetOwnerId = userId, lostPetId = key, lostPetImageUrl = imageUrl)
             val values = updatedData.toMap()
             val updates = mapOf(
-                "/found_pets/$key" to values,
-                "/users/$userId/found_pets/$key" to values
+                "/lost_pets/$key" to values,
+                "/users/$userId/lost_pets/$key" to values
             )
             database.reference.updateChildren(updates).await()
             Result.success(Unit)
@@ -60,7 +59,7 @@ class FoundRepository {
         }
     }
 
-    suspend fun updateFoundPet(foundPetId: String, data: FoundPetData, newImageUri: Uri?): Result<Unit> = withContext(Dispatchers.IO) {
+    suspend fun updateLostPet(lostPetId: String, data: LostPetData, newImageUri: Uri?): Result<Unit> = withContext(Dispatchers.IO) {
         try {
             val userId = auth.currentUser?.uid ?: return@withContext Result.failure(Exception("Brak użytkownika"))
 
@@ -68,14 +67,14 @@ class FoundRepository {
                 val fileRef = storage.reference.child("images/${UUID.randomUUID()}")
                 fileRef.putFile(newImageUri).await()
                 fileRef.downloadUrl.await().toString()
-            } else data.foundPetImageUrl ?: ""
+            } else data.lostPetImageUrl ?: ""
 
-            val updatedData = data.copy(foundPetOwnerId = userId, foundPetImageUrl = imageUrl)
+            val updatedData = data.copy(lostPetOwnerId = userId, lostPetImageUrl = imageUrl)
             val values = updatedData.toMap()
 
             val updates = mapOf(
-                "/found_pets/$foundPetId" to values,
-                "/users/$userId/found_pets/$foundPetId" to values
+                "/lost_pets/$lostPetId" to values,
+                "/users/$userId/lost_pets/$lostPetId" to values
             )
 
             database.reference.updateChildren(updates).await()
@@ -84,14 +83,14 @@ class FoundRepository {
             Result.failure(e)
         }
     }
-    suspend fun deleteFoundPet(foundPetId: String): Result<Unit> = withContext(Dispatchers.IO) {
+    suspend fun deleteLostPet(lostPetId: String): Result<Unit> = withContext(Dispatchers.IO) {
         try {
             val userId = FirebaseAuth.getInstance().currentUser?.uid
                 ?: return@withContext Result.failure(Exception("Brak użytkownika"))
 
             val updates = mapOf<String, Any?>(
-                "/found_pets/$foundPetId" to null,
-                "/users/$userId/found_pets/$foundPetId" to null
+                "/lost_pets/$lostPetId" to null,
+                "/users/$userId/lost_pets/$lostPetId" to null
             )
 
             FirebaseDatabase.getInstance().reference.updateChildren(updates).await()
@@ -101,13 +100,13 @@ class FoundRepository {
         }
     }
 
-    suspend fun sendReport(foundPetId: String, message: String, userId: String): Result<Unit> =
+    suspend fun sendReport(lostPetId: String, message: String, userId: String): Result<Unit> =
         withContext(Dispatchers.IO) {
             try {
                 val reportRef = database.reference.child("reports").push()
 
                 val reportData = mapOf(
-                    "postId" to foundPetId,
+                    "postId" to lostPetId,
                     "userId" to userId,
                     "message" to message,
                     "timestamp" to System.currentTimeMillis()
@@ -121,17 +120,5 @@ class FoundRepository {
                 Result.failure(e)
             }
         }
-
-
-    fun getAllFoundPets(callback: (List<FoundPetData>) -> Unit) {
-        database.reference.child("found").get()
-            .addOnSuccessListener { snapshot ->
-                val list = snapshot.children.mapNotNull { it.getValue(FoundPetData::class.java) }
-                callback(list)
-            }
-            .addOnFailureListener {
-                callback(emptyList())
-            }
-    }
     fun getCurrentUserId(): String? = auth.currentUser?.uid
 }

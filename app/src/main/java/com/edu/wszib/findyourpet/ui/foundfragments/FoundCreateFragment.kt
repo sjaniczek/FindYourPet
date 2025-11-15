@@ -44,27 +44,28 @@ class FoundCreateFragment : Fragment() {
 
     private var _binding: FragmentCreateFoundBinding? = null
     private val binding get() = _binding!!
-    private lateinit var dateAdded: String
     private var imageUri: Uri? = null
     private val viewModel: FoundPetViewModel by activityViewModels {
         FoundPetViewModelFactory(FoundRepository())
     }
-
-    private val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) launchImagePicker()
-        else Toast.makeText(context, "Brak uprawnień do zdjęć", Toast.LENGTH_SHORT).show()
-    }
-
-    private val getImageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK && result.data != null) {
-            imageUri = result.data?.data
-            binding.ivFoundPet.setImageURI(imageUri)
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) launchImagePicker()
+            else Toast.makeText(context, "Brak uprawnień do zdjęć", Toast.LENGTH_SHORT).show()
         }
-    }
+    private val getImageLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK && result.data != null) {
+                imageUri = result.data?.data
+                binding.ivFoundPet.setImageURI(imageUri)
+            }
+        }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ) =
         FragmentCreateFoundBinding.inflate(inflater, container, false).also { _binding = it }.root
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -89,6 +90,7 @@ class FoundCreateFragment : Fragment() {
                         binding.buttonFoundAccept.isEnabled = true
                         if (it.isSuccess) {
                             Toast.makeText(context, "Ogłoszenie dodane", Toast.LENGTH_SHORT).show()
+                            viewModel.resetUploadState()
                             viewModel.clearData()
                             findNavController().navigate(
                                 FoundCreateFragmentDirections.actionFoundCreateFragmentToMainFragment()
@@ -115,7 +117,8 @@ class FoundCreateFragment : Fragment() {
             )
         )
     }
-    private fun populateFieldsFromViewModel() = with(binding){
+
+    private fun populateFieldsFromViewModel() = with(binding) {
 
         viewModel.foundPetData.let { data ->
             etFoundPetDate.setText(data.foundPetDate)
@@ -126,15 +129,18 @@ class FoundCreateFragment : Fragment() {
             etFoundPetAdditionalInfo.setText(data.foundPetAdditionalPetInfo)
             etFoundFinderAdditionalInfo.setText(data.foundPetAdditionalFinderInfo)
             imageUri = viewModel.imageUri
-            if (imageUri != null)  ivFoundPet.setImageURI(imageUri)
+            if (imageUri != null) ivFoundPet.setImageURI(imageUri)
             rgFoundType.children.forEach { rb ->
-                if (rb is RadioButton && rb.text.toString() == data.foundPetType) rb.isChecked = true
+                if (rb is RadioButton && rb.text.toString() == data.foundPetType) rb.isChecked =
+                    true
             }
             rgFoundBehavior.children.forEach { rb ->
-                if (rb is RadioButton && rb.text.toString() == data.foundPetBehavior) rb.isChecked = true
+                if (rb is RadioButton && rb.text.toString() == data.foundPetBehavior) rb.isChecked =
+                    true
             }
         }
     }
+
     private fun saveFieldsToViewModel() = with(binding) {
         viewModel.foundPetData.apply {
             foundPetDate = etFoundPetDate.text.toString()
@@ -142,20 +148,31 @@ class FoundCreateFragment : Fragment() {
             foundPetFinderName = etFoundFinderName.text.toString()
             foundPetPhoneNumber = etFoundFinderNumber.text.toString()
             foundPetEmailAddress = etFoundFinderEmail.text.toString()
-            foundPetBehavior = rgFoundBehavior.findViewById<RadioButton>(rgFoundBehavior.checkedRadioButtonId)?.text.toString()
-            foundPetType = rgFoundType.findViewById<RadioButton>(rgFoundType.checkedRadioButtonId)?.text.toString()
+            foundPetBehavior =
+                rgFoundBehavior.findViewById<RadioButton>(rgFoundBehavior.checkedRadioButtonId)?.text.toString()
+            foundPetType =
+                rgFoundType.findViewById<RadioButton>(rgFoundType.checkedRadioButtonId)?.text.toString()
             foundPetAdditionalPetInfo = etFoundPetAdditionalInfo.text.toString()
             foundPetAdditionalFinderInfo = etFoundFinderAdditionalInfo.text.toString()
             viewModel.imageUri = imageUri
         }
     }
+
     private fun requestImagePermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED)
+            if (ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.READ_MEDIA_IMAGES
+                ) != PackageManager.PERMISSION_GRANTED
+            )
                 requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES)
             else launchImagePicker()
         } else {
-            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+            if (ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED
+            )
                 requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
             else launchImagePicker()
         }
@@ -169,46 +186,53 @@ class FoundCreateFragment : Fragment() {
     private fun validateAndUpload() {
         val location = viewModel.foundPetData.foundPetLocation
         if (!validateFields() || imageUri == null || location == null) {
-            Toast.makeText(context, "Wypełnij pola, wybierz zdjęcie i lokalizację", Toast.LENGTH_SHORT).show()
+            Log.d("uploadtest", "validateAndUpload: "+imageUri.toString()+location.toString())
+            Toast.makeText(
+                context,
+                "Wypełnij pola, wybierz zdjęcie i lokalizację",
+                Toast.LENGTH_SHORT
+            ).show()
             return
         }
-
         binding.buttonFoundAccept.isEnabled = false
-
-        val data = FoundPetData(
-            foundPetType = binding.rgFoundType.findViewById<RadioButton>(binding.rgFoundType.checkedRadioButtonId)?.text.toString(),
-            foundPetDate = binding.etFoundPetDate.text.toString(),
-            foundPetDecodedAddress = viewModel.foundPetData.foundPetDecodedAddress ?: "",
-            foundPetFinderName = binding.etFoundFinderName.text.toString(),
-            foundPetPhoneNumber = binding.etFoundFinderNumber.text.toString(),
-            foundPetEmailAddress = binding.etFoundFinderEmail.text.toString(),
-            foundPetBehavior = binding.rgFoundBehavior.findViewById<RadioButton>(binding.rgFoundBehavior.checkedRadioButtonId)?.text.toString(),
-            foundPetAdditionalPetInfo = binding.etFoundPetAdditionalInfo.text.toString(),
-            foundPetAdditionalFinderInfo = binding.etFoundFinderAdditionalInfo.text.toString(),
-            foundPetLocation = location,
-            foundPetDateAdded = getCurrentDateTime()
-        )
-
+        val data = with(binding) {
+            FoundPetData(
+                foundPetType = rgFoundType.findViewById<RadioButton>(rgFoundType.checkedRadioButtonId)?.text.toString(),
+                foundPetDate = etFoundPetDate.text.toString(),
+                foundPetDecodedAddress = viewModel.foundPetData.foundPetDecodedAddress ?: "",
+                foundPetFinderName = etFoundFinderName.text.toString(),
+                foundPetPhoneNumber = etFoundFinderNumber.text.toString(),
+                foundPetEmailAddress = etFoundFinderEmail.text.toString(),
+                foundPetBehavior = rgFoundBehavior.findViewById<RadioButton>(rgFoundBehavior.checkedRadioButtonId)?.text.toString(),
+                foundPetAdditionalPetInfo = etFoundPetAdditionalInfo.text.toString(),
+                foundPetAdditionalFinderInfo = etFoundFinderAdditionalInfo.text.toString(),
+                foundPetLocation = location,
+                foundPetDateAdded = getCurrentDateTime()
+            )
+        }
         viewModel.uploadFoundPet(data, imageUri!!)
     }
+
     private fun getCurrentDateTime(): String {
         val calendar = Calendar.getInstance()
         val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
         return dateFormat.format(calendar.time)
     }
 
-    private fun validateFields(): Boolean {
-        return binding.etFoundPetDate.text.isNotEmpty() &&
-                binding.etFoundAddress.text.isNotEmpty() &&
-                binding.etFoundFinderName.text.isNotEmpty() &&
-                binding.etFoundFinderNumber.text.isNotEmpty() &&
-                binding.etFoundFinderEmail.text.isNotEmpty() &&
-                binding.rgFoundType.checkedRadioButtonId != -1 &&
-                binding.rgFoundBehavior.checkedRadioButtonId != -1
+    private fun validateFields(): Boolean = with(binding){
+        return  etFoundPetDate.text.isNotEmpty() &&
+                etFoundAddress.text.isNotEmpty() &&
+                etFoundFinderName.text.isNotEmpty() &&
+                etFoundFinderNumber.text.isNotEmpty() &&
+                etFoundFinderEmail.text.isNotEmpty() &&
+                rgFoundType.checkedRadioButtonId != -1 &&
+                rgFoundBehavior.checkedRadioButtonId != -1
     }
+
     companion object {
         private const val TAG = "FoundCreateFragment"
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

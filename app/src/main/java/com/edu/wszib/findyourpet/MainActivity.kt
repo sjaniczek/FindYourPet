@@ -35,9 +35,13 @@ lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
 private lateinit var auth: FirebaseAuth
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
-    val repository = FoundRepository()
+    private val foundRepository = FoundRepository()
     val foundPetViewModel: FoundPetViewModel by viewModels {
-        FoundPetViewModelFactory(repository)
+        FoundPetViewModelFactory(foundRepository)
+    }
+    private val lostRepository = FoundRepository()
+    val lostPetViewModel: FoundPetViewModel by viewModels {
+        FoundPetViewModelFactory(lostRepository)
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

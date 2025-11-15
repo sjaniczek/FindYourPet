@@ -128,6 +128,7 @@ class FoundMapsFragment : Fragment(), OnMapReadyCallback {
 
         dialog.show()
     }
+
     private fun searchLocation(query: String) {
         val geocoder = Geocoder(requireContext(), Locale.getDefault())
         try {
@@ -136,14 +137,16 @@ class FoundMapsFragment : Fragment(), OnMapReadyCallback {
                 val location = LatLng(addresses[0].latitude, addresses[0].longitude)
                 googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 14f))
             } else {
-                Toast.makeText(requireContext(), "Nie znaleziono lokalizacji", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Nie znaleziono lokalizacji", Toast.LENGTH_SHORT)
+                    .show()
             }
         } catch (e: Exception) {
             Toast.makeText(requireContext(), "Błąd: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
-        private fun decodeLocation(currentLocation: LatLng) {
-            val geocoder = Geocoder(requireContext(), Locale.getDefault())
+
+    private fun decodeLocation(currentLocation: LatLng) {
+        val geocoder = Geocoder(requireContext(), Locale.getDefault())
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             geocoder.getFromLocation(
                 currentLocation.latitude,
@@ -158,16 +161,6 @@ class FoundMapsFragment : Fragment(), OnMapReadyCallback {
                                 currentLocation.latitude,
                                 currentLocation.longitude
                             )
-                        Log.i("decodeLocation", decodedAddress.toString())
-                        Log.i(
-                            "decodeLocation",
-                            foundPetViewModel.foundPetData?.foundPetDecodedAddress.toString()
-                        )
-                        Log.i("decodeLocation", foundPetViewModel.toString())
-                        Log.i(
-                            "decodeLocation",
-                            foundPetViewModel.foundPetData?.foundPetLocation.toString()
-                        )
                         activity?.runOnUiThread {
                             Toast.makeText(
                                 context,

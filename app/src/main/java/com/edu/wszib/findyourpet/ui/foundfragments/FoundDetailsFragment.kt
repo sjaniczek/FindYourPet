@@ -4,52 +4,38 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.EditText
 import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import androidx.navigation.findNavController
+import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.edu.wszib.findyourpet.R
 import com.edu.wszib.findyourpet.databinding.FragmentFoundDetailsBinding
-import com.edu.wszib.findyourpet.ui.lostfragments.LostDetailsFragment
-import com.edu.wszib.findyourpet.ui.lostfragments.LostDetailsFragment.Companion
-import com.edu.wszib.findyourpet.models.FoundPetData
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.database
-import com.google.firebase.database.ktx.getValue
-import com.google.firebase.ktx.Firebase
+import com.edu.wszib.findyourpet.models.FoundPetViewModel
+import com.edu.wszib.findyourpet.models.FoundPetViewModelFactory
+import com.edu.wszib.findyourpet.repository.FoundRepository
 import com.squareup.picasso.Picasso
-
+import kotlinx.coroutines.launch
 
 class FoundDetailsFragment : Fragment() {
-    private lateinit var editMenuItem: MenuItem
-    private lateinit var deleteMenuItem: MenuItem
-    private lateinit var auth: FirebaseAuth
-    private lateinit var foundPetKey: String
-    private lateinit var database: FirebaseDatabase
-    private lateinit var databaseRef: DatabaseReference
-    private var foundPetListener: ValueEventListener? = null
-    private var _binding: FragmentFoundDetailsBinding? = null
-    private val binding: FragmentFoundDetailsBinding
-        get() = _binding!!
 
+    private var _binding: FragmentFoundDetailsBinding? = null
+    private val binding get() = _binding!!
+
+    private lateinit var foundPetKey: String
+    private var editMenuItem: MenuItem? = null
+    private var deleteMenuItem: MenuItem? = null
+
+    private val viewModel: FoundPetViewModel by activityViewModels {
+        FoundPetViewModelFactory(FoundRepository())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,271 +47,175 @@ class FoundDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         foundPetKey = requireArguments().getString(EXTRA_POST_KEY)
             ?: throw IllegalArgumentException("Must pass EXTRA_POST_KEY")
+        viewModel.loadFoundPet(foundPetKey)
+        setupMenu()
+        observeFoundPetData()
+        observeReportState()
+        observeDeleteState()
+        setupReportButton()
+    }
 
-        // Initialize Firebase auth
-        auth = Firebase.auth
-
-        // Initialize Database
-        database = Firebase.database(databaseUrl)
-        databaseRef = database.reference.child("found_pets").child(foundPetKey)
-
+    private fun setupMenu() {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                // Add menu items here
                 menuInflater.inflate(R.menu.menu_found_pet_details, menu)
                 editMenuItem = menu.findItem(R.id.action_edit_pet)
                 deleteMenuItem = menu.findItem(R.id.action_delete_pet)
+
+                viewModel.editData.value?.let { data ->
+                    val isOwner = viewModel.getCurrentUserId() == data.foundPetOwnerId
+                    editMenuItem?.isVisible = isOwner
+                    deleteMenuItem?.isVisible = isOwner
+                }
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                // Handle the menu selection
                 return when (menuItem.itemId) {
                     R.id.action_edit_pet -> {
-                        navigateToFoundPet()
+                        navigateToFoundPetEdit()
                         true
                     }
-
                     R.id.action_delete_pet -> {
-                        deleteFoundPet()
+                        confirmAndDeleteFoundPet()
                         true
                     }
-
                     else -> false
                 }
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
 
+    private fun observeFoundPetData() {
+        viewModel.editData.observe(viewLifecycleOwner, Observer { data ->
+            data?.let {
+                val isOwner = viewModel.getCurrentUserId() == it.foundPetOwnerId
+                editMenuItem?.isVisible = isOwner
+                deleteMenuItem?.isVisible = isOwner
+
+                binding.apply {
+                    val imageUrl = if (it.foundPetImageUrl.isNullOrEmpty()) DEFAULT_IMAGE_URL else it.foundPetImageUrl
+                    Picasso.get().load(imageUrl)
+                        .placeholder(R.drawable.pets)
+                        .error(R.drawable.pets)
+                        .into(ivPetImage)
+
+                    tvFoundDetailsPetDecodedAddress.text = it.foundPetDecodedAddress
+                    tvFoundDetailsPetType.text = getString(R.string.details_found_pet_type, it.foundPetType)
+                    tvFoundDetailsPetDate.text = getString(R.string.details_found_pet_date, it.foundPetDate)
+                    tvFoundDetailsPetBehavior.text = getString(R.string.details_pet_behavior, it.foundPetBehavior)
+                    tvFoundDetailsPetAdditionalInfo.text = getString(R.string.details_pet_additional, it.foundPetAdditionalPetInfo)
+                    tvFoundDetailsPetFinderName.text = getString(R.string.details_pet_finder_name, it.foundPetFinderName)
+                    tvFoundDetailsPetPhoneNumber.text = getString(R.string.details_pet_finder_number, it.foundPetPhoneNumber)
+                    tvFoundDetailsPetEmailAddress.text = getString(R.string.details_pet_finder_email, it.foundPetEmailAddress)
+                    tvFoundDetailsPetOwnerAdditionalInfo.text = getString(R.string.details_pet_finder_additional, it.foundPetAdditionalFinderInfo)
+
+                    foundDetailsMapButton.setOnClickListener { loc ->
+                        it.foundPetLocation?.let { loc ->
+                            val uri = Uri.parse("geo:0,0?q=${loc.latitude},${loc.longitude}")
+                            val mapIntent = Intent(Intent.ACTION_VIEW, uri)
+                            mapIntent.setPackage("com.google.android.apps.maps")
+                            startActivity(mapIntent)
+                        }
+                    }
+
+                    foundPetPhoneButton.setOnClickListener {
+                        val dialIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:${data.foundPetPhoneNumber}"))
+                        startActivity(dialIntent)
+                    }
+
+                    foundDetailsSmsButton.setOnClickListener {
+                        val smsUri = Uri.parse("smsto:${data.foundPetPhoneNumber}")
+                        val smsIntent = Intent(Intent.ACTION_SENDTO, smsUri)
+                        smsIntent.putExtra("sms_body", "Dzień dobry, kontaktuję się w sprawie odnalezionego zwierzaka.")
+                        startActivity(smsIntent)
+                    }
+                }
+            }
+        })
+    }
+    private fun observeReportState() {
+        lifecycleScope.launch {
+            viewModel.reportState.collect { result ->
+                result?.let {
+                    if (it.isSuccess) {
+                        Toast.makeText(requireContext(), "Zgłoszenie wysłane", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(requireContext(), "Błąd podczas wysyłania zgłoszenia", Toast.LENGTH_SHORT).show()
+                    }
+
+                    viewModel.resetReportState()
+                }
+            }
+        }
+    }
+    private fun setupReportButton() {
         binding.buttonReportFound.setOnClickListener {
             val builder = AlertDialog.Builder(requireContext())
-            builder.setTitle("Zgłoś ogłoszenie")
+                .setTitle("Zgłoś ogłoszenie")
 
-            val input = EditText(requireContext())
-            input.hint = "Wpisz powód zgłoszenia"
+            val input = EditText(requireContext()).apply { hint = "Wpisz powód zgłoszenia" }
             builder.setView(input)
 
             builder.setPositiveButton("Wyślij") { dialog, _ ->
                 val message = input.text.toString().trim()
                 if (message.isNotEmpty()) {
-                    sendReportToFirebase(message)
-                    Toast.makeText(requireContext(), "Zgłoszenie wysłane", Toast.LENGTH_SHORT)
-                        .show()
+                    viewModel.sendReport(foundPetKey, message)
+
                 } else {
-                    Toast.makeText(
-                        requireContext(),
-                        "Treść zgłoszenia nie może być pusta",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(requireContext(), "Treść zgłoszenia nie może być pusta", Toast.LENGTH_SHORT).show()
                 }
                 dialog.dismiss()
             }
-            builder.setNegativeButton("Anuluj") { dialog, _ ->
-                dialog.cancel()
-            }
+
+            builder.setNegativeButton("Anuluj") { dialog, _ -> dialog.cancel() }
 
             builder.show()
         }
     }
+    private fun observeDeleteState() {
+        lifecycleScope.launch {
+            viewModel.deleteState.collect { result ->
+                result ?: return@collect
 
-    private fun deleteFoundPet() {
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        if (currentUser != null) {
-            val userId = currentUser.uid
-
-            val confirmationDialog = AlertDialog.Builder(requireContext())
-                .setTitle("Usuń ogłoszenie")
-                .setMessage("Czy jesteś pewny, że chcesz usunąć to ogłoszenie?")
-                .setPositiveButton("Tak") { _, _ ->
-                    // User clicked "Yes," proceed with the deletion
-                    // Create a map to delete the post from both locations in a single update
-                    val childUpdates = HashMap<String, Any?>()
-                    childUpdates["/found_pets/$foundPetKey"] = null
-                    childUpdates["/users/$userId/found_pets/$foundPetKey"] = null
-
-                    database.reference.updateChildren(childUpdates)
-                        .addOnSuccessListener {
-                            // Post deleted successfully
-                            // Navigate back to the previous fragment using NavController
-                            val navController = findNavController()
-                            navController.popBackStack()
-                        }
-                        .addOnFailureListener { e ->
-                            // Failed to delete post
-                            Toast.makeText(
-                                requireContext(),
-                                "Nie udało się usunąć: ${e.message}",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
+                if (result.isSuccess) {
+                    Toast.makeText(requireContext(), "Usunięto ogłoszenie", Toast.LENGTH_SHORT).show()
+                    findNavController().navigate(R.id.mainFragment)
+                } else {
+                    Toast.makeText(requireContext(), "Błąd podczas usuwania", Toast.LENGTH_SHORT).show()
                 }
-                .setNegativeButton("Anuluj") { _, _ ->
-                    // User clicked "Cancel," do nothing
-                }
-                .create()
 
-            confirmationDialog.show()
+                viewModel.resetDeleteState()
+            }
         }
     }
-
-    override fun onStart() {
-        super.onStart()
-
-        // Add value event listener to the post
-        val foundPetListener = object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                // Get Post object and use the values to update the UI
-                val foundPetData = dataSnapshot.getValue<FoundPetData>()
-                foundPetData?.let {
-                    val ownerId = foundPetData.foundPetOwnerId
-                    editMenuItem.isVisible = isOwner(ownerId)
-                    deleteMenuItem.isVisible = isOwner(ownerId)
-
-                    with(binding) {
-                        if (foundPetData.foundPetImageUrl.isNullOrEmpty()) {
-                            Picasso.get()
-                                .load(DEFAULT_IMAGE_URL)
-                                .into(ivPetImage)
-                        } else {
-                            Picasso.get()
-                                .load(foundPetData.foundPetImageUrl)
-                                .placeholder(R.drawable.pets)
-                                .error(R.drawable.pets)
-                                .into(ivPetImage)
-                        }
-                        tvFoundDetailsPetDecodedAddress.text =
-                            foundPetData.foundPetDecodedAddress
-                        tvFoundDetailsPetType.text =
-                            getString(R.string.details_found_pet_type, foundPetData.foundPetType)
-                        tvFoundDetailsPetDate.text =
-                            getString(R.string.details_found_pet_date, foundPetData.foundPetDate)
-                        tvFoundDetailsPetBehavior.text = getString(
-                            R.string.details_pet_behavior,
-                            foundPetData.foundPetBehavior
-                        )
-                        tvFoundDetailsPetAdditionalInfo.text = getString(
-                            R.string.details_pet_additional,
-                            foundPetData.foundPetAdditionalPetInfo
-                        )
-                        tvFoundDetailsPetFinderName.text = getString(
-                            R.string.details_pet_finder_name,
-                            foundPetData.foundPetFinderName
-                        )
-                        tvFoundDetailsPetPhoneNumber.text = getString(
-                            R.string.details_pet_finder_number,
-                            foundPetData.foundPetPhoneNumber
-                        )
-                        tvFoundDetailsPetEmailAddress.text = getString(
-                            R.string.details_pet_finder_email,
-                            foundPetData.foundPetEmailAddress
-                        )
-                        tvFoundDetailsPetOwnerAdditionalInfo.text = getString(
-                            R.string.details_pet_finder_additional,
-                            foundPetData.foundPetAdditionalFinderInfo
-                        )
-                    }
-                    binding.foundDetailsMapButton.setOnClickListener {
-                        val longitude = foundPetData.foundPetLocation?.longitude
-                        val latitude = foundPetData.foundPetLocation?.latitude
-                        val uri = Uri.parse("geo:,$longitude?q=$latitude,$longitude")
-
-                        // Start the map application
-                        val mapIntent = Intent(Intent.ACTION_VIEW, uri)
-                        mapIntent.setPackage("com.google.android.apps.maps") // This will ensure it opens in Google Maps
-                        startActivity(mapIntent)
-                    }
-                    binding.foundPetPhoneButton.setOnClickListener {
-                        val phoneNumber = foundPetData.foundPetPhoneNumber
-                        val dialIntent = Intent(Intent.ACTION_DIAL)
-                        dialIntent.data = Uri.parse("tel:$phoneNumber")
-                        startActivity(dialIntent)
-                    }
-                    binding.foundDetailsSmsButton.setOnClickListener {
-                        val phoneNumber = foundPetData.foundPetPhoneNumber
-                        val smsUri = Uri.parse("smsto:$phoneNumber")
-                        val smsIntent = Intent(Intent.ACTION_SENDTO, smsUri)
-                        smsIntent.putExtra(
-                            "sms_body",
-                            "Dzień dobry, kontaktuję się w sprawie odnalezionego zwierzaka."
-                        ) // Optional message
-                        startActivity(smsIntent)
-                    }
-                }
+    private fun confirmAndDeleteFoundPet() {
+        viewModel.getCurrentUserId() ?: return
+        val builder = AlertDialog.Builder(requireContext())
+            .setTitle("Usuń ogłoszenie")
+            .setMessage("Czy jesteś pewny, że chcesz usunąć to ogłoszenie?")
+            .setPositiveButton("Tak") { _, _ ->
+                viewModel.deleteFoundPet(foundPetKey)
             }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                // Getting Post failed, log a message
-                Log.w(TAG, "loadPost:onCancelled", databaseError.toException())
-                Toast.makeText(
-                    context, "Błąd podczas ładowania postu.",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-
-        databaseRef.addValueEventListener(foundPetListener)
-
-        // Keep copy of post listener so we can remove it when app stops
-        this.foundPetListener = foundPetListener
-
+            .setNegativeButton("Anuluj", null)
+        builder.show()
     }
 
-    private fun sendReportToFirebase(message: String) {
-        val currentPostId = arguments?.getString(LostDetailsFragment.EXTRA_POST_KEY)
-        val reportRef = Firebase.database.reference.child("reports").push()
-        val reportData = mapOf(
-            "postId" to currentPostId,          // ID ogłoszenia, które jest zgłaszane
-            "userId" to Firebase.auth.currentUser?.uid,
-            "message" to message,
-            "timestamp" to System.currentTimeMillis()
-        )
-
-        reportRef.setValue(reportData)
-            .addOnSuccessListener {
-                // Operacja powiodła się
-                Toast.makeText(context, "Zgłoszenie wysłane", Toast.LENGTH_SHORT).show()
-            }
-            .addOnFailureListener { e ->
-                // Wystąpił błąd
-                Log.e("SendReport", "Błąd wysyłania zgłoszenia: ${e.message}", e)
-                Toast.makeText(context, "Błąd podczas wysyłania zgłoszenia", Toast.LENGTH_SHORT).show()
-            }
-    }
-
-    override fun onStop() {
-        super.onStop()
-
-        // Remove post value event listener
-        foundPetListener?.let {
-            databaseRef.removeEventListener(it)
-        }
-
-        // Clean up comments listener
-        //adapter?.cleanupListener()
-    }
-
-    private fun isOwner(ownerId: String?): Boolean {
-        // Get the currently logged-in user's ID
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        val currentUserId = currentUser?.uid
-
-        // Check if the ownerId matches the currently logged-in user's ID
-        return ownerId == currentUserId
-    }
-
-    private fun navigateToFoundPet() {
+    private fun navigateToFoundPetEdit() {
         val args = bundleOf(FoundEditFragment.FOUND_EDIT_POST_KEY to foundPetKey)
-        val navController = requireActivity().findNavController(R.id.nav_host_fragment)
-        navController.navigate(R.id.foundEditFragment, args)
+        findNavController().navigate(R.id.foundEditFragment, args)
+    }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     companion object {
         private const val DEFAULT_IMAGE_URL = "https://i.stack.imgur.com/l60Hf.png"
-        private const val databaseUrl =
-            "https://findyourpet-e77a8-default-rtdb.europe-west1.firebasedatabase.app/"
-        private const val TAG = "FoundDetailFragment"
         const val EXTRA_POST_KEY = "post_key"
     }
 }

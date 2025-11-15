@@ -46,10 +46,12 @@ class FoundEditFragment : Fragment() {
     }
     private lateinit var currentLocation: LatLng
     private lateinit var foundPetKey: String
+
     companion object {
         const val FOUND_EDIT_POST_KEY = "post_key"
         const val TAG = "FoundEditFragment"
     }
+
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -78,11 +80,7 @@ class FoundEditFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         DateInputMask(binding.etFoundEditPetDate).listen()
-        Log.d(TAG, "Before populate fields"+viewModel.foundPetData.toString())
-        Log.d(TAG, "1: "+viewModel.foundPetData.foundPetAdditionalPetInfo.toString())
         populateFieldsFromViewModel()
-        Log.d(TAG, "After populate fields"+viewModel.foundPetData.toString())
-        Log.d(TAG, "2: "+viewModel.foundPetData.foundPetAdditionalPetInfo.toString())
         foundPetKey = requireArguments().getString(FOUND_EDIT_POST_KEY)
             ?: throw IllegalArgumentException("Must pass post_key")
         viewModel.loadFoundPet(foundPetKey)
@@ -101,6 +99,7 @@ class FoundEditFragment : Fragment() {
         viewModel.resetUploadState()
         observeUpdate()
     }
+
     private fun fillUIWithData(data: FoundPetData) = with(binding) {
         rgFoundEditType.findViewWithTag<RadioButton>(data.foundPetType)?.isChecked = true
         rgFoundEditBehavior.findViewWithTag<RadioButton>(data.foundPetBehavior)?.isChecked = true
@@ -112,10 +111,15 @@ class FoundEditFragment : Fragment() {
         etFoundEditFinderEmail.setText(data.foundPetEmailAddress)
         etFoundEditFinderAdditionalInfo.setText(data.foundPetAdditionalFinderInfo)
         imageUrl = data.foundPetImageUrl
-        currentLocation = data.foundPetLocation?.let { loc -> LatLng(loc.latitude, loc.longitude) } ?: LatLng(0.0, 0.0)
         Picasso.get().load(imageUrl).into(binding.ivFoundEditPet)
-        Log.d(TAG, "fillUIWithData: "+data.foundPetAdditionalPetInfo.toString())
+        currentLocation =
+            data.foundPetLocation?.let { loc -> LatLng(loc.latitude, loc.longitude) } ?: LatLng(
+                0.0,
+                0.0
+            )
+
     }
+
     private fun openMap() {
         val loc = viewModel.foundPetData.foundPetLocation
         if (loc != null) currentLocation = LatLng(loc.latitude, loc.longitude)
@@ -136,8 +140,10 @@ class FoundEditFragment : Fragment() {
                         binding.buttonFoundEditAccept.isEnabled = true
                         binding.progressBar.visibility = View.GONE
                         if (it.isSuccess) {
-                            Toast.makeText(context, "Ogłoszenie edytowane", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Ogłoszenie edytowane", Toast.LENGTH_SHORT)
+                                .show()
                             //Log.d(TAG, "Before clear data"+viewModel.foundPetData.toString())
+                            viewModel.resetUploadState()
                             viewModel.clearData()
                             //Log.d(TAG, "After clear data"+viewModel.foundPetData.toString())
                             findNavController().navigate(
@@ -155,6 +161,7 @@ class FoundEditFragment : Fragment() {
             }
         }
     }
+
     private fun populateFieldsFromViewModel() = with(binding) {
         viewModel.foundPetData.let { data ->
 
@@ -169,20 +176,21 @@ class FoundEditFragment : Fragment() {
             imageUrl = viewModel.foundPetData.foundPetImageUrl
             if (imageUri != null) {
                 ivFoundEditPet.setImageURI(imageUri)
-            }
-            else if (!imageUrl.isNullOrEmpty()) {
+            } else if (!imageUrl.isNullOrEmpty()) {
 
                 Picasso.get().load(imageUrl).into(ivFoundEditPet)
             }
 
             rgFoundEditType.children.forEach { rb ->
-                if (rb is RadioButton && rb.text.toString() == data.foundPetType) rb.isChecked = true
+                if (rb is RadioButton && rb.text.toString() == data.foundPetType) rb.isChecked =
+                    true
             }
             rgFoundEditBehavior.children.forEach { rb ->
-                if (rb is RadioButton && rb.text.toString() == data.foundPetBehavior) rb.isChecked = true
+                if (rb is RadioButton && rb.text.toString() == data.foundPetBehavior) rb.isChecked =
+                    true
             }
-            currentLocation = data.foundPetLocation?.let { LatLng(it.latitude, it.longitude) } ?: LatLng(0.0, 0.0)
-            Log.d(TAG, "populate data: "+viewModel.foundPetData.foundPetAdditionalPetInfo.toString())
+            currentLocation =
+                data.foundPetLocation?.let { LatLng(it.latitude, it.longitude) } ?: LatLng(0.0, 0.0)
         }
     }
 
@@ -193,14 +201,11 @@ class FoundEditFragment : Fragment() {
             foundPetFinderName = etFoundEditFinderName.text.toString()
             foundPetPhoneNumber = etFoundEditFinderNumber.text.toString()
             foundPetEmailAddress = etFoundEditFinderEmail.text.toString()
-            foundPetBehavior =
-                rgFoundEditBehavior.findViewById<RadioButton>(rgFoundEditBehavior.checkedRadioButtonId)?.text.toString()
-            foundPetType =
-                rgFoundEditType.findViewById<RadioButton>(rgFoundEditType.checkedRadioButtonId)?.text.toString()
+            foundPetBehavior = rgFoundEditBehavior.findViewById<RadioButton>(rgFoundEditBehavior.checkedRadioButtonId)?.text.toString()
+            foundPetType = rgFoundEditType.findViewById<RadioButton>(rgFoundEditType.checkedRadioButtonId)?.text.toString()
             foundPetAdditionalPetInfo = etFoundEditPetAdditionalInfo.text.toString()
             foundPetAdditionalFinderInfo = etFoundEditFinderAdditionalInfo.text.toString()
             viewModel.imageUri = imageUri
-            Log.d(TAG, "savefields: "+viewModel.foundPetData.foundPetAdditionalPetInfo.toString())
         }
     }
 
@@ -229,40 +234,45 @@ class FoundEditFragment : Fragment() {
         getImageLauncher.launch(intent)
     }
 
-    private fun validateFields(): Boolean {
-        return binding.etFoundEditPetDate.text.isNotEmpty() &&
-                binding.etFoundEditAddress.text.isNotEmpty() &&
-                binding.etFoundEditFinderName.text.isNotEmpty() &&
-                binding.etFoundEditFinderNumber.text.isNotEmpty() &&
-                binding.etFoundEditFinderEmail.text.isNotEmpty() &&
-                binding.rgFoundEditType.checkedRadioButtonId != -1 &&
-                binding.rgFoundEditBehavior.checkedRadioButtonId != -1
+    private fun validateFields(): Boolean = with(binding) {
+        return etFoundEditPetDate.text.isNotEmpty() &&
+                etFoundEditAddress.text.isNotEmpty() &&
+                etFoundEditFinderName.text.isNotEmpty() &&
+                etFoundEditFinderNumber.text.isNotEmpty() &&
+                etFoundEditFinderEmail.text.isNotEmpty() &&
+                rgFoundEditType.checkedRadioButtonId != -1 &&
+                rgFoundEditBehavior.checkedRadioButtonId != -1
     }
 
     private fun validateAndUpdate() {
         val location = viewModel.foundPetData.foundPetLocation
         if (!validateFields() || location == null) {
-            Toast.makeText(context, "Wypełnij pola, wybierz zdjęcie i lokalizację", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                "Wypełnij pola, wybierz zdjęcie i lokalizację",
+                Toast.LENGTH_SHORT
+            ).show()
             return
         }
-
         binding.buttonFoundEditAccept.isEnabled = false
-        val updatedData = FoundPetData(
-            foundPetId = foundPetKey,
-            foundPetOwnerId = viewModel.foundPetData.foundPetOwnerId,
-            foundPetType = binding.rgFoundEditType.findViewById<RadioButton>(binding.rgFoundEditType.checkedRadioButtonId)?.text.toString(),
-            foundPetBehavior = binding.rgFoundEditBehavior.findViewById<RadioButton>(binding.rgFoundEditBehavior.checkedRadioButtonId)?.text.toString(),
-            foundPetDecodedAddress = binding.etFoundEditAddress.text.toString(),
-            foundPetDate = binding.etFoundEditPetDate.text.toString(),
-            foundPetAdditionalPetInfo = binding.etFoundEditPetAdditionalInfo.text.toString(),
-            foundPetFinderName = binding.etFoundEditFinderName.text.toString(),
-            foundPetPhoneNumber = binding.etFoundEditFinderNumber.text.toString(),
-            foundPetEmailAddress = binding.etFoundEditFinderEmail.text.toString(),
-            foundPetAdditionalFinderInfo = binding.etFoundEditFinderAdditionalInfo.text.toString(),
-            foundPetDateAdded = viewModel.foundPetData.foundPetDateAdded,
-            foundPetImageUrl = viewModel.foundPetData.foundPetImageUrl,
-            foundPetLocation = viewModel.foundPetData.foundPetLocation,
-        )
+        val updatedData = with(binding) {
+            FoundPetData(
+                foundPetId = foundPetKey,
+                foundPetOwnerId = viewModel.foundPetData.foundPetOwnerId,
+                foundPetType = rgFoundEditType.findViewById<RadioButton>(rgFoundEditType.checkedRadioButtonId)?.text.toString(),
+                foundPetBehavior = rgFoundEditBehavior.findViewById<RadioButton>(rgFoundEditBehavior.checkedRadioButtonId)?.text.toString(),
+                foundPetDecodedAddress = etFoundEditAddress.text.toString(),
+                foundPetDate = etFoundEditPetDate.text.toString(),
+                foundPetAdditionalPetInfo = etFoundEditPetAdditionalInfo.text.toString(),
+                foundPetFinderName = etFoundEditFinderName.text.toString(),
+                foundPetPhoneNumber = etFoundEditFinderNumber.text.toString(),
+                foundPetEmailAddress = etFoundEditFinderEmail.text.toString(),
+                foundPetAdditionalFinderInfo = etFoundEditFinderAdditionalInfo.text.toString(),
+                foundPetDateAdded = viewModel.foundPetData.foundPetDateAdded,
+                foundPetImageUrl = viewModel.foundPetData.foundPetImageUrl,
+                foundPetLocation = viewModel.foundPetData.foundPetLocation,
+            )
+        }
         viewModel.updateFoundPet(foundPetKey, updatedData, imageUri)
     }
 
