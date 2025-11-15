@@ -12,6 +12,7 @@ import android.webkit.WebView
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -20,6 +21,9 @@ import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.fragment.NavHostFragment
 import com.edu.wszib.findyourpet.databinding.ActivityMainBinding
+import com.edu.wszib.findyourpet.models.FoundPetViewModel
+import com.edu.wszib.findyourpet.models.FoundPetViewModelFactory
+import com.edu.wszib.findyourpet.repository.FoundRepository
 import com.firebase.ui.auth.AuthUI
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
@@ -31,6 +35,10 @@ lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
 private lateinit var auth: FirebaseAuth
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+    val repository = FoundRepository()
+    val foundPetViewModel: FoundPetViewModel by viewModels {
+        FoundPetViewModelFactory(repository)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -68,6 +76,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         profileImageView.setImageURI(auth.currentUser?.photoUrl)
         val fabHiddenDestinations = setOf(
+            R.id.loginFragment,
             R.id.lostCreateFragment,
             R.id.lostEditFragment,
             R.id.foundCreateFragment,

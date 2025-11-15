@@ -84,7 +84,7 @@ class FoundDetailsFragment : Fragment() {
                 // Handle the menu selection
                 return when (menuItem.itemId) {
                     R.id.action_edit_pet -> {
-                        navigateToLostPet()
+                        navigateToFoundPet()
                         true
                     }
 
@@ -314,7 +314,7 @@ class FoundDetailsFragment : Fragment() {
         return ownerId == currentUserId
     }
 
-    private fun navigateToLostPet() {
+    private fun navigateToFoundPet() {
         val args = bundleOf(FoundEditFragment.FOUND_EDIT_POST_KEY to foundPetKey)
         val navController = requireActivity().findNavController(R.id.nav_host_fragment)
         navController.navigate(R.id.foundEditFragment, args)

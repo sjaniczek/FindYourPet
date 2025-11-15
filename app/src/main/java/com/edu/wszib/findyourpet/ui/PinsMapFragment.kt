@@ -1,4 +1,4 @@
-package com.edu.wszib.findyourpet
+package com.edu.wszib.findyourpet.ui
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.edu.wszib.findyourpet.R
 import com.edu.wszib.findyourpet.databinding.FragmentPinsMapBinding
 import com.edu.wszib.findyourpet.ui.foundfragments.FoundDetailsFragment
 import com.edu.wszib.findyourpet.ui.lostfragments.LostDetailsFragment

@@ -1,4 +1,4 @@
-package com.edu.wszib.findyourpet
+package com.edu.wszib.findyourpet.ui
 
 import android.app.AlertDialog
 import android.os.Bundle

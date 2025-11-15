@@ -316,6 +316,7 @@ class LostEditFragment : Fragment() {
             lostPetAdditionalOwnerInfo = binding.etLostEditOwnerAdditionalInfo.text.toString(),
             lostPetDateAdded = dateAdded,
             lostPetImageUrl = imageUrl,
+
             lostPetLocation = lostPetViewModel.lostPetData?.lostPetLocation ?: LostPetData.LostLocation(currentLocation)
         )
     }

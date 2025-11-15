@@ -1,4 +1,4 @@
-package com.edu.wszib.findyourpet
+package com.edu.wszib.findyourpet.ui
 
 //import com.edu.wszib.findyourpet.listlostfragments.MyFoundFragment
 import android.os.Bundle

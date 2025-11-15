@@ -26,6 +26,8 @@ import com.edu.wszib.findyourpet.databinding.FragmentFoundMapsBinding
 
 import com.edu.wszib.findyourpet.models.FoundPetData
 import com.edu.wszib.findyourpet.models.FoundPetViewModel
+import com.edu.wszib.findyourpet.models.FoundPetViewModelFactory
+import com.edu.wszib.findyourpet.repository.FoundRepository
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
@@ -40,7 +42,9 @@ import com.google.android.gms.tasks.OnTokenCanceledListener
 import java.util.*
 
 class FoundMapsFragment : Fragment(), OnMapReadyCallback {
-    private val foundPetViewModel: FoundPetViewModel by activityViewModels()
+    private val foundPetViewModel: FoundPetViewModel by activityViewModels {
+        FoundPetViewModelFactory(FoundRepository())
+    }
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var googleMap: GoogleMap
     private var _binding: FragmentFoundMapsBinding? = null
@@ -139,9 +143,9 @@ class FoundMapsFragment : Fragment(), OnMapReadyCallback {
         }
     }
         private fun decodeLocation(currentLocation: LatLng) {
-        val geocoder = Geocoder(requireContext(), Locale.getDefault())
+            val geocoder = Geocoder(requireContext(), Locale.getDefault())
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            val addresses = geocoder.getFromLocation(
+            geocoder.getFromLocation(
                 currentLocation.latitude,
                 currentLocation.longitude,
                 1,
@@ -196,7 +200,7 @@ class FoundMapsFragment : Fragment(), OnMapReadyCallback {
             @Suppress("DEPRECATION")
             val addresses =
                 geocoder.getFromLocation(currentLocation.latitude, currentLocation.longitude, 1)
-            if (addresses != null && addresses.isNotEmpty()) {
+            if (!addresses.isNullOrEmpty()) {
                 // Process the retrieved addresses
                 val decodedAddress = addresses[0].getAddressLine(0)
                 foundPetViewModel.foundPetData?.foundPetDecodedAddress = decodedAddress

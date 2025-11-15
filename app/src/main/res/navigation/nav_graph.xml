@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.edu.wszib.findyourpet.LoginFragment"
+        android:name="com.edu.wszib.findyourpet.ui.LoginFragment"
         android:label="fragment_login"
         tools:layout="@layout/fragment_login">
         <action
@@ -80,7 +80,7 @@
     </fragment>
     <fragment
         android:id="@+id/chooseFragment"
-        android:name="com.edu.wszib.findyourpet.ChooseFragment"
+        android:name="com.edu.wszib.findyourpet.ui.ChooseFragment"
         android:label="fragment_choose"
         tools:layout="@layout/fragment_choose">
         <action
@@ -135,7 +135,7 @@
     </fragment>
     <fragment
         android:id="@+id/myLostFoundPetFragment"
-        android:name="com.edu.wszib.findyourpet.MyLostFoundPetFragment"
+        android:name="com.edu.wszib.findyourpet.ui.MyLostFoundPetFragment"
         android:label="MyLostFoundPetFragment" />
     <fragment
         android:id="@+id/foundEditFragment"

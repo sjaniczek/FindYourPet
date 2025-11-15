@@ -16,129 +16,148 @@ import android.widget.RadioButton
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.view.children
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.edu.wszib.findyourpet.databinding.FragmentCreateFoundBinding
-
 import com.edu.wszib.findyourpet.inputmasks.DateInputMask
 import com.edu.wszib.findyourpet.models.FoundPetData
 import com.edu.wszib.findyourpet.models.FoundPetViewModel
+import com.edu.wszib.findyourpet.models.FoundPetViewModelFactory
+import com.edu.wszib.findyourpet.models.ReportData
+import com.edu.wszib.findyourpet.repository.FoundRepository
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.ktx.storage
-import com.google.firebase.storage.storageMetadata
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
 
 class FoundCreateFragment : Fragment() {
 
-    private lateinit var auth: FirebaseAuth
-    private lateinit var database: FirebaseDatabase
-    private lateinit var storage: FirebaseStorage
     private var _binding: FragmentCreateFoundBinding? = null
     private val binding get() = _binding!!
+    private lateinit var dateAdded: String
     private var imageUri: Uri? = null
-    private val foundPetViewModel: FoundPetViewModel by activityViewModels()
-
-    companion object {
-        private const val TAG = "FoundCreateFragment"
+    private val viewModel: FoundPetViewModel by activityViewModels {
+        FoundPetViewModelFactory(FoundRepository())
     }
 
-    private val requestPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            Log.d(TAG, "Permission result: $isGranted")
-            if (isGranted) launchImagePicker()
-        }
-
-    private val getImageLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK && result.data != null) {
-                imageUri = result.data?.data
-                Log.d(TAG, "Selected imageUri: $imageUri")
-                binding.ivFoundPet.setImageURI(imageUri)
-            }
-        }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentCreateFoundBinding.inflate(inflater, container, false)
-        return binding.root
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) launchImagePicker()
+        else Toast.makeText(context, "Brak uprawnień do zdjęć", Toast.LENGTH_SHORT).show()
     }
+
+    private val getImageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK && result.data != null) {
+            imageUri = result.data?.data
+            binding.ivFoundPet.setImageURI(imageUri)
+        }
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
+        FragmentCreateFoundBinding.inflate(inflater, container, false).also { _binding = it }.root
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        auth = Firebase.auth
-        database = Firebase.database("https://findyourpet-e77a8-default-rtdb.europe-west1.firebasedatabase.app/")
-        storage = Firebase.storage
         DateInputMask(binding.etFoundPetDate).listen()
-        restoreDataFromViewModel()
-
-        binding.buttonChooseFoundPic.setOnClickListener { checkPermissionAndPickImage() }
-
+        populateFieldsFromViewModel()
+        binding.buttonChooseFoundPic.setOnClickListener { requestImagePermission() }
+        binding.buttonFoundAccept.setOnClickListener { validateAndUpload() }
         binding.buttonGoToMap.setOnClickListener {
-            saveFormDataToViewModel()
-            findNavController().navigate(
-                FoundCreateFragmentDirections.actionFoundCreateFragmentToFoundMapsFragment(
-                    false, LatLng(52.06, 19.25), "foundpetkey"
-                )
+            saveFieldsToViewModel()
+            openMap()
+        }
+        observeUpload()
+    }
+
+    private fun observeUpload() {
+        lifecycleScope.launch {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uploadState.collectLatest { result ->
+                    result?.let {
+                        binding.buttonFoundAccept.isEnabled = true
+                        if (it.isSuccess) {
+                            Toast.makeText(context, "Ogłoszenie dodane", Toast.LENGTH_SHORT).show()
+                            viewModel.clearData()
+                            findNavController().navigate(
+                                FoundCreateFragmentDirections.actionFoundCreateFragmentToMainFragment()
+                            )
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "Błąd: ${it.exceptionOrNull()?.message}",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun openMap() {
+        findNavController().navigate(
+            FoundCreateFragmentDirections.actionFoundCreateFragmentToFoundMapsFragment(
+                false,
+                LatLng(52.06, 19.25),
+                "foundpetkey"
             )
-        }
-
-        binding.buttonFoundAccept.setOnClickListener {
-            uploadImageAndForm()
-        }
-    }
-
-    private fun restoreDataFromViewModel() {
-        foundPetViewModel.foundPetData?.let { data ->
-            binding.rgFoundType.findViewWithTag<RadioButton>(data.foundPetType)?.isChecked = true
-            binding.rgFoundBehavior.findViewWithTag<RadioButton>(data.foundPetBehavior)?.isChecked = true
-            binding.etFoundAddress.setText(data.foundPetDecodedAddress)
-            binding.etFoundPetDate.setText(data.foundPetDate)
-            binding.etFoundPetAdditionalInfo.setText(data.foundPetAdditionalPetInfo)
-            binding.etFoundFinderName.setText(data.foundPetFinderName)
-            binding.etFoundFinderNumber.setText(data.foundPetPhoneNumber)
-            binding.etFoundFinderEmail.setText(data.foundPetEmailAddress)
-            binding.etFoundFinderAdditionalInfo.setText(data.foundPetAdditionalFinderInfo)
-            imageUri = foundPetViewModel.imageUri
-            if (imageUri != null) binding.ivFoundPet.setImageURI(imageUri)
-        }
-    }
-
-    private fun saveFormDataToViewModel() {
-        val data = FoundPetData(
-            foundPetDate = binding.etFoundPetDate.text.toString(),
-            foundPetDecodedAddress = binding.etFoundAddress.text.toString(),
-            foundPetAdditionalPetInfo = binding.etFoundPetAdditionalInfo.text.toString(),
-            foundPetFinderName = binding.etFoundFinderName.text.toString(),
-            foundPetPhoneNumber = binding.etFoundFinderNumber.text.toString(),
-            foundPetEmailAddress = binding.etFoundFinderEmail.text.toString(),
-            foundPetAdditionalFinderInfo = binding.etFoundFinderAdditionalInfo.text.toString(),
-            foundPetType = binding.rgFoundType.findViewById<RadioButton>(binding.rgFoundType.checkedRadioButtonId)?.text.toString(),
-            foundPetBehavior = binding.rgFoundBehavior.findViewById<RadioButton>(binding.rgFoundBehavior.checkedRadioButtonId)?.text.toString(),
-            foundPetLocation = foundPetViewModel.foundPetData?.foundPetLocation
         )
-        foundPetViewModel.saveFormData(data, imageUri)
     }
+    private fun populateFieldsFromViewModel() = with(binding){
 
-    private fun checkPermissionAndPickImage() {
+        viewModel.foundPetData.let { data ->
+            etFoundPetDate.setText(data.foundPetDate)
+            etFoundAddress.setText(data.foundPetDecodedAddress)
+            etFoundFinderName.setText(data.foundPetFinderName)
+            etFoundFinderNumber.setText(data.foundPetPhoneNumber)
+            etFoundFinderEmail.setText(data.foundPetEmailAddress)
+            etFoundPetAdditionalInfo.setText(data.foundPetAdditionalPetInfo)
+            etFoundFinderAdditionalInfo.setText(data.foundPetAdditionalFinderInfo)
+            imageUri = viewModel.imageUri
+            if (imageUri != null)  ivFoundPet.setImageURI(imageUri)
+            rgFoundType.children.forEach { rb ->
+                if (rb is RadioButton && rb.text.toString() == data.foundPetType) rb.isChecked = true
+            }
+            rgFoundBehavior.children.forEach { rb ->
+                if (rb is RadioButton && rb.text.toString() == data.foundPetBehavior) rb.isChecked = true
+            }
+        }
+    }
+    private fun saveFieldsToViewModel() = with(binding) {
+        viewModel.foundPetData.apply {
+            foundPetDate = etFoundPetDate.text.toString()
+            foundPetDecodedAddress = etFoundAddress.text.toString()
+            foundPetFinderName = etFoundFinderName.text.toString()
+            foundPetPhoneNumber = etFoundFinderNumber.text.toString()
+            foundPetEmailAddress = etFoundFinderEmail.text.toString()
+            foundPetBehavior = rgFoundBehavior.findViewById<RadioButton>(rgFoundBehavior.checkedRadioButtonId)?.text.toString()
+            foundPetType = rgFoundType.findViewById<RadioButton>(rgFoundType.checkedRadioButtonId)?.text.toString()
+            foundPetAdditionalPetInfo = etFoundPetAdditionalInfo.text.toString()
+            foundPetAdditionalFinderInfo = etFoundFinderAdditionalInfo.text.toString()
+            viewModel.imageUri = imageUri
+        }
+    }
+    private fun requestImagePermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED)
                 requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES)
-            } else launchImagePicker()
+            else launchImagePicker()
         } else {
-            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
                 requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-            } else launchImagePicker()
+            else launchImagePicker()
         }
     }
 
@@ -147,110 +166,49 @@ class FoundCreateFragment : Fragment() {
         getImageLauncher.launch(intent)
     }
 
-    private fun validateFieldsAndImage(): Boolean {
-        return !(binding.etFoundAddress.text.isNullOrEmpty() ||
-                binding.etFoundPetDate.text.isNullOrEmpty() ||
-                binding.etFoundFinderName.text.isNullOrEmpty() ||
-                binding.etFoundFinderEmail.text.isNullOrEmpty() ||
-                binding.etFoundFinderNumber.text.isNullOrEmpty() ||
-                binding.rgFoundType.checkedRadioButtonId == -1 ||
-                binding.rgFoundBehavior.checkedRadioButtonId == -1 ||
-                imageUri == null)
-    }
-
-    private var isUploading = false
-    private fun uploadImageAndForm() {
-        if (isUploading) return
-
-        saveFormDataToViewModel()
-
-        if (!validateFieldsAndImage()) {
-            Toast.makeText(context, "Wypełnij wszystkie pola i dodaj zdjęcie", Toast.LENGTH_SHORT).show()
+    private fun validateAndUpload() {
+        val location = viewModel.foundPetData.foundPetLocation
+        if (!validateFields() || imageUri == null || location == null) {
+            Toast.makeText(context, "Wypełnij pola, wybierz zdjęcie i lokalizację", Toast.LENGTH_SHORT).show()
             return
         }
 
-        isUploading = true
         binding.buttonFoundAccept.isEnabled = false
-        binding.progressBar.visibility = View.VISIBLE
 
-        val userId = auth.currentUser?.uid ?: run {
-            Toast.makeText(context, "Brak zalogowanego użytkownika", Toast.LENGTH_SHORT).show()
-            resetUploadUI()
-            return
-        }
+        val data = FoundPetData(
+            foundPetType = binding.rgFoundType.findViewById<RadioButton>(binding.rgFoundType.checkedRadioButtonId)?.text.toString(),
+            foundPetDate = binding.etFoundPetDate.text.toString(),
+            foundPetDecodedAddress = viewModel.foundPetData.foundPetDecodedAddress ?: "",
+            foundPetFinderName = binding.etFoundFinderName.text.toString(),
+            foundPetPhoneNumber = binding.etFoundFinderNumber.text.toString(),
+            foundPetEmailAddress = binding.etFoundFinderEmail.text.toString(),
+            foundPetBehavior = binding.rgFoundBehavior.findViewById<RadioButton>(binding.rgFoundBehavior.checkedRadioButtonId)?.text.toString(),
+            foundPetAdditionalPetInfo = binding.etFoundPetAdditionalInfo.text.toString(),
+            foundPetAdditionalFinderInfo = binding.etFoundFinderAdditionalInfo.text.toString(),
+            foundPetLocation = location,
+            foundPetDateAdded = getCurrentDateTime()
+        )
 
-        val databaseRef = database.reference
-        val foundPetKey = databaseRef.child("found_pets").push().key ?: run {
-            Log.w(TAG, "Nie udało się otrzymać klucza foundPetKey")
-            resetUploadUI()
-            return
-        }
-
-        val mimeType = context?.contentResolver?.getType(imageUri!!) ?: "image/jpeg"
-        val fileSize = context?.contentResolver?.openFileDescriptor(imageUri!!, "r")?.use { it.statSize }
-        if (fileSize != null && fileSize > 10 * 1024 * 1024) {
-            Toast.makeText(context, "Plik jest za duży (max 10 MB)", Toast.LENGTH_SHORT).show()
-            resetUploadUI()
-            return
-        }
-
-        val metadata = storageMetadata {
-            setContentType(mimeType)
-            setCustomMetadata("owner", userId)
-            setCustomMetadata("postId", foundPetKey)
-        }
-
-        val fileRef = storage.reference.child("images/${UUID.randomUUID()}")
-        fileRef.putFile(imageUri!!, metadata).addOnSuccessListener { taskSnapshot ->
-            taskSnapshot.storage.downloadUrl.addOnSuccessListener { uri ->
-                val imageUrl = uri.toString()
-                val formData = foundPetViewModel.foundPetData!!
-                val foundPetData = formData.copy(
-                    foundPetId = foundPetKey,
-                    foundPetOwnerId = userId,
-                    foundPetImageUrl = imageUrl,
-                    foundPetDateAdded = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
-                )
-                val foundPetValues = foundPetData.toMap()
-                val updates = hashMapOf<String, Any>(
-                    "/found_pets/$foundPetKey" to foundPetValues,
-                    "/users/$userId/found_pets/$foundPetKey" to foundPetValues
-                )
-                database.reference.updateChildren(updates).addOnSuccessListener {
-                    Toast.makeText(context, "Ogłoszenie dodane", Toast.LENGTH_SHORT).show()
-                    clearData()
-                    findNavController().navigate(
-                        FoundCreateFragmentDirections.actionFoundCreateFragmentToMainFragment()
-                    )
-                }.addOnFailureListener { e ->
-                    Log.e(TAG, "Error uploading form: ${e.message}", e)
-                    Toast.makeText(context, "Błąd podczas dodawania postu", Toast.LENGTH_SHORT).show()
-                    resetUploadUI()
-                }
-            }.addOnFailureListener { e ->
-                Log.e(TAG, "Error getting download URL: ${e.message}", e)
-                Toast.makeText(context, "Błąd podczas dodawania zdjęcia", Toast.LENGTH_SHORT).show()
-                resetUploadUI()
-            }
-        }.addOnFailureListener { e ->
-            Log.e(TAG, "Upload failed: ${e.message}", e)
-            Toast.makeText(context, "Błąd podczas uploadu obrazu", Toast.LENGTH_SHORT).show()
-            resetUploadUI()
-        }
+        viewModel.uploadFoundPet(data, imageUri!!)
+    }
+    private fun getCurrentDateTime(): String {
+        val calendar = Calendar.getInstance()
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        return dateFormat.format(calendar.time)
     }
 
-    private fun resetUploadUI() {
-        isUploading = false
-        binding.buttonFoundAccept.isEnabled = true
-        binding.progressBar.visibility = View.GONE
+    private fun validateFields(): Boolean {
+        return binding.etFoundPetDate.text.isNotEmpty() &&
+                binding.etFoundAddress.text.isNotEmpty() &&
+                binding.etFoundFinderName.text.isNotEmpty() &&
+                binding.etFoundFinderNumber.text.isNotEmpty() &&
+                binding.etFoundFinderEmail.text.isNotEmpty() &&
+                binding.rgFoundType.checkedRadioButtonId != -1 &&
+                binding.rgFoundBehavior.checkedRadioButtonId != -1
     }
-
-    private fun clearData() {
-        foundPetViewModel.foundPetData = null
-        foundPetViewModel.imageUri = null
-        imageUri = null
+    companion object {
+        private const val TAG = "FoundCreateFragment"
     }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
