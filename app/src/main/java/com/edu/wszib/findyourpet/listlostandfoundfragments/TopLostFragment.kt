@@ -5,6 +5,7 @@ import com.google.firebase.database.FirebaseDatabase
 
 class TopLostFragment : LostListFragment() {
     override fun getDatabaseReference(): DatabaseReference {
+        // Return reference to all lost pets in the database
         return FirebaseDatabase.getInstance().reference.child("lost_pets")
     }
 }

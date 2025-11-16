@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.edu.wszib.findyourpet.repository.FoundRepository
 
+// Factory to create FoundPetViewModel with repository injection
 class FoundPetViewModelFactory(
     private val repository: FoundRepository
 ) : ViewModelProvider.Factory {

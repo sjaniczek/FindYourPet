@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 
 class LostPetViewModel(private val repository: LostRepository) : ViewModel() {
 
-    // ---- STATES ----
+    // ---- STATE FLOWS ----
     private val _uploadState = MutableStateFlow<Result<Unit>?>(null)
     val uploadState: StateFlow<Result<Unit>?> = _uploadState
 
@@ -29,7 +29,6 @@ class LostPetViewModel(private val repository: LostRepository) : ViewModel() {
     var lostPetData: LostPetData = LostPetData()
     var imageUri: Uri? = null
 
-
     // ---- UPLOAD / UPDATE ----
     fun uploadLostPet(data: LostPetData, imageUri: Uri) {
         viewModelScope.launch {
@@ -41,7 +40,7 @@ class LostPetViewModel(private val repository: LostRepository) : ViewModel() {
         viewModelScope.launch {
             _uploadState.value = repository.updateLostPet(lostPetId, data, newImageUri)
 
-            // Po udanym update pobierz świeże dane
+            // Refresh data after successful update
             repository.getLostPetOnce(lostPetId) { latest ->
                 latest?.let {
                     lostPetData = it.copy()
@@ -50,7 +49,6 @@ class LostPetViewModel(private val repository: LostRepository) : ViewModel() {
             }
         }
     }
-
 
     // ---- LOAD ----
     fun loadLostPet(lostPetId: String) {
@@ -64,14 +62,12 @@ class LostPetViewModel(private val repository: LostRepository) : ViewModel() {
         }
     }
 
-
     // ---- DELETE ----
     fun deleteLostPet(lostPetId: String) {
         viewModelScope.launch {
             _deleteState.value = repository.deleteLostPet(lostPetId)
         }
     }
-
 
     // ---- REPORT ----
     fun sendReport(lostPetId: String, message: String) {
@@ -81,7 +77,6 @@ class LostPetViewModel(private val repository: LostRepository) : ViewModel() {
             _reportState.value = repository.sendReport(lostPetId, message, userId)
         }
     }
-
 
     // ---- RESET FUNCTIONS ----
     fun resetUploadState() {
@@ -110,7 +105,6 @@ class LostPetViewModel(private val repository: LostRepository) : ViewModel() {
         resetDeleteState()
         resetReportState()
     }
-
 
     // ---- AUTH ----
     fun getCurrentUserId(): String? = repository.getCurrentUserId()

@@ -3,7 +3,6 @@ package com.edu.wszib.findyourpet.listlostandfoundfragments
 import android.annotation.SuppressLint
 import android.location.Geocoder
 import android.os.Bundle
-import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -62,9 +61,8 @@ abstract class FoundListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Initialize RecyclerView layout manager
         manager = LinearLayoutManager(activity)
-        manager.reverseLayout = false
-        manager.stackFromEnd = false
         recycler.layoutManager = manager
 
         val etSearch = view.findViewById<EditText>(R.id.etSearchAddress)
@@ -72,6 +70,7 @@ abstract class FoundListFragment : Fragment() {
         val btnLocate = view.findViewById<ImageButton>(R.id.btnGetLocation)
         val btnReset = view.findViewById<ImageButton>(R.id.btnResetSearch)
 
+        // Initialize adapter for found pets list
         adapter = FoundPetListAdapter(list) { pet ->
             val args = bundleOf(FoundDetailsFragment.EXTRA_POST_KEY to pet.foundPetId)
             findNavController().navigate(R.id.foundDetailsFragment, args)
@@ -97,7 +96,7 @@ abstract class FoundListFragment : Fragment() {
                 false
             }
         }
-        // obsługa przycisków
+
         btnSearch.setOnClickListener {
             val address = etSearch.text.toString()
             if (address.isNotEmpty()) {
@@ -115,6 +114,7 @@ abstract class FoundListFragment : Fragment() {
             resetSearch(etSearch)
         }
 
+        // Load list from database
         loadFoundPets()
     }
 
@@ -137,15 +137,14 @@ abstract class FoundListFragment : Fragment() {
                 Toast.makeText(context, "Nie znaleziono lokalizacji", Toast.LENGTH_SHORT).show()
             }
         } catch (e: Exception) {
-            Toast.makeText(context, "Błąd przy geokodowaniu: ${e.message}", Toast.LENGTH_SHORT)
-                .show()
-            e.printStackTrace()
+            Toast.makeText(context, "Błąd przy geokodowaniu: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun sortListByDistance() {
         val ref = referenceLocation ?: return
 
+        // Sort list based on distance from reference location
         list.sortBy { pet ->
             pet.foundPetLocation?.let {
                 haversineDistance(ref, LatLng(it.latitude, it.longitude))
@@ -156,7 +155,7 @@ abstract class FoundListFragment : Fragment() {
     }
 
     private fun haversineDistance(from: LatLng, to: LatLng): Double {
-        val R = 6371000.0 // promień Ziemi w metrach
+        val R = 6371000.0
         val dLat = Math.toRadians(to.latitude - from.latitude)
         val dLon = Math.toRadians(to.longitude - from.longitude)
         val a = sin(dLat / 2).pow(2.0) +
@@ -171,11 +170,11 @@ abstract class FoundListFragment : Fragment() {
     private fun requestUserLocationAndSort() {
         val fused = LocationServices.getFusedLocationProviderClient(requireActivity())
 
+        // Check location permission before accessing GPS
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
                 android.Manifest.permission.ACCESS_FINE_LOCATION
-            )
-            != android.content.pm.PackageManager.PERMISSION_GRANTED
+            ) != android.content.pm.PackageManager.PERMISSION_GRANTED
         ) {
             requestPermissions(arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 1001)
             return
@@ -186,8 +185,7 @@ abstract class FoundListFragment : Fragment() {
                 referenceLocation = LatLng(loc.latitude, loc.longitude)
                 sortListByDistance()
             } else {
-                Toast.makeText(context, "Nie udało się pobrać lokalizacji", Toast.LENGTH_SHORT)
-                    .show()
+                Toast.makeText(context, "Nie udało się pobrać lokalizacji", Toast.LENGTH_SHORT).show()
             }
         }.addOnFailureListener { e ->
             Toast.makeText(
@@ -200,7 +198,6 @@ abstract class FoundListFragment : Fragment() {
 
     private fun loadFoundPets() {
         val query = getDatabaseReference()
-        Log.d("FoundListFragment", "Query path: ${query.ref.key}")
 
         query.get().addOnSuccessListener { snapshot ->
             list.clear()
@@ -210,15 +207,13 @@ abstract class FoundListFragment : Fragment() {
                 if (pet != null) list.add(pet)
             }
 
-            // sortowanie domyślne po dacie dodania
+            // Sort by date added (newest first)
             list.sortByDescending { it.foundPetDateAdded }
 
             val textEmpty = view?.findViewById<TextView>(R.id.tvFoundPetRecyclerEmpty)
             textEmpty?.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
 
             adapter.notifyDataSetChanged()
-        }.addOnFailureListener { e ->
-            Log.e("FoundListFragment", "Failed to load pets", e)
         }
     }
 }

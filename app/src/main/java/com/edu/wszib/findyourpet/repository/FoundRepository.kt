@@ -20,7 +20,7 @@ class FoundRepository {
     )
     private val storage = FirebaseStorage.getInstance()
 
-    // Pobranie pojedynczego wpisu (once)
+    // ---- GET SINGLE PET ONCE ----
     fun getFoundPetOnce(foundPetId: String, callback: (FoundPetData?) -> Unit) {
         database.reference.child("found_pets").child(foundPetId)
             .get()
@@ -33,18 +33,21 @@ class FoundRepository {
             }
     }
 
+    // ---- UPLOAD NEW PET ----
     suspend fun uploadFoundPet(data: FoundPetData, imageUri: Uri): Result<Unit> =
         withContext(Dispatchers.IO) {
             try {
                 val userId = auth.currentUser?.uid
-                    ?: return@withContext Result.failure(Exception("Brak użytkownika"))
+                    ?: return@withContext Result.failure(Exception("No user logged in"))
                 val key = database.reference.child("found_pets").push().key
-                    ?: return@withContext Result.failure(Exception("Nie udało się wygenerować klucza"))
+                    ?: return@withContext Result.failure(Exception("Failed to generate key"))
 
+                // Upload image to Firebase Storage
                 val fileRef = storage.reference.child("images/${UUID.randomUUID()}")
                 fileRef.putFile(imageUri).await()
                 val imageUrl = fileRef.downloadUrl.await().toString()
 
+                // Prepare data with owner ID and image URL
                 val updatedData = data.copy(
                     foundPetOwnerId = userId,
                     foundPetId = key,
@@ -62,6 +65,7 @@ class FoundRepository {
             }
         }
 
+    // ---- UPDATE EXISTING PET ----
     suspend fun updateFoundPet(
         foundPetId: String,
         data: FoundPetData,
@@ -69,7 +73,7 @@ class FoundRepository {
     ): Result<Unit> = withContext(Dispatchers.IO) {
         try {
             val userId = auth.currentUser?.uid
-                ?: return@withContext Result.failure(Exception("Brak użytkownika"))
+                ?: return@withContext Result.failure(Exception("No user logged in"))
 
             val imageUrl = if (newImageUri != null) {
                 val fileRef = storage.reference.child("images/${UUID.randomUUID()}")
@@ -92,10 +96,11 @@ class FoundRepository {
         }
     }
 
+    // ---- DELETE PET ----
     suspend fun deleteFoundPet(foundPetId: String): Result<Unit> = withContext(Dispatchers.IO) {
         try {
             val userId = FirebaseAuth.getInstance().currentUser?.uid
-                ?: return@withContext Result.failure(Exception("Brak użytkownika"))
+                ?: return@withContext Result.failure(Exception("No user logged in"))
 
             val updates = mapOf<String, Any?>(
                 "/found_pets/$foundPetId" to null,
@@ -109,6 +114,7 @@ class FoundRepository {
         }
     }
 
+    // ---- SEND REPORT ----
     suspend fun sendReport(foundPetId: String, message: String, userId: String): Result<Unit> =
         withContext(Dispatchers.IO) {
             try {
@@ -122,13 +128,12 @@ class FoundRepository {
                 )
 
                 reportRef.setValue(reportData).await()
-
-
                 Result.success(Unit)
             } catch (e: Exception) {
                 Result.failure(e)
             }
         }
 
+    // ---- GET CURRENT USER ID ----
     fun getCurrentUserId(): String? = auth.currentUser?.uid
 }

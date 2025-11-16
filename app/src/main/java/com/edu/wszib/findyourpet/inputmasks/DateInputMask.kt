@@ -7,6 +7,7 @@ import android.widget.EditText
 class DateInputMask(val input: EditText) {
 
     fun listen() {
+        // Attach text watcher to listen for date input changes
         input.addTextChangedListener(mDateEntryWatcher)
     }
 
@@ -16,6 +17,7 @@ class DateInputMask(val input: EditText) {
         val dividerCharacter = "/"
 
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+            // Prevent recursive triggering when text is programmatically changed
             if (edited) {
                 edited = false
                 return
@@ -23,10 +25,11 @@ class DateInputMask(val input: EditText) {
 
             var working = getEditText()
 
+            // Insert or remove divider after the day and month positions
             working = manageDateDivider(working, 2, start, before)
             working = manageDateDivider(working, 5, start, before)
 
-            // Check if more than 4 digits have been entered after the second slash
+            // Ensure that the year part does not exceed 4 digits
             val indexOfSecondSlash = working.indexOf("/", 3)
             if (indexOfSecondSlash != -1 && working.length - indexOfSecondSlash > 5) {
                 working = working.substring(0, indexOfSecondSlash + 5)
@@ -43,6 +46,7 @@ class DateInputMask(val input: EditText) {
             start: Int,
             before: Int
         ): String {
+            // Automatically add or remove divider depending on edit position
             if (working.length == position) {
                 return if (before <= position && start < position)
                     working + dividerCharacter
@@ -53,6 +57,7 @@ class DateInputMask(val input: EditText) {
         }
 
         private fun getEditText(): String {
+            // Limit input to maximum length of DD/MM/YYYY
             return if (input.text.length >= 10)
                 input.text.toString().substring(0, 10)
             else

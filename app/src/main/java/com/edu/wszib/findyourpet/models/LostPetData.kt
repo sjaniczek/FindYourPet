@@ -23,10 +23,11 @@ data class LostPetData(
     var lostPetDateAdded: String? = "",
     var lostPetImageUrl: String? = "",
     var lostPetLocation: LostLocation? = null,
-    @get:Exclude var id: String? = null
+    @get:Exclude var id: String? = null // Local use only, not stored in Firebase
 ) {
     @Exclude
     fun toMap(): Map<String, Any?> {
+        // Convert object to map for Firebase database
         return mapOf(
             "lostPetOwnerId" to lostPetOwnerId,
             "lostPetId" to lostPetId,

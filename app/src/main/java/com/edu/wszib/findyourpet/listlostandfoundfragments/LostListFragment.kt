@@ -3,7 +3,6 @@ package com.edu.wszib.findyourpet.listlostandfoundfragments
 import android.annotation.SuppressLint
 import android.location.Geocoder
 import android.os.Bundle
-import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -66,9 +65,8 @@ abstract class LostListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Set up RecyclerView layout manager
         manager = LinearLayoutManager(activity)
-        manager.reverseLayout = false
-        manager.stackFromEnd = false
         recycler.layoutManager = manager
 
         val etSearch = view.findViewById<EditText>(R.id.etSearchAddress)
@@ -76,6 +74,7 @@ abstract class LostListFragment : Fragment() {
         val btnLocate = view.findViewById<ImageButton>(R.id.btnGetLocation)
         val btnReset = view.findViewById<ImageButton>(R.id.btnResetSearch)
 
+        // Initialize adapter handling click events for navigation
         adapter = LostPetListAdapter(list) { pet ->
             val args = bundleOf(LostDetailsFragment.EXTRA_POST_KEY to pet.lostPetId)
             findNavController().navigate(R.id.lostDetailsFragment, args)
@@ -85,6 +84,7 @@ abstract class LostListFragment : Fragment() {
         val databaseUrl =
             "https://findyourpet-e77a8-default-rtdb.europe-west1.firebasedatabase.app/"
         database = Firebase.database(databaseUrl).reference
+
         etSearch.setOnEditorActionListener { _, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH ||
                 (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)
@@ -96,18 +96,13 @@ abstract class LostListFragment : Fragment() {
                     Toast.makeText(context, "Wpisz adres", Toast.LENGTH_SHORT).show()
                 }
                 true
-            } else {
-                false
-            }
+            } else false
         }
-        // obsługa przycisków
+
         btnSearch.setOnClickListener {
             val address = etSearch.text.toString()
-            if (address.isNotEmpty()) {
-                setReferenceLocationFromAddress(address)
-            } else {
-                Toast.makeText(context, "Wpisz adres", Toast.LENGTH_SHORT).show()
-            }
+            if (address.isNotEmpty()) setReferenceLocationFromAddress(address)
+            else Toast.makeText(context, "Wpisz adres", Toast.LENGTH_SHORT).show()
         }
 
         btnLocate.setOnClickListener {
@@ -118,6 +113,7 @@ abstract class LostListFragment : Fragment() {
             resetSearch(etSearch)
         }
 
+        // Load list from Firebase
         loadLostPets()
     }
 
@@ -140,26 +136,26 @@ abstract class LostListFragment : Fragment() {
                 Toast.makeText(context, "Nie znaleziono lokalizacji", Toast.LENGTH_SHORT).show()
             }
         } catch (e: Exception) {
-            Toast.makeText(context, "Błąd przy geokodowaniu: ${e.message}", Toast.LENGTH_SHORT)
-                .show()
-            e.printStackTrace()
+            Toast.makeText(context, "Błąd przy geokodowaniu: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun sortListByDistance() {
         val ref = referenceLocation ?: return
 
+        // Sort list by distance from selected or detected location
         list.sortBy { pet ->
             pet.lostPetLocation?.let {
                 haversineDistance(ref, LatLng(it.latitude, it.longitude))
             } ?: Double.MAX_VALUE
         }
+
         adapter.notifyDataSetChanged()
         recycler.smoothScrollToPosition(0)
     }
 
     private fun haversineDistance(from: LatLng, to: LatLng): Double {
-        val R = 6371000.0 // promień Ziemi w metrach
+        val R = 6371000.0
         val dLat = Math.toRadians(to.latitude - from.latitude)
         val dLon = Math.toRadians(to.longitude - from.longitude)
         val a = sin(dLat / 2).pow(2.0) +
@@ -174,11 +170,11 @@ abstract class LostListFragment : Fragment() {
     private fun requestUserLocationAndSort() {
         val fused = LocationServices.getFusedLocationProviderClient(requireActivity())
 
+        // Check if location permission is granted before accessing GPS
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
                 android.Manifest.permission.ACCESS_FINE_LOCATION
-            )
-            != android.content.pm.PackageManager.PERMISSION_GRANTED
+            ) != android.content.pm.PackageManager.PERMISSION_GRANTED
         ) {
             requestPermissions(arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 1001)
             return
@@ -189,8 +185,7 @@ abstract class LostListFragment : Fragment() {
                 referenceLocation = LatLng(loc.latitude, loc.longitude)
                 sortListByDistance()
             } else {
-                Toast.makeText(context, "Nie udało się pobrać lokalizacji", Toast.LENGTH_SHORT)
-                    .show()
+                Toast.makeText(context, "Nie udało się pobrać lokalizacji", Toast.LENGTH_SHORT).show()
             }
         }.addOnFailureListener { e ->
             Toast.makeText(
@@ -203,25 +198,24 @@ abstract class LostListFragment : Fragment() {
 
     private fun loadLostPets() {
         val query = getDatabaseReference()
-        Log.d("LostListFragment", "Query path: ${query.ref.key}")
 
         query.get().addOnSuccessListener { snapshot ->
             list.clear()
+
+            // Convert Firebase entries to model objects
             for (child in snapshot.children) {
                 val pet = child.getValue(LostPetData::class.java)
                 pet?.lostPetId = child.key
                 if (pet != null) list.add(pet)
             }
 
-            // sortowanie domyślne po dacie dodania
+            // Sort newest lost pets first
             list.sortByDescending { it.lostPetDateAdded }
 
             val textEmpty = view?.findViewById<TextView>(R.id.tvLostPetRecyclerEmpty)
             textEmpty?.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
 
             adapter.notifyDataSetChanged()
-        }.addOnFailureListener { e ->
-            Log.e("LostListFragment", "Failed to load pets", e)
         }
     }
 }

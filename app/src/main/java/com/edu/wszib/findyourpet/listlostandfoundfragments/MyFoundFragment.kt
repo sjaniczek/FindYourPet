@@ -7,6 +7,7 @@ import com.google.firebase.ktx.Firebase
 
 class MyFoundFragment : FoundListFragment() {
     override fun getDatabaseReference(): DatabaseReference {
+        // Return reference to the current user's found pets
         val uid = Firebase.auth.currentUser?.uid ?: ""
         return FirebaseDatabase.getInstance().reference.child("users/$uid/found_pets")
     }

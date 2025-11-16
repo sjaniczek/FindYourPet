@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.edu.wszib.findyourpet.repository.LostRepository
 
+// Factory to create LostPetViewModel with repository injection
 class LostPetViewModelFactory(
     private val repository: LostRepository
 ) : ViewModelProvider.Factory {

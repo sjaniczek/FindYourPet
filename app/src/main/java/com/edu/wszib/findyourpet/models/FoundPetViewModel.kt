@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 
 class FoundPetViewModel(private val repository: FoundRepository) : ViewModel() {
 
-    // ---- STATES ----
+    // ---- STATE FLOWS ----
     private val _uploadState = MutableStateFlow<Result<Unit>?>(null)
     val uploadState: StateFlow<Result<Unit>?> = _uploadState
 
@@ -22,14 +22,13 @@ class FoundPetViewModel(private val repository: FoundRepository) : ViewModel() {
     private val _reportState = MutableStateFlow<Result<Unit>?>(null)
     val reportState: StateFlow<Result<Unit>?> = _reportState
 
-    // Dane do edycji
+    // Current data for editing
     private val _editData = MutableLiveData<FoundPetData?>()
     val editData: LiveData<FoundPetData?> = _editData
 
-    // Bieżące dane formularza (create/edit)
+    // Current form data (create/edit)
     var foundPetData: FoundPetData = FoundPetData()
     var imageUri: Uri? = null
-
 
     // ---- UPLOAD / UPDATE ----
     fun uploadFoundPet(data: FoundPetData, imageUri: Uri) {
@@ -42,7 +41,7 @@ class FoundPetViewModel(private val repository: FoundRepository) : ViewModel() {
         viewModelScope.launch {
             _uploadState.value = repository.updateFoundPet(foundPetId, data, newImageUri)
 
-            // odśwież dane po aktualizacji
+            // Refresh data after update
             repository.getFoundPetOnce(foundPetId) { latest ->
                 latest?.let {
                     foundPetData = it.copy()
@@ -51,7 +50,6 @@ class FoundPetViewModel(private val repository: FoundRepository) : ViewModel() {
             }
         }
     }
-
 
     // ---- LOAD ----
     fun loadFoundPet(foundPetId: String) {
@@ -65,14 +63,12 @@ class FoundPetViewModel(private val repository: FoundRepository) : ViewModel() {
         }
     }
 
-
     // ---- DELETE ----
     fun deleteFoundPet(foundPetId: String) {
         viewModelScope.launch {
             _deleteState.value = repository.deleteFoundPet(foundPetId)
         }
     }
-
 
     // ---- REPORT ----
     fun sendReport(foundPetId: String, message: String) {
@@ -82,7 +78,6 @@ class FoundPetViewModel(private val repository: FoundRepository) : ViewModel() {
             _reportState.value = repository.sendReport(foundPetId, message, userId)
         }
     }
-
 
     // ---- RESET FUNCTIONS ----
     fun resetUploadState() {
@@ -111,7 +106,6 @@ class FoundPetViewModel(private val repository: FoundRepository) : ViewModel() {
         resetDeleteState()
         resetReportState()
     }
-
 
     // ---- AUTH ----
     fun getCurrentUserId(): String? = repository.getCurrentUserId()
