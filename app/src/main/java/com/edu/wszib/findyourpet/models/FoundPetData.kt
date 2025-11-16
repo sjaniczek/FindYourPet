@@ -17,7 +17,8 @@ data class FoundPetData(
     var foundPetAdditionalFinderInfo: String? = "",
     var foundPetDateAdded: String? = "",
     var foundPetImageUrl: String? = "",
-    var foundPetLocation: FoundLocation? = null
+    var foundPetLocation: FoundLocation? = null,
+    @get:Exclude var id: String? = null
 ) {
     @Exclude
     fun toMap(): Map<String, Any?> {
