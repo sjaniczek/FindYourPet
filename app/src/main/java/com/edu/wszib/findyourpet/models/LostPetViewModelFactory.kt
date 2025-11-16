@@ -2,7 +2,6 @@ package com.edu.wszib.findyourpet.models
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.edu.wszib.findyourpet.repository.FoundRepository
 import com.edu.wszib.findyourpet.repository.LostRepository
 
 class LostPetViewModelFactory(

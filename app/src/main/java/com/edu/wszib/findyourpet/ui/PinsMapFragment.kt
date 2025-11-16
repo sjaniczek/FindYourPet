@@ -18,10 +18,10 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.edu.wszib.findyourpet.R
 import com.edu.wszib.findyourpet.databinding.FragmentPinsMapBinding
-import com.edu.wszib.findyourpet.ui.foundfragments.FoundDetailsFragment
-import com.edu.wszib.findyourpet.ui.lostfragments.LostDetailsFragment
 import com.edu.wszib.findyourpet.models.FoundPetData
 import com.edu.wszib.findyourpet.models.LostPetData
+import com.edu.wszib.findyourpet.ui.foundfragments.FoundDetailsFragment
+import com.edu.wszib.findyourpet.ui.lostfragments.LostDetailsFragment
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -30,7 +30,10 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.squareup.picasso.Callback
@@ -130,6 +133,7 @@ class PinsMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.InfoWindowAdap
             }
         }
     }
+
     private fun showSearchDialog() {
         val editText = EditText(requireContext()).apply {
             hint = "Wpisz adres lub miasto"
@@ -154,6 +158,7 @@ class PinsMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.InfoWindowAdap
 
         dialog.show()
     }
+
     private fun searchLocation(query: String) {
         val geocoder = Geocoder(requireContext(), Locale.getDefault())
         try {
@@ -162,12 +167,14 @@ class PinsMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.InfoWindowAdap
                 val location = LatLng(addresses[0].latitude, addresses[0].longitude)
                 googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 14f))
             } else {
-                Toast.makeText(requireContext(), "Nie znaleziono lokalizacji", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Nie znaleziono lokalizacji", Toast.LENGTH_SHORT)
+                    .show()
             }
         } catch (e: Exception) {
             Toast.makeText(requireContext(), "Błąd: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -214,8 +221,10 @@ class PinsMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.InfoWindowAdap
                     }
 
                     override fun onError(e: Exception?) {
-                        Toast.makeText(requireContext(), "Wystąpił błąd podczas ładowania zdjęcia",
-                            Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            requireContext(), "Wystąpił błąd podczas ładowania zdjęcia",
+                            Toast.LENGTH_SHORT
+                        ).show()
                         Log.e(TAG, "Błąd ładowania zdjęcia: ${e?.message}")
                     }
                 })

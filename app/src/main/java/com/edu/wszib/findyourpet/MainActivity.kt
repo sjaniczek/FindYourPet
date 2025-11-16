@@ -8,7 +8,6 @@ import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.MenuItem
 import android.view.View
-import android.webkit.WebView
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -16,8 +15,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.fragment.NavHostFragment
 import com.edu.wszib.findyourpet.databinding.ActivityMainBinding
@@ -43,6 +40,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     val lostPetViewModel: FoundPetViewModel by viewModels {
         FoundPetViewModelFactory(lostRepository)
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -159,6 +157,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         return false
     }
+
     private fun deleteAccount() {
         val user = auth.currentUser
         AlertDialog.Builder(this)
@@ -174,7 +173,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
                         navHostFragment.navController.navigate(R.id.loginFragment)
                     } else {
-                        Toast.makeText(this, "Nie udało się usunąć konta", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Nie udało się usunąć konta", Toast.LENGTH_SHORT)
+                            .show()
                     }
                 }
             }
@@ -189,16 +189,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             .setPositiveButton("Tak, cofam") { _, _ ->
                 PrefsManager(this).setConsentGiven(false)
                 Toast.makeText(this, "Zgoda została cofnięta", Toast.LENGTH_SHORT).show()
-                finishAffinity() 
+                finishAffinity()
             }
             .setNegativeButton("Anuluj", null)
             .show()
     }
+
     private fun showConsentDialogIfNeeded() {
         val prefsManager = PrefsManager(this)
         if (!prefsManager.isConsentGiven()) {
-            val message = "Aby korzystać z aplikacji, musisz wyrazić zgodę na przetwarzanie danych osobowych.\n\n" +
-                    "Kliknij tutaj, aby przeczytać politykę prywatności."
+            val message =
+                "Aby korzystać z aplikacji, musisz wyrazić zgodę na przetwarzanie danych osobowych.\n\n" +
+                        "Kliknij tutaj, aby przeczytać politykę prywatności."
 
             val spannableMessage = SpannableString(message)
             val start = message.indexOf("Kliknij tutaj")
@@ -225,11 +227,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     prefsManager.setConsentGiven()
                 }
                 .setNegativeButton("Nie zgadzam się") { _, _ ->
-                    Toast.makeText(this, "Nie możesz korzystać z aplikacji bez zgody", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this,
+                        "Nie możesz korzystać z aplikacji bez zgody",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     finish()
                 }
                 .show()
-            }
+        }
     }
 
     companion object {

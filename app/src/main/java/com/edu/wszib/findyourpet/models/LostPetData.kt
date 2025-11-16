@@ -22,7 +22,8 @@ data class LostPetData(
     var lostPetAdditionalOwnerInfo: String? = "",
     var lostPetDateAdded: String? = "",
     var lostPetImageUrl: String? = "",
-    var lostPetLocation: LostLocation? = null
+    var lostPetLocation: LostLocation? = null,
+    @get:Exclude var id: String? = null
 ) {
     @Exclude
     fun toMap(): Map<String, Any?> {

@@ -31,18 +31,11 @@ import com.edu.wszib.findyourpet.models.LostPetViewModel
 import com.edu.wszib.findyourpet.models.LostPetViewModelFactory
 import com.edu.wszib.findyourpet.repository.LostRepository
 import com.google.android.gms.maps.model.LatLng
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.ktx.storage
-import com.google.firebase.storage.storageMetadata
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
 
 class LostCreateFragment : Fragment() {
 
@@ -202,7 +195,7 @@ class LostCreateFragment : Fragment() {
     private fun validateAndUpload() {
         val location = viewModel.lostPetData.lostPetLocation
         if (!validateFields() || imageUri == null || location == null) {
-            Log.d("uploadtest", "validateAndUpload: "+imageUri.toString()+location.toString())
+            Log.d("uploadtest", "validateAndUpload: " + imageUri.toString() + location.toString())
             Toast.makeText(context, "Wypełnij wszystkie pola i dodaj zdjęcie", Toast.LENGTH_SHORT)
                 .show()
             return

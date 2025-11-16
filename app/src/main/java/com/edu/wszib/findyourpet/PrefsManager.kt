@@ -10,6 +10,7 @@ class PrefsManager(context: Context) {
     fun setConsentGiven(consent: Boolean) {
         prefs.edit().putBoolean("rodo_consent", consent).apply()
     }
+
     fun setConsentGiven() {
         setConsentGiven(true)
     }

@@ -1,21 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:viewBindingIgnore="true">
+    android:orientation="vertical"
+    android:padding="8dp">
 
+    <!-- Pasek wyszukiwania po adresie -->
+    <LinearLayout
+        android:id="@+id/searchBar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:gravity="center_vertical"
+        android:background="@android:color/transparent">
+
+
+        <!-- Pole wpisywania adresu -->
+        <EditText
+            android:id="@+id/etSearchAddress"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:hint="Wpisz adres"
+            android:paddingHorizontal="12dp"
+            android:gravity="center_vertical"
+            android:singleLine="true"
+            android:imeOptions="actionSearch"
+            android:inputType="text" />
+
+        <!-- Przycisk Szukaj (wyraźny, po prawej) -->
+        <ImageButton
+            android:id="@+id/btnSearchAddress"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_search"
+            android:contentDescription="Szukaj"
+            android:padding="8dp" />
+
+        <!-- Przycisk pobrania lokalizacji (pinezka) -->
+        <ImageButton
+            android:id="@+id/btnGetLocation"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_marginStart="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_my_location"
+            android:contentDescription="Moja lokalizacja"
+            android:padding="8dp" />
+
+        <!-- Przycisk reset (X) -->
+        <ImageButton
+            android:id="@+id/btnResetSearch"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_marginStart="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_clear"
+            android:contentDescription="Reset"
+            android:padding="8dp" />
+
+    </LinearLayout>
+    <!-- Lista ogłoszeń -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewLost"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         tools:listitem="@layout/lost_list_iem" />
 
     <TextView
         android:id="@+id/tvLostPetRecyclerEmpty"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Brak ogłoszeń"
+        android:text="Brak ogłoszeń."
         android:gravity="center"
         android:visibility="gone" />
-</FrameLayout>
+
+</LinearLayout>

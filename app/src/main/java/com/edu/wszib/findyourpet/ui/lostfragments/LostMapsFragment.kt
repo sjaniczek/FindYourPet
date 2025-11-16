@@ -35,7 +35,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.CancellationToken
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.gms.tasks.OnTokenCanceledListener
-import java.util.*
+import java.util.Locale
 
 class LostMapsFragment : Fragment(), OnMapReadyCallback {
 
@@ -97,6 +97,7 @@ class LostMapsFragment : Fragment(), OnMapReadyCallback {
             decodeLocation(currentLocation)
         }
     }
+
     private fun showSearchDialog() {
         val editText = EditText(requireContext()).apply {
             hint = "Wpisz adres lub miasto"
@@ -121,6 +122,7 @@ class LostMapsFragment : Fragment(), OnMapReadyCallback {
 
         dialog.show()
     }
+
     private fun searchLocation(query: String) {
         val geocoder = Geocoder(requireContext(), Locale.getDefault())
         try {
@@ -129,12 +131,14 @@ class LostMapsFragment : Fragment(), OnMapReadyCallback {
                 val location = LatLng(addresses[0].latitude, addresses[0].longitude)
                 googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 14f))
             } else {
-                Toast.makeText(requireContext(), "Nie znaleziono lokalizacji", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Nie znaleziono lokalizacji", Toast.LENGTH_SHORT)
+                    .show()
             }
         } catch (e: Exception) {
             Toast.makeText(requireContext(), "Błąd: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
+
     private fun decodeLocation(currentLocation: LatLng) {
         val geocoder = Geocoder(requireContext(), Locale.getDefault())
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

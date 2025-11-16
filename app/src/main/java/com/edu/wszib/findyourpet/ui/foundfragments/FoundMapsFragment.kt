@@ -8,7 +8,6 @@ import android.location.Geocoder
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,7 +22,6 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.edu.wszib.findyourpet.R
 import com.edu.wszib.findyourpet.databinding.FragmentFoundMapsBinding
-
 import com.edu.wszib.findyourpet.models.FoundPetData
 import com.edu.wszib.findyourpet.models.FoundPetViewModel
 import com.edu.wszib.findyourpet.models.FoundPetViewModelFactory
@@ -39,7 +37,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.CancellationToken
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.gms.tasks.OnTokenCanceledListener
-import java.util.*
+import java.util.Locale
 
 class FoundMapsFragment : Fragment(), OnMapReadyCallback {
     private val foundPetViewModel: FoundPetViewModel by activityViewModels {

@@ -8,7 +8,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,7 +28,6 @@ import com.edu.wszib.findyourpet.models.FoundPetData
 import com.edu.wszib.findyourpet.models.FoundPetViewModel
 import com.edu.wszib.findyourpet.models.FoundPetViewModelFactory
 import com.edu.wszib.findyourpet.repository.FoundRepository
-import com.edu.wszib.findyourpet.ui.LoginFragmentDirections
 import com.google.android.gms.maps.model.LatLng
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.launch
@@ -201,8 +199,10 @@ class FoundEditFragment : Fragment() {
             foundPetFinderName = etFoundEditFinderName.text.toString()
             foundPetPhoneNumber = etFoundEditFinderNumber.text.toString()
             foundPetEmailAddress = etFoundEditFinderEmail.text.toString()
-            foundPetBehavior = rgFoundEditBehavior.findViewById<RadioButton>(rgFoundEditBehavior.checkedRadioButtonId)?.text.toString()
-            foundPetType = rgFoundEditType.findViewById<RadioButton>(rgFoundEditType.checkedRadioButtonId)?.text.toString()
+            foundPetBehavior =
+                rgFoundEditBehavior.findViewById<RadioButton>(rgFoundEditBehavior.checkedRadioButtonId)?.text.toString()
+            foundPetType =
+                rgFoundEditType.findViewById<RadioButton>(rgFoundEditType.checkedRadioButtonId)?.text.toString()
             foundPetAdditionalPetInfo = etFoundEditPetAdditionalInfo.text.toString()
             foundPetAdditionalFinderInfo = etFoundEditFinderAdditionalInfo.text.toString()
             viewModel.imageUri = imageUri

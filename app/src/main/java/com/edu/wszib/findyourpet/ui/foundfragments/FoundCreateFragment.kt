@@ -17,10 +17,8 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
-import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -30,10 +28,8 @@ import com.edu.wszib.findyourpet.inputmasks.DateInputMask
 import com.edu.wszib.findyourpet.models.FoundPetData
 import com.edu.wszib.findyourpet.models.FoundPetViewModel
 import com.edu.wszib.findyourpet.models.FoundPetViewModelFactory
-import com.edu.wszib.findyourpet.models.ReportData
 import com.edu.wszib.findyourpet.repository.FoundRepository
 import com.google.android.gms.maps.model.LatLng
-import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -186,7 +182,7 @@ class FoundCreateFragment : Fragment() {
     private fun validateAndUpload() {
         val location = viewModel.foundPetData.foundPetLocation
         if (!validateFields() || imageUri == null || location == null) {
-            Log.d("uploadtest", "validateAndUpload: "+imageUri.toString()+location.toString())
+            Log.d("uploadtest", "validateAndUpload: " + imageUri.toString() + location.toString())
             Toast.makeText(
                 context,
                 "Wypełnij pola, wybierz zdjęcie i lokalizację",
@@ -219,8 +215,8 @@ class FoundCreateFragment : Fragment() {
         return dateFormat.format(calendar.time)
     }
 
-    private fun validateFields(): Boolean = with(binding){
-        return  etFoundPetDate.text.isNotEmpty() &&
+    private fun validateFields(): Boolean = with(binding) {
+        return etFoundPetDate.text.isNotEmpty() &&
                 etFoundAddress.text.isNotEmpty() &&
                 etFoundFinderName.text.isNotEmpty() &&
                 etFoundFinderNumber.text.isNotEmpty() &&

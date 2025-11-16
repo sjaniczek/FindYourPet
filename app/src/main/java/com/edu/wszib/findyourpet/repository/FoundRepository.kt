@@ -1,21 +1,12 @@
 package com.edu.wszib.findyourpet.repository
 
 import android.net.Uri
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.edu.wszib.findyourpet.models.FoundPetData
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.auth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.database
-import com.google.firebase.database.ktx.database
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.storage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -42,32 +33,43 @@ class FoundRepository {
             }
     }
 
-    suspend fun uploadFoundPet(data: FoundPetData, imageUri: Uri): Result<Unit> = withContext(Dispatchers.IO) {
-        try {
-            val userId = auth.currentUser?.uid ?: return@withContext Result.failure(Exception("Brak użytkownika"))
-            val key = database.reference.child("found_pets").push().key
-                ?: return@withContext Result.failure(Exception("Nie udało się wygenerować klucza"))
+    suspend fun uploadFoundPet(data: FoundPetData, imageUri: Uri): Result<Unit> =
+        withContext(Dispatchers.IO) {
+            try {
+                val userId = auth.currentUser?.uid
+                    ?: return@withContext Result.failure(Exception("Brak użytkownika"))
+                val key = database.reference.child("found_pets").push().key
+                    ?: return@withContext Result.failure(Exception("Nie udało się wygenerować klucza"))
 
-            val fileRef = storage.reference.child("images/${UUID.randomUUID()}")
-            fileRef.putFile(imageUri).await()
-            val imageUrl = fileRef.downloadUrl.await().toString()
+                val fileRef = storage.reference.child("images/${UUID.randomUUID()}")
+                fileRef.putFile(imageUri).await()
+                val imageUrl = fileRef.downloadUrl.await().toString()
 
-            val updatedData = data.copy(foundPetOwnerId = userId, foundPetId = key, foundPetImageUrl = imageUrl)
-            val values = updatedData.toMap()
-            val updates = mapOf(
-                "/found_pets/$key" to values,
-                "/users/$userId/found_pets/$key" to values
-            )
-            database.reference.updateChildren(updates).await()
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
+                val updatedData = data.copy(
+                    foundPetOwnerId = userId,
+                    foundPetId = key,
+                    foundPetImageUrl = imageUrl
+                )
+                val values = updatedData.toMap()
+                val updates = mapOf(
+                    "/found_pets/$key" to values,
+                    "/users/$userId/found_pets/$key" to values
+                )
+                database.reference.updateChildren(updates).await()
+                Result.success(Unit)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
         }
-    }
 
-    suspend fun updateFoundPet(foundPetId: String, data: FoundPetData, newImageUri: Uri?): Result<Unit> = withContext(Dispatchers.IO) {
+    suspend fun updateFoundPet(
+        foundPetId: String,
+        data: FoundPetData,
+        newImageUri: Uri?
+    ): Result<Unit> = withContext(Dispatchers.IO) {
         try {
-            val userId = auth.currentUser?.uid ?: return@withContext Result.failure(Exception("Brak użytkownika"))
+            val userId = auth.currentUser?.uid
+                ?: return@withContext Result.failure(Exception("Brak użytkownika"))
 
             val imageUrl = if (newImageUri != null) {
                 val fileRef = storage.reference.child("images/${UUID.randomUUID()}")
@@ -89,6 +91,7 @@ class FoundRepository {
             Result.failure(e)
         }
     }
+
     suspend fun deleteFoundPet(foundPetId: String): Result<Unit> = withContext(Dispatchers.IO) {
         try {
             val userId = FirebaseAuth.getInstance().currentUser?.uid

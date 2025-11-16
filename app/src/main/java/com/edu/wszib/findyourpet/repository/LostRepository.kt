@@ -4,12 +4,9 @@ import android.net.Uri
 import com.edu.wszib.findyourpet.models.LostPetData
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.auth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.database
-import com.google.firebase.database.ktx.database
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.storage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -36,32 +33,40 @@ class LostRepository {
             }
     }
 
-    suspend fun uploadLostPet(data: LostPetData, imageUri: Uri): Result<Unit> = withContext(Dispatchers.IO) {
-        try {
-            val userId = auth.currentUser?.uid ?: return@withContext Result.failure(Exception("Brak użytkownika"))
-            val key = database.reference.child("lost_pets").push().key
-                ?: return@withContext Result.failure(Exception("Nie udało się wygenerować klucza"))
+    suspend fun uploadLostPet(data: LostPetData, imageUri: Uri): Result<Unit> =
+        withContext(Dispatchers.IO) {
+            try {
+                val userId = auth.currentUser?.uid
+                    ?: return@withContext Result.failure(Exception("Brak użytkownika"))
+                val key = database.reference.child("lost_pets").push().key
+                    ?: return@withContext Result.failure(Exception("Nie udało się wygenerować klucza"))
 
-            val fileRef = storage.reference.child("images/${UUID.randomUUID()}")
-            fileRef.putFile(imageUri).await()
-            val imageUrl = fileRef.downloadUrl.await().toString()
+                val fileRef = storage.reference.child("images/${UUID.randomUUID()}")
+                fileRef.putFile(imageUri).await()
+                val imageUrl = fileRef.downloadUrl.await().toString()
 
-            val updatedData = data.copy(lostPetOwnerId = userId, lostPetId = key, lostPetImageUrl = imageUrl)
-            val values = updatedData.toMap()
-            val updates = mapOf(
-                "/lost_pets/$key" to values,
-                "/users/$userId/lost_pets/$key" to values
-            )
-            database.reference.updateChildren(updates).await()
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
+                val updatedData =
+                    data.copy(lostPetOwnerId = userId, lostPetId = key, lostPetImageUrl = imageUrl)
+                val values = updatedData.toMap()
+                val updates = mapOf(
+                    "/lost_pets/$key" to values,
+                    "/users/$userId/lost_pets/$key" to values
+                )
+                database.reference.updateChildren(updates).await()
+                Result.success(Unit)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
         }
-    }
 
-    suspend fun updateLostPet(lostPetId: String, data: LostPetData, newImageUri: Uri?): Result<Unit> = withContext(Dispatchers.IO) {
+    suspend fun updateLostPet(
+        lostPetId: String,
+        data: LostPetData,
+        newImageUri: Uri?
+    ): Result<Unit> = withContext(Dispatchers.IO) {
         try {
-            val userId = auth.currentUser?.uid ?: return@withContext Result.failure(Exception("Brak użytkownika"))
+            val userId = auth.currentUser?.uid
+                ?: return@withContext Result.failure(Exception("Brak użytkownika"))
 
             val imageUrl = if (newImageUri != null) {
                 val fileRef = storage.reference.child("images/${UUID.randomUUID()}")
@@ -83,6 +88,7 @@ class LostRepository {
             Result.failure(e)
         }
     }
+
     suspend fun deleteLostPet(lostPetId: String): Result<Unit> = withContext(Dispatchers.IO) {
         try {
             val userId = FirebaseAuth.getInstance().currentUser?.uid
@@ -120,5 +126,6 @@ class LostRepository {
                 Result.failure(e)
             }
         }
+
     fun getCurrentUserId(): String? = auth.currentUser?.uid
 }

@@ -9,7 +9,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.edu.wszib.findyourpet.databinding.FragmentMainBinding
-import com.edu.wszib.findyourpet.listlostandfoundfragments.*
+import com.edu.wszib.findyourpet.listlostandfoundfragments.TopFoundFragment
+import com.edu.wszib.findyourpet.listlostandfoundfragments.TopLostFragment
 import com.edu.wszib.findyourpet.ui.PinsMapFragment
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.auth.FirebaseAuth
@@ -67,6 +68,7 @@ class MainFragment : Fragment() {
             }.attach()
         }
     }
+
     override fun onDestroy() {
         super.onDestroy()
         _binding = null

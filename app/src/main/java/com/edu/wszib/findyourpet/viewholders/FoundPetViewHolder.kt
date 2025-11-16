@@ -16,24 +16,24 @@ class FoundPetViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val listFoundPetImg: ImageView = itemView.findViewById(R.id.listFoundPetImg)
 
 
-    fun bindToLostPet(foundPet: FoundPetData) {
+    fun bindToFoundPet(foundPet: FoundPetData) {
         listFoundPetDate.text = buildString {
             append("Odnaleziony: ")
             append(foundPet.foundPetDate)
         }
         listFoundPetAddress.text = foundPet.foundPetDecodedAddress
         listFoundPetDateAdded.text = buildString {
-        append("Dodano: ")
-        append(foundPet.foundPetDateAdded)
-    }
+            append("Dodano: ")
+            append(foundPet.foundPetDateAdded)
+        }
 
-        val lostImageUrl = if (foundPet.foundPetImageUrl.isNullOrEmpty()) {
+        val foundImageUrl = if (foundPet.foundPetImageUrl.isNullOrEmpty()) {
             DEFAULT_IMAGE_URL
         } else {
             foundPet.foundPetImageUrl
         }
         Picasso.get()
-            .load(lostImageUrl)
+            .load(foundImageUrl)
             .into(listFoundPetImg)
     }
 }

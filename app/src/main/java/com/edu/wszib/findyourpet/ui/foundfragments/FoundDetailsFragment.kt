@@ -4,7 +4,12 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
 import androidx.core.os.bundleOf
@@ -79,10 +84,12 @@ class FoundDetailsFragment : Fragment() {
                         navigateToFoundPetEdit()
                         true
                     }
+
                     R.id.action_delete_pet -> {
                         confirmAndDeleteFoundPet()
                         true
                     }
+
                     else -> false
                 }
             }
@@ -97,21 +104,32 @@ class FoundDetailsFragment : Fragment() {
                 deleteMenuItem?.isVisible = isOwner
 
                 binding.apply {
-                    val imageUrl = if (it.foundPetImageUrl.isNullOrEmpty()) DEFAULT_IMAGE_URL else it.foundPetImageUrl
+                    val imageUrl =
+                        if (it.foundPetImageUrl.isNullOrEmpty()) DEFAULT_IMAGE_URL else it.foundPetImageUrl
                     Picasso.get().load(imageUrl)
                         .placeholder(R.drawable.pets)
                         .error(R.drawable.pets)
                         .into(ivPetImage)
 
                     tvFoundDetailsPetDecodedAddress.text = it.foundPetDecodedAddress
-                    tvFoundDetailsPetType.text = getString(R.string.details_found_pet_type, it.foundPetType)
-                    tvFoundDetailsPetDate.text = getString(R.string.details_found_pet_date, it.foundPetDate)
-                    tvFoundDetailsPetBehavior.text = getString(R.string.details_pet_behavior, it.foundPetBehavior)
-                    tvFoundDetailsPetAdditionalInfo.text = getString(R.string.details_pet_additional, it.foundPetAdditionalPetInfo)
-                    tvFoundDetailsPetFinderName.text = getString(R.string.details_pet_finder_name, it.foundPetFinderName)
-                    tvFoundDetailsPetPhoneNumber.text = getString(R.string.details_pet_finder_number, it.foundPetPhoneNumber)
-                    tvFoundDetailsPetEmailAddress.text = getString(R.string.details_pet_finder_email, it.foundPetEmailAddress)
-                    tvFoundDetailsPetOwnerAdditionalInfo.text = getString(R.string.details_pet_finder_additional, it.foundPetAdditionalFinderInfo)
+                    tvFoundDetailsPetType.text =
+                        getString(R.string.details_found_pet_type, it.foundPetType)
+                    tvFoundDetailsPetDate.text =
+                        getString(R.string.details_found_pet_date, it.foundPetDate)
+                    tvFoundDetailsPetBehavior.text =
+                        getString(R.string.details_pet_behavior, it.foundPetBehavior)
+                    tvFoundDetailsPetAdditionalInfo.text =
+                        getString(R.string.details_pet_additional, it.foundPetAdditionalPetInfo)
+                    tvFoundDetailsPetFinderName.text =
+                        getString(R.string.details_pet_finder_name, it.foundPetFinderName)
+                    tvFoundDetailsPetPhoneNumber.text =
+                        getString(R.string.details_pet_finder_number, it.foundPetPhoneNumber)
+                    tvFoundDetailsPetEmailAddress.text =
+                        getString(R.string.details_pet_finder_email, it.foundPetEmailAddress)
+                    tvFoundDetailsPetOwnerAdditionalInfo.text = getString(
+                        R.string.details_pet_finder_additional,
+                        it.foundPetAdditionalFinderInfo
+                    )
 
                     foundDetailsMapButton.setOnClickListener { loc ->
                         it.foundPetLocation?.let { loc ->
@@ -123,28 +141,38 @@ class FoundDetailsFragment : Fragment() {
                     }
 
                     foundPetPhoneButton.setOnClickListener {
-                        val dialIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:${data.foundPetPhoneNumber}"))
+                        val dialIntent =
+                            Intent(Intent.ACTION_DIAL, Uri.parse("tel:${data.foundPetPhoneNumber}"))
                         startActivity(dialIntent)
                     }
 
                     foundDetailsSmsButton.setOnClickListener {
                         val smsUri = Uri.parse("smsto:${data.foundPetPhoneNumber}")
                         val smsIntent = Intent(Intent.ACTION_SENDTO, smsUri)
-                        smsIntent.putExtra("sms_body", "Dzień dobry, kontaktuję się w sprawie odnalezionego zwierzaka.")
+                        smsIntent.putExtra(
+                            "sms_body",
+                            "Dzień dobry, kontaktuję się w sprawie odnalezionego zwierzaka."
+                        )
                         startActivity(smsIntent)
                     }
                 }
             }
         })
     }
+
     private fun observeReportState() {
         lifecycleScope.launch {
             viewModel.reportState.collect { result ->
                 result?.let {
                     if (it.isSuccess) {
-                        Toast.makeText(requireContext(), "Zgłoszenie wysłane", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "Zgłoszenie wysłane", Toast.LENGTH_SHORT)
+                            .show()
                     } else {
-                        Toast.makeText(requireContext(), "Błąd podczas wysyłania zgłoszenia", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            requireContext(),
+                            "Błąd podczas wysyłania zgłoszenia",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
 
                     viewModel.resetReportState()
@@ -152,6 +180,7 @@ class FoundDetailsFragment : Fragment() {
             }
         }
     }
+
     private fun setupReportButton() {
         binding.buttonReportFound.setOnClickListener {
             val builder = AlertDialog.Builder(requireContext())
@@ -166,7 +195,11 @@ class FoundDetailsFragment : Fragment() {
                     viewModel.sendReport(foundPetKey, message)
 
                 } else {
-                    Toast.makeText(requireContext(), "Treść zgłoszenia nie może być pusta", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        "Treść zgłoszenia nie może być pusta",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
                 dialog.dismiss()
             }
@@ -176,22 +209,26 @@ class FoundDetailsFragment : Fragment() {
             builder.show()
         }
     }
+
     private fun observeDeleteState() {
         lifecycleScope.launch {
             viewModel.deleteState.collect { result ->
                 result ?: return@collect
 
                 if (result.isSuccess) {
-                    Toast.makeText(requireContext(), "Usunięto ogłoszenie", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Usunięto ogłoszenie", Toast.LENGTH_SHORT)
+                        .show()
                     findNavController().navigate(R.id.mainFragment)
                 } else {
-                    Toast.makeText(requireContext(), "Błąd podczas usuwania", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Błąd podczas usuwania", Toast.LENGTH_SHORT)
+                        .show()
                 }
 
                 viewModel.resetDeleteState()
             }
         }
     }
+
     private fun confirmAndDeleteFoundPet() {
         viewModel.getCurrentUserId() ?: return
         val builder = AlertDialog.Builder(requireContext())
