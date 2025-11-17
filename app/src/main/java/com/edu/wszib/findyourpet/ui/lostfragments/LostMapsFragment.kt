@@ -8,6 +8,7 @@ import android.location.Geocoder
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -62,10 +63,9 @@ class LostMapsFragment : Fragment(), OnMapReadyCallback {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentLostMapsBinding.inflate(inflater, container, false)
 
-        val lostPetViewModel = lostPetViewModel.lostPetData
         return binding.root
     }
 
@@ -78,7 +78,6 @@ class LostMapsFragment : Fragment(), OnMapReadyCallback {
             LostMapsFragmentArgs.fromBundle(requireArguments())
         isEditing = args.isEditing
         lostPetKey = args.lostPetKey
-        val currentLocation = args.currentLocation
         binding.buttonSearchAddressLost.setOnClickListener {
             showSearchDialog()
         }
@@ -102,7 +101,6 @@ class LostMapsFragment : Fragment(), OnMapReadyCallback {
         val editText = EditText(requireContext()).apply {
             hint = "Wpisz adres lub miasto"
             setPadding(50, 40, 50, 40)
-            setTextColor(ContextCompat.getColor(requireContext(), android.R.color.black))
             setHintTextColor(ContextCompat.getColor(requireContext(), android.R.color.darker_gray))
         }
 
@@ -185,11 +183,11 @@ class LostMapsFragment : Fragment(), OnMapReadyCallback {
             @Suppress("DEPRECATION")
             val addresses =
                 geocoder.getFromLocation(currentLocation.latitude, currentLocation.longitude, 1)
-            if (addresses != null && addresses.isNotEmpty()) {
+            if (!addresses.isNullOrEmpty()) {
                 // Process the retrieved addresses
                 val decodedAddress = addresses[0].getAddressLine(0)
-                lostPetViewModel.lostPetData?.lostPetDecodedAddress = decodedAddress
-                lostPetViewModel.lostPetData?.lostPetLocation =
+                lostPetViewModel.lostPetData.lostPetDecodedAddress = decodedAddress
+                lostPetViewModel.lostPetData.lostPetLocation =
                     LostPetData.LostLocation(currentLocation.latitude, currentLocation.longitude)
 
                 if (isEditing) {

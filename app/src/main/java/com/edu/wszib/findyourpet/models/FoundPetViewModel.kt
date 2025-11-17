@@ -13,8 +13,7 @@ import kotlinx.coroutines.launch
 class FoundPetViewModel(private val repository: FoundRepository) : ViewModel() {
 
     // ---- STATE FLOWS ----
-    private val _uploadState = MutableStateFlow<Result<Unit>?>(null)
-    val uploadState: StateFlow<Result<Unit>?> = _uploadState
+
 
     private val _deleteState = MutableStateFlow<Result<Unit>?>(null)
     val deleteState: StateFlow<Result<Unit>?> = _deleteState
@@ -30,6 +29,8 @@ class FoundPetViewModel(private val repository: FoundRepository) : ViewModel() {
     var foundPetData: FoundPetData = FoundPetData()
     var imageUri: Uri? = null
 
+    private val _uploadState = MutableStateFlow<Result<Unit>?>(null)
+    val uploadState: StateFlow<Result<Unit>?> = _uploadState
     // ---- UPLOAD / UPDATE ----
     fun uploadFoundPet(data: FoundPetData, imageUri: Uri) {
         viewModelScope.launch {

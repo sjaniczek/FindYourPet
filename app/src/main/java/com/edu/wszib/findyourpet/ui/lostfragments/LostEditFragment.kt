@@ -30,6 +30,8 @@ import com.edu.wszib.findyourpet.models.LostPetData
 import com.edu.wszib.findyourpet.models.LostPetViewModel
 import com.edu.wszib.findyourpet.models.LostPetViewModelFactory
 import com.edu.wszib.findyourpet.repository.LostRepository
+import com.edu.wszib.findyourpet.ui.foundfragments.FoundEditFragment
+import com.edu.wszib.findyourpet.ui.foundfragments.FoundEditFragment.Companion
 import com.google.android.gms.maps.model.LatLng
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.launch
@@ -228,7 +230,7 @@ class LostEditFragment : Fragment() {
             lostPetReact =
                 rgLostEditReacts.findViewById<RadioButton>(rgLostEditReacts.checkedRadioButtonId)?.text.toString()
             viewModel.imageUri = imageUri
-            //lostPetLocation = LostPetData.LostLocation(currentLocation)
+            lostPetLocation = LostPetData.LostLocation(currentLocation)
         }
     }
 
@@ -300,7 +302,7 @@ class LostEditFragment : Fragment() {
                 lostPetAdditionalOwnerInfo = etLostEditOwnerAdditionalInfo.text.toString(),
                 lostPetDateAdded = viewModel.lostPetData.lostPetDateAdded,
                 lostPetImageUrl = viewModel.lostPetData.lostPetImageUrl,
-                lostPetLocation = viewModel.lostPetData.lostPetLocation,
+                lostPetLocation = LostPetData.LostLocation(currentLocation),
             )
         }
         viewModel.updateLostPet(lostPetKey, updatedData, imageUri)

@@ -106,7 +106,6 @@ class FoundMapsFragment : Fragment(), OnMapReadyCallback {
         val editText = EditText(requireContext()).apply {
             hint = "Wpisz adres lub miasto"
             setPadding(50, 40, 50, 40)
-            setTextColor(ContextCompat.getColor(requireContext(), android.R.color.black))
             setHintTextColor(ContextCompat.getColor(requireContext(), android.R.color.darker_gray))
         }
 
@@ -194,8 +193,8 @@ class FoundMapsFragment : Fragment(), OnMapReadyCallback {
             if (!addresses.isNullOrEmpty()) {
                 // Process the retrieved addresses
                 val decodedAddress = addresses[0].getAddressLine(0)
-                foundPetViewModel.foundPetData?.foundPetDecodedAddress = decodedAddress
-                foundPetViewModel.foundPetData?.foundPetLocation =
+                foundPetViewModel.foundPetData.foundPetDecodedAddress = decodedAddress
+                foundPetViewModel.foundPetData.foundPetLocation =
                     FoundPetData.FoundLocation(currentLocation.latitude, currentLocation.longitude)
 
                 if (isEditing) {

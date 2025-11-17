@@ -138,7 +138,6 @@ class PinsMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.InfoWindowAdap
         val editText = EditText(requireContext()).apply {
             hint = "Wpisz adres lub miasto"
             setPadding(50, 40, 50, 40)
-            setTextColor(ContextCompat.getColor(requireContext(), android.R.color.black))
             setHintTextColor(ContextCompat.getColor(requireContext(), android.R.color.darker_gray))
         }
 

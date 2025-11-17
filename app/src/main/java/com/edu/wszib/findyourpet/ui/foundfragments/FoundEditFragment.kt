@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,7 +28,10 @@ import com.edu.wszib.findyourpet.inputmasks.DateInputMask
 import com.edu.wszib.findyourpet.models.FoundPetData
 import com.edu.wszib.findyourpet.models.FoundPetViewModel
 import com.edu.wszib.findyourpet.models.FoundPetViewModelFactory
+import com.edu.wszib.findyourpet.models.LostPetData
 import com.edu.wszib.findyourpet.repository.FoundRepository
+import com.edu.wszib.findyourpet.ui.lostfragments.LostEditFragment
+import com.edu.wszib.findyourpet.ui.lostfragments.LostEditFragment.Companion
 import com.google.android.gms.maps.model.LatLng
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.launch
@@ -38,7 +42,6 @@ class FoundEditFragment : Fragment() {
     private val binding get() = _binding!!
     private var imageUri: Uri? = null
     private var imageUrl: String? = null
-    private lateinit var dateAdded: String
     private val viewModel: FoundPetViewModel by activityViewModels {
         FoundPetViewModelFactory(FoundRepository())
     }
@@ -246,6 +249,7 @@ class FoundEditFragment : Fragment() {
 
     private fun validateAndUpdate() {
         val location = viewModel.foundPetData.foundPetLocation
+        Log.d(TAG, "validateAndUpdate: "+location.toString())
         if (!validateFields() || location == null) {
             Toast.makeText(
                 context,
@@ -270,7 +274,7 @@ class FoundEditFragment : Fragment() {
                 foundPetAdditionalFinderInfo = etFoundEditFinderAdditionalInfo.text.toString(),
                 foundPetDateAdded = viewModel.foundPetData.foundPetDateAdded,
                 foundPetImageUrl = viewModel.foundPetData.foundPetImageUrl,
-                foundPetLocation = viewModel.foundPetData.foundPetLocation,
+                foundPetLocation = FoundPetData.FoundLocation(currentLocation),
             )
         }
         viewModel.updateFoundPet(foundPetKey, updatedData, imageUri)
