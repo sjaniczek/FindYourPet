@@ -25,7 +25,10 @@ import com.edu.wszib.findyourpet.ui.lostfragments.LostDetailsFragment
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import kotlin.math.atan2
@@ -136,7 +139,8 @@ abstract class LostListFragment : Fragment() {
                 Toast.makeText(context, "Nie znaleziono lokalizacji", Toast.LENGTH_SHORT).show()
             }
         } catch (e: Exception) {
-            Toast.makeText(context, "Błąd przy geokodowaniu: ${e.message}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Błąd przy geokodowaniu: ${e.message}", Toast.LENGTH_SHORT)
+                .show()
         }
     }
 
@@ -185,7 +189,8 @@ abstract class LostListFragment : Fragment() {
                 referenceLocation = LatLng(loc.latitude, loc.longitude)
                 sortListByDistance()
             } else {
-                Toast.makeText(context, "Nie udało się pobrać lokalizacji", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Nie udało się pobrać lokalizacji", Toast.LENGTH_SHORT)
+                    .show()
             }
         }.addOnFailureListener { e ->
             Toast.makeText(
@@ -199,23 +204,28 @@ abstract class LostListFragment : Fragment() {
     private fun loadLostPets() {
         val query = getDatabaseReference()
 
-        query.get().addOnSuccessListener { snapshot ->
-            list.clear()
+        query.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                list.clear()
 
-            // Convert Firebase entries to model objects
-            for (child in snapshot.children) {
-                val pet = child.getValue(LostPetData::class.java)
-                pet?.lostPetId = child.key
-                if (pet != null) list.add(pet)
+                // Convert Firebase entries to model objects
+                for (child in snapshot.children) {
+                    val pet = child.getValue(LostPetData::class.java)
+                    pet?.lostPetId = child.key
+                    if (pet != null) list.add(pet)
+                }
+
+
+                // Sort newest lost pets first
+                list.sortByDescending { it.lostPetDateAdded }
+
+                val textEmpty = view?.findViewById<TextView>(R.id.tvLostPetRecyclerEmpty)
+                textEmpty?.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
+
+                adapter.notifyDataSetChanged()
             }
 
-            // Sort newest lost pets first
-            list.sortByDescending { it.lostPetDateAdded }
-
-            val textEmpty = view?.findViewById<TextView>(R.id.tvLostPetRecyclerEmpty)
-            textEmpty?.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
-
-            adapter.notifyDataSetChanged()
-        }
+            override fun onCancelled(error: DatabaseError) {}
+        })
     }
 }

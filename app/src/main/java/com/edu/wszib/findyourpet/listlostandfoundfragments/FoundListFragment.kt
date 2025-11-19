@@ -25,7 +25,10 @@ import com.edu.wszib.findyourpet.ui.foundfragments.FoundDetailsFragment
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import kotlin.math.*
@@ -199,21 +202,21 @@ abstract class FoundListFragment : Fragment() {
     private fun loadFoundPets() {
         val query = getDatabaseReference()
 
-        query.get().addOnSuccessListener { snapshot ->
-            list.clear()
-            for (child in snapshot.children) {
-                val pet = child.getValue(FoundPetData::class.java)
-                pet?.foundPetId = child.key
-                if (pet != null) list.add(pet)
+        query.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                list.clear()
+                for (child in snapshot.children) {
+                    val pet = child.getValue(FoundPetData::class.java)
+                    pet?.foundPetId = child.key
+                    if (pet != null) list.add(pet)
+                }
+
+                list.sortByDescending { it.foundPetDateAdded }
+
+                adapter.notifyDataSetChanged()
             }
 
-            // Sort by date added (newest first)
-            list.sortByDescending { it.foundPetDateAdded }
-
-            val textEmpty = view?.findViewById<TextView>(R.id.tvFoundPetRecyclerEmpty)
-            textEmpty?.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
-
-            adapter.notifyDataSetChanged()
-        }
+            override fun onCancelled(error: DatabaseError) {}
+        })
     }
 }
